@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
 import axios from "axios";
+import React, { useState } from "react";
 import { Button, Select } from "@chakra-ui/react";
 import {
     Chart as ChartJS,
@@ -11,6 +11,7 @@ import {
     Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
+import WeeklyEnergyChart from "components/WeeklyEnergyChart";
 
 ChartJS.register(
     CategoryScale,
@@ -21,167 +22,18 @@ ChartJS.register(
     Legend
 );
 
-/*
- * const options = {
-    responsive: true,
-    plugins: {
-        legend: {
-            position: "top",
-        },
-        title: {
-            display: true,
-            text: "Device Energy Usage Graph",
-        },
-    },
-};
-const options2 = {
-    responsive: true,
-    plugins: {
-        legend: {
-            position: "top",
-        },
-        title: {
-            display: true,
-            text: "Device Activity Graph",
-        },
-    },
-};
-const weeklyLabel = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
-const hourlyLabel = [
-    "00:00",
-    "01:00",
-    "02:00",
-    "03:00",
-    "04:00",
-    "05:00",
-    "06:00",
-    "07:00",
-    "08:00",
-    "09:00",
-    "10:00",
-    "11:00",
-    "12:00",
-    "13:00",
-    "14:00",
-    "15:00",
-    "16:00",
-    "17:00",
-    "18:00",
-    "19:00",
-    "20:00",
-    "21:00",
-    "22:00",
-    "23:00",
-];
-
-const weeklyData = {
-    labels: weeklyLabel,
-    datasets: [
-        {
-            label: "Device 1",
-            data: [10, 20, 30, 40, 50, 60, 70],
-            backgroundColor: "rgba(255, 99, 132, 0.5)",
-        },
-        {
-            label: "Device 2",
-            data: [30, 40, 50, 60, 70, 80, 92],
-            backgroundColor: "rgba(53, 162, 235, 0.5)",
-        },
-    ],
-};
-
-const hourlyData = {
-    labels: hourlyLabel,
-    datasets: [
-        {
-            label: "Device 1",
-            data: [
-                15, 35, 39, 92, 77, 36, 2, 25, 45, 49, 102, 87, 46, 12, 65, 85, 89, 52,
-                67, 26, 21, 22, 65, 24,
-            ],
-            backgroundColor: "rgba(255, 99, 132, 0.5)",
-        },
-        {
-            label: "Device 2",
-            data: [
-                24, 65, 22, 21, 26, 67, 52, 89, 85, 65, 12, 46, 87, 102, 49, 45, 25, 2,
-                36, 77, 92, 39, 35, 15,
-            ],
-            backgroundColor: "rgba(53, 162, 235, 0.5)",
-        },
-    ],
-};
 
 
-const weeklyActivityData = {
-    labels: weeklyLabel,
-    datasets: [
-        {
-            label: "Device 1",
-            data: [50, 20, 30, 10, 50, 20, 60],
-            backgroundColor: "rgba(255, 99, 132, 0.5)",
-        },
-        {
-            label: "Device 2",
-            data: [30, 40, 50, 60, 70, 80, 52],
-            backgroundColor: "rgba(53, 162, 235, 0.5)",
-        },
-    ],
-};
-
-const hourlyActivityData = {
-    labels: hourlyLabel,
-    datasets: [
-        {
-            label: "Device 1",
-            data: [
-                15, 35, 39, 92, 77, 36, 2, 25, 45, 49, 102, 87, 46, 12, 65, 85, 89, 52,
-                67, 26, 21, 22, 65, 24,
-            ],
-            backgroundColor: "rgba(255, 99, 132, 0.5)",
-        },
-        {
-            label: "Device 2",
-            data: [
-                80, 65, 22, 21, 26, 67, 52, 19, 25, 65, 12, 46, 87, 70, 49, 45, 25, 2,
-                36, 77, 92, 39, 35, 15,
-            ],
-            backgroundColor: "rgba(53, 162, 235, 0.5)",
-        },
-    ],
-};
-*/
-
-function DeviceLogging() {
-    const [selectDevice, setSelectedDevice] = useState("");
-    const [selectDevice2, setSelectedDevice2] = useState("");
+export default function DeviceLogging() {
+    const [allDevices, setAllDevices] = useState({});
+    //const [test, setTest] = useState(0); debug purpose
+    const [Device1WeeklyEnergy, setDevice1WeeklyEnergy] = useState([])
+    const [Device1WeeklyActvity, setDevice1WeeklyActivity] = useState([])
+    //const [Device2WeeklyEnergy, setDevice2WeeklyEnergy] = useState([])
+    //const [Device2WeeklyActvity, setDevice2WeeklyActivity] = useState([])
     const [device1ID, setDevice1ID] = useState("");
-    const [weeklyDevice1Log, setweeklyDevice1Log] = useState([]);
-    const [allLog, setAllLog] = useState([]);
-    const [test, setTest] = useState(0);
-
-    /*
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const res = await fetch('http://localhost:5186/api/DeviceLog', {
-                    method: 'GET',
-                    headers: {
-                        accept: 'text/plain',
-                    },
-                })
-                const data = await res.json()
-                console.log(data)
-                setweeklyDevice1Log(data)
-            } catch (error) {
-                console.error(error)
-            }
-        }
-        fetchData()
-    }, [])
-    */
-
+    //const [device2ID, setDevice2ID] = useState("");
+ 
     const onChange = (event) => {
         const value = event.target.value;
         setDevice1ID(value);
@@ -189,27 +41,84 @@ function DeviceLogging() {
 
     const fetchWeeklyLog = async (id, date) => {
         try {
-            //create the fetch request
-            const res = await axios.get(`https://localhost:7140/api/DeviceLog/${id}/${date}`)
+            // loops 7 times to get weekly log
+            //
+            // var dateAndTime = fetechedDateTimeVariable
 
-            console.log(res)
+            // var date = dateAndTime.Date
+            const dateString = date.split(" ")
+            // date = 2023-02-15
+            const day = dateString[0].split("-")
+            // 15 should be in dateOfDay
+            let dateOfDay = parseInt(day[2])
+
+
+            for (let i = 0; i < 7; i++) {
+
+                let getWeekData = day[0] + "-" + day[1] + "-" + dateOfDay + " 00:00:00.0000000"
+
+                //create the fetch request
+                const res = await axios.get(`https://localhost:7140/api/DeviceLog/${id}/${getWeekData}`)
+                console.log(res)
+                dateOfDay = dateOfDay + 1
+                // result from backend
+                let energyUsage = await res.data[0]
+                console.log(energyUsage)
+                const activity = await res.data[1]
+
+                setDevice1WeeklyEnergy(current => [...current, energyUsage])
+
+            }
             //get the fetch request
-            const data = await res.data
-            setweeklyDevice1Log(data)
+
+            // add weekly energy log from res according to deviceID
+            /*            if (id != device1ID) {
+                            if (Device2WeeklyEnergy == null) {
+                                setDevice2WeeklyEnergy(data)
+                            } else {
+                                //append
+                                setDevice2WeeklyEnergy(current => [...current, ...data])
+                            }
+                        } else {
+                            if (Device1WeeklyEnergy == null) {
+                                setDevice1WeeklyEnergy(data)
+                            } else {
+                                //append
+                                setDevice1WeeklyEnergy(current => [...current, ...data])
+                            }
+                        }
+            
+                        // add weekly activity log from res according to deviceID
+                        if (id != device1ID) {
+                            if (Device2WeeklyEnergy == null) {
+                                setDevice2WeeklyActivity(data)
+                            } else {
+                                //append
+                                setDevice2WeeklyActivity(current => [...current, ...data])
+                            }
+                        } else {
+                            if (Device1WeeklyEnergy == null) {
+                                setDevice1WeeklyActivity(data)
+                            } else {
+                                //append
+                                setDevice1WeeklyActivity(current => [...current, ...data])
+                            }
+                        }*/
 
         } catch (err) {
             console.error(err)
         }
+
+        
     }
 
-    // displaying 
     return (
         <div>
-            <h2>Device Log</h2>
-            <br></br>
+            Device Logging<br></br><br></br>
+            
             <h2>Select first device</h2>
             <select onChange={onChange} className="form-select">
-                <option defaultValue disabled>
+                <option disabled>
                     Select 1st device
                 </option>
                 <option value="385576BC-F97B-4B95-9B40-F423E4D16623"> Device 1</option>
@@ -220,14 +129,15 @@ function DeviceLogging() {
 
             <Button
                 variant="outlined"
-                colorScheme='blue'
-                onClick={() => {
-                    fetchWeeklyLog(device1ID, "2023-02-15 13:49:50.7925408")
-                    //fetchDeviceLogs()
+                colorScheme='blue' 
+                onClick={() => { 
+                    fetchWeeklyLog(device1ID, "2023-02-13 00:00:00.0000000")
                 }}
             > View weekly log </Button>
-
+            {Device1WeeklyEnergy && <h2>{Device1WeeklyActvity}</h2>}
+            <WeeklyEnergyChart
+                Device1WeeklyEnergy={Device1WeeklyEnergy}
+            />
         </div>
     );
-};
-export default DeviceLogging;
+}
