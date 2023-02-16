@@ -23,6 +23,7 @@ import UserProfileEdit from "./pages/profile/EditProfile";
 import ProfileLanding from "./pages/profile/ProfileLanding";
 import RegisterDevice from "./pages/RegisterDevice";
 import SelectNearbyDevice from "pages/SelectNearbyDevice";
+import DeviceConfig from "./pages/DeviceConfig";
 import Report from "pages/Analytics";
 
 export function App() {
@@ -65,6 +66,7 @@ export function App() {
               path="/scenario/edit/:id"
               element={<SchRule />}
             />
+            <Route path="/config" element={<DeviceConfig />} />
             <Route path="/analytics" element={<Report />} />
           </Routes>
         </Container>
