@@ -11,7 +11,8 @@ import {
   Center,
   Container,
   Text,
-  Heading
+  Heading,
+  Flex
 } from '@chakra-ui/react'; 
 
 const labels = ["January", "February", "March", "April", "May", "June"];
@@ -30,11 +31,11 @@ function UsageBar() {
     
 
     return (
-      <Container maxWidth={1600} mt={2} centerContent>
+      <Flex direction="column" justify="center" align="center">
         <Heading pb={5}>Forecast Household Energy Usage</Heading>
         <Text pb={10}>This is your predicted total household energy usage for the following months. </Text>
           <Bar data={data} />
-      </Container>
+      </Flex>
     )
   }
 
