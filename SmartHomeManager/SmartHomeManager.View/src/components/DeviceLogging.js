@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { Button, Select } from "@chakra-ui/react";
 import {
@@ -21,138 +21,6 @@ ChartJS.register(
     Legend
 );
 
-/*
- * const options = {
-    responsive: true,
-    plugins: {
-        legend: {
-            position: "top",
-        },
-        title: {
-            display: true,
-            text: "Device Energy Usage Graph",
-        },
-    },
-};
-const options2 = {
-    responsive: true,
-    plugins: {
-        legend: {
-            position: "top",
-        },
-        title: {
-            display: true,
-            text: "Device Activity Graph",
-        },
-    },
-};
-const weeklyLabel = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
-const hourlyLabel = [
-    "00:00",
-    "01:00",
-    "02:00",
-    "03:00",
-    "04:00",
-    "05:00",
-    "06:00",
-    "07:00",
-    "08:00",
-    "09:00",
-    "10:00",
-    "11:00",
-    "12:00",
-    "13:00",
-    "14:00",
-    "15:00",
-    "16:00",
-    "17:00",
-    "18:00",
-    "19:00",
-    "20:00",
-    "21:00",
-    "22:00",
-    "23:00",
-];
-
-const weeklyData = {
-    labels: weeklyLabel,
-    datasets: [
-        {
-            label: "Device 1",
-            data: [10, 20, 30, 40, 50, 60, 70],
-            backgroundColor: "rgba(255, 99, 132, 0.5)",
-        },
-        {
-            label: "Device 2",
-            data: [30, 40, 50, 60, 70, 80, 92],
-            backgroundColor: "rgba(53, 162, 235, 0.5)",
-        },
-    ],
-};
-
-const hourlyData = {
-    labels: hourlyLabel,
-    datasets: [
-        {
-            label: "Device 1",
-            data: [
-                15, 35, 39, 92, 77, 36, 2, 25, 45, 49, 102, 87, 46, 12, 65, 85, 89, 52,
-                67, 26, 21, 22, 65, 24,
-            ],
-            backgroundColor: "rgba(255, 99, 132, 0.5)",
-        },
-        {
-            label: "Device 2",
-            data: [
-                24, 65, 22, 21, 26, 67, 52, 89, 85, 65, 12, 46, 87, 102, 49, 45, 25, 2,
-                36, 77, 92, 39, 35, 15,
-            ],
-            backgroundColor: "rgba(53, 162, 235, 0.5)",
-        },
-    ],
-};
-
-
-const weeklyActivityData = {
-    labels: weeklyLabel,
-    datasets: [
-        {
-            label: "Device 1",
-            data: [50, 20, 30, 10, 50, 20, 60],
-            backgroundColor: "rgba(255, 99, 132, 0.5)",
-        },
-        {
-            label: "Device 2",
-            data: [30, 40, 50, 60, 70, 80, 52],
-            backgroundColor: "rgba(53, 162, 235, 0.5)",
-        },
-    ],
-};
-
-const hourlyActivityData = {
-    labels: hourlyLabel,
-    datasets: [
-        {
-            label: "Device 1",
-            data: [
-                15, 35, 39, 92, 77, 36, 2, 25, 45, 49, 102, 87, 46, 12, 65, 85, 89, 52,
-                67, 26, 21, 22, 65, 24,
-            ],
-            backgroundColor: "rgba(255, 99, 132, 0.5)",
-        },
-        {
-            label: "Device 2",
-            data: [
-                80, 65, 22, 21, 26, 67, 52, 19, 25, 65, 12, 46, 87, 70, 49, 45, 25, 2,
-                36, 77, 92, 39, 35, 15,
-            ],
-            backgroundColor: "rgba(53, 162, 235, 0.5)",
-        },
-    ],
-};
-*/
-
 function DeviceLogging() {
     const [selectDevice, setSelectedDevice] = useState("");
     const [selectDevice2, setSelectedDevice2] = useState("");
@@ -160,27 +28,6 @@ function DeviceLogging() {
     const [weeklyDevice1Log, setweeklyDevice1Log] = useState([]);
     const [allLog, setAllLog] = useState([]);
     const [test, setTest] = useState(0);
-
-    /*
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const res = await fetch('http://localhost:5186/api/DeviceLog', {
-                    method: 'GET',
-                    headers: {
-                        accept: 'text/plain',
-                    },
-                })
-                const data = await res.json()
-                console.log(data)
-                setweeklyDevice1Log(data)
-            } catch (error) {
-                console.error(error)
-            }
-        }
-        fetchData()
-    }, [])
-    */
 
     const onChange = (event) => {
         const value = event.target.value;
@@ -192,7 +39,6 @@ function DeviceLogging() {
             //create the fetch request
             const res = await axios.get(`https://localhost:7140/api/DeviceLog/${id}/${date}`)
 
-            console.log(res)
             //get the fetch request
             const data = await res.data
             setweeklyDevice1Log(data)
@@ -223,7 +69,6 @@ function DeviceLogging() {
                 colorScheme='blue'
                 onClick={() => {
                     fetchWeeklyLog(device1ID, "2023-02-15 13:49:50.7925408")
-                    //fetchDeviceLogs()
                 }}
             > View weekly log </Button>
 
