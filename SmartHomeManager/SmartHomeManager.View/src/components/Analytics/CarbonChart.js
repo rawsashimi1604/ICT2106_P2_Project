@@ -14,7 +14,7 @@ import {
   Flex
 } from '@chakra-ui/react';
 import { Line } from "react-chartjs-2";
-import { getByPlaceholderText } from '@testing-library/react';
+
 
 
 const labels = ["January", "February", "March", "April", "May", "June"];
