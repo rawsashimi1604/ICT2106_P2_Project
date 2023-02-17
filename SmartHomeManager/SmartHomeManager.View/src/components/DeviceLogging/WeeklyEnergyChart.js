@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Select } from "@chakra-ui/react";
+import {Box, Heading, Text, Select } from "@chakra-ui/react";
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -101,12 +101,14 @@ function WeeklyEnergyChart({ Device1WeeklyEnergy }) {
     };
 
     return (
-        <div>
-            Device Logging<br></br><br></br>
+        <Box paddingTop="15">
+            <Text> Select the chart to display</Text>
             <Select
                 placeholder="Select Device Energy Usage View"
                 onChange={(e) => dropDownHandler(e)}
                 width={"200px"}
+                variant='filled'
+
             >
                 <option value="option1">Weekly</option>
 
@@ -117,14 +119,11 @@ function WeeklyEnergyChart({ Device1WeeklyEnergy }) {
                 </div>
             ) : (
                 <div>
-                    <strong>Please select any value from dropdown</strong>
                 </div>
             )}
-            <br></br>
-            <br></br>
 
 
-        </div>
+        </Box>
 
 
     )

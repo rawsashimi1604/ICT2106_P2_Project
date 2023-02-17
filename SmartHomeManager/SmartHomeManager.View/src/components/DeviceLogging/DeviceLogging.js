@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Button, Select } from "@chakra-ui/react";
+import { Button, Box, Heading, Text, Select } from "@chakra-ui/react";
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -127,33 +127,41 @@ function DeviceLogging() {
 
     // displaying 
     return (
-        <>
-            <h2>Device Log</h2>
-            <br></br>
-            <h2>Select first device</h2>
-            <select
-                onChange={onChange}
-                defaultValue={""}
-            >
-                <option disabled={true} value="">Please select device</option>
-                {
-                    allDeviceID.map((list, index) =>
-                        <option key={index} value={list}> Device {index}</option>)
-                }
-            </select>
-            <br></br>
+        <Box>
+            <Heading alignContent="center">Device Log</Heading>
+            <Text>This page displays charts to illustrate the energy usage and activity level of devices.</Text>
+            <Box paddingTop="5">  
+                <text>Please select device to compare{'\n'}</text>
+                <Select
+                    onChange={onChange}
+                    defaultValue={""}
+                    variant='filled'
+                >
+                    <option disabled={true} value="">Please select device</option>
+                    {
+                        allDeviceID.map((list, index) =>
+                            <option key={index} value={list}> Device {index}</option>)
+                    }
+                </Select>  
 
-            <Button
-                variant="outlined"
-                colorScheme='blue'
-                onClick={() => {
-                    fetchWeeklyLog(device1ID, "2023-02-13 00:00:00")
-                }}
-            > View weekly log </Button>
+                <Box paddingTop="5">
+                    <Button
+                        padding="5"
+                        
+                        colorScheme="blue"
+                        onClick={() => {
+                            fetchWeeklyLog(device1ID, "2023-02-13 00:00:00")
+                        }}
+                    >
+                        View Weekly Energy Chart
+                    </Button>  
+                </Box>              
+            </Box>
+                
             <WeeklyEnergyChart
                 Device1WeeklyEnergy={Device1WeeklyEnergy}
             />
-        </>
+        </Box>
     );
 };
 export default DeviceLogging;
