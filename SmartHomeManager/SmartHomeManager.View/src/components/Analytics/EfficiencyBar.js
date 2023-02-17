@@ -13,6 +13,7 @@ import {
     Heading,
     Container,
     Text,
+    Flex
 } from '@chakra-ui/react';
 
 
@@ -62,12 +63,12 @@ export function EfficiencyBar() {
 
     return (
 
-        <Container maxWidth={1600} mt={2} centerContent>
+        <Flex direction="column" justify="center" align="center">
             <Heading pb={5}>Energy Efficiency</Heading>
             <Text pb={10}>This is your monthly energy efficiency</Text> 
             <Bar 
             // @ts-ignore
             options={options} data={data} />
-        </Container>
+        </Flex>
     )
 }
