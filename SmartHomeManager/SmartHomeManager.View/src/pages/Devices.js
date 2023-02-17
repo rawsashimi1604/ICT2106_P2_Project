@@ -1,5 +1,5 @@
 import React from "react";
-import DeviceLogging from "components/DeviceLogging/DeviceLogging";
+import DeviceLogging from "components/DeviceLogging";
 function Devices() {
     return (
         <div className="container mt-3">

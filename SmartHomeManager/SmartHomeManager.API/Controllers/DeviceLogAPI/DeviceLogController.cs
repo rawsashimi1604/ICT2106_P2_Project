@@ -98,7 +98,7 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
             var totalUsage = 0;
             var totalActivity = 0;
             var result = _logReadService.GetDeviceLogByDay(deviceId, date);
-           // if (!result.Any()) return NotFound();
+            if (!result.Any()) return NotFound();
             foreach (var item in result)
             {
                 totalUsage += item.DeviceEnergyUsage;
