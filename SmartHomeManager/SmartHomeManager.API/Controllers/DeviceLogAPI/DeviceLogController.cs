@@ -82,7 +82,8 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
         [HttpGet("{profileId}")]
         public ActionResult<IEnumerable<Device>> GetAllDevicesInProfile(Guid profileId)
         {
-            var result = _logReadService.GetAllDevicesInProfile(profileId);
+            //var result = _logReadService.GetAllDevicesInProfile(profileId);
+            string[] result = { "33333333-3333-3333-3333-333333333333", "44444444-4444-4444-4444-444444444444" };
             if (!result.Any()) return NotFound();
             return Ok(result);
         }
@@ -97,7 +98,7 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
             var totalUsage = 0;
             var totalActivity = 0;
             var result = _logReadService.GetDeviceLogByDay(deviceId, date);
-            if (!result.Any()) return NotFound();
+           // if (!result.Any()) return NotFound();
             foreach (var item in result)
             {
                 totalUsage += item.DeviceEnergyUsage;
