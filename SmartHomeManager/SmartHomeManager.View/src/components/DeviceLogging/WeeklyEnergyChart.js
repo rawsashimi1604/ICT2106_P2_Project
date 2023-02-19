@@ -95,9 +95,6 @@ function WeeklyEnergyChart({ Device1WeeklyEnergy }) {
     const dropDownHandler = (e) => {
         let value = e.target.value;
         setDropDownValue(value);
-        /*  if (value === "option1") {
-              setChartData(weeklyData);
-          } */
     };
 
     return (
@@ -114,18 +111,14 @@ function WeeklyEnergyChart({ Device1WeeklyEnergy }) {
 
             </Select>
             {DropDownValue ? (
-                <div style={{ width: "1300px" }}>
+                <Box style={{ width: "1300px" }}>
                     {Device1WeeklyEnergy && <Bar options={options} data={chartData} />}
-                </div>
+                </Box>
             ) : (
-                <div>
-                </div>
+                <Box>
+                </Box>
             )}
-
-
         </Box>
-
-
     )
 }
 

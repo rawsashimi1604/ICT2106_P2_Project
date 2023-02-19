@@ -10,7 +10,6 @@ import {
     Tooltip,
     Legend,
 } from "chart.js";
-import { Bar } from "react-chartjs-2";
 import WeeklyEnergyChart from "components/DeviceLogging/WeeklyEnergyChart";
 
 
@@ -37,13 +36,13 @@ function DeviceLogging() {
     useEffect(() => {
         const fetchDeviceID = async () => {
             try {
-                const res = await fetch('https://localhost:7140/api/DeviceLog/{22222222-2222-2222-2222-222222222222}', {
+                const res = await axios.get('https://localhost:7140/api/DeviceLog/{22222222-2222-2222-2222-222222222222}', {
                     method: 'GET',
                     headers: {
                         accept: 'text/plain',
                     },
                 })
-                const data = await res.json()
+                const data = await res.data
                 setAllDevice1ID(data)
             } catch (error) {
                 console.error(error)
@@ -82,41 +81,6 @@ function DeviceLogging() {
                 setDevice1WeeklyEnergy(current => [...current, energyUsage])
 
             }
-            //get the fetch request
-
-            // add weekly energy log from res according to deviceID
-            /*            if (id != device1ID) {
-                            if (Device2WeeklyEnergy == null) {
-                                setDevice2WeeklyEnergy(data)
-                            } else {
-                                //append
-                                setDevice2WeeklyEnergy(current => [...current, ...data])
-                            }
-                        } else {
-                            if (Device1WeeklyEnergy == null) {
-                                setDevice1WeeklyEnergy(data)
-                            } else {
-                                //append
-                                setDevice1WeeklyEnergy(current => [...current, ...data])
-                            }
-                        }
-            
-                        // add weekly activity log from res according to deviceID
-                        if (id != device1ID) {
-                            if (Device2WeeklyEnergy == null) {
-                                setDevice2WeeklyActivity(data)
-                            } else {
-                                //append
-                                setDevice2WeeklyActivity(current => [...current, ...data])
-                            }
-                        } else {
-                            if (Device1WeeklyEnergy == null) {
-                                setDevice1WeeklyActivity(data)
-                            } else {
-                                //append
-                                setDevice1WeeklyActivity(current => [...current, ...data])
-                            }
-                        }*/
 
         } catch (err) {
             console.error(err)
