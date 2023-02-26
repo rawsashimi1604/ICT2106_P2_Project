@@ -26,7 +26,7 @@ namespace SmartHomeManager.Domain.NotificationDomain.Services
         public async Task<Tuple<NotificationResult, IEnumerable<Notification>>> GetAllNotificationsAsync()
         {
             // TODO: Pass in accountId
-            IEnumerable<Notification?> allNotification = null;
+            IEnumerable<Notification> allNotification = null;
             try
             {
                 allNotification = await _notificationRepository.GetAllAsync();

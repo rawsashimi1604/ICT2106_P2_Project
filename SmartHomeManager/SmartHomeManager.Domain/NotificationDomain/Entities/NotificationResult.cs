@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SmartHomeManager.Domain.NotificationDomain.Entities
 {
-
     public enum NotificationResult
     {
         Error_AccountNotFound,
