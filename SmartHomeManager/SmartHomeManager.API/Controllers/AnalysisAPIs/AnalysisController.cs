@@ -14,7 +14,7 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         // TODO: Create API Routes...
 
         // TODO: Device Route
-        // GET /api/analysis/device/{deviceId}
+        // GET /api/analysis/device/download/{deviceId}
 
         // TODO: HouseholdReport Route
         // GET /api/analysis/householdReport/download/{accountId}
