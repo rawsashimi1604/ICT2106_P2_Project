@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
+using iText.Layout.Properties;
 
 namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 {
@@ -19,8 +23,24 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         [HttpGet("device/download")]
         public ActionResult GetDeviceReport()
         {
-            string filePath = "../SmartHomeManager.Domain/AnalysisDomain/Files/2106_ClientMeeting.pdf";
+
+            // string fileName = "2106_ClientMeeting.pdf";
             string fileName = "testing.pdf";
+
+            // Create a new PDF document
+            PdfDocument pdfDoc = new PdfDocument(new PdfWriter("../SmartHomeManager.Domain/AnalysisDomain/Files/" + fileName));
+            Document doc = new Document(pdfDoc);
+
+            // Add content to the PDF document
+            Paragraph p1 = new Paragraph("Hello, World!").SetTextAlignment(TextAlignment.CENTER);
+            doc.Add(p1);
+
+            // Save the PDF document
+            doc.Close();
+
+            
+            string filePath = "../SmartHomeManager.Domain/AnalysisDomain/Files/" + fileName;
+            
 
             byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
 
