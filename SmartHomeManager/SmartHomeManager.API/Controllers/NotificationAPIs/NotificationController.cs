@@ -7,7 +7,7 @@ using SmartHomeManager.Domain.Common;
 using SmartHomeManager.Domain.NotificationDomain.Entities;
 using SmartHomeManager.Domain.NotificationDomain.Interfaces;
 using SmartHomeManager.Domain.NotificationDomain.Services;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace SmartHomeManager.API.Controllers.NotificationAPIs
 {

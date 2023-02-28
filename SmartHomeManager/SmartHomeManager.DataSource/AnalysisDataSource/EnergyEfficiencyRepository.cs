@@ -90,7 +90,8 @@ namespace SmartHomeManager.DataSource.AnalysisDataSource
         {
             try
             {
-                await _applicationDbContext.Update(entity);
+
+                //await _applicationDbContext.EnergyEfficiency.Update(entity);
                 return true;
             }
             catch
