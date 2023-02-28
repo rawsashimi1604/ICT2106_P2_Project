@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.AspNetCore.Hosting;
 
 namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 {
@@ -16,14 +16,16 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 
         // TODO: Device Route
         // GET /api/analysis/device/download/{deviceId}
-        [HttpGet("{deviceId}")]
-        [Route("api/analysis/device/download")]
-        public HttpResponseMessage Get()
+        [HttpGet("device/download")]
+        public ActionResult GetDeviceReport()
         {
-            HttpResponseMessage result = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
-            
+            //string filePath = "./Controllers/AnalysisAPIs/2106_ClientMeeting.pdf";
+            string filePath = "../SmartHomeManager.Domain/AnalysisDomain/Files/2106_ClientMeeting.pdf";
+            string fileName = "testing.pdf";
 
-            return result;
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+
+            return File(fileBytes, "application/force-download", fileName);
         }
 
         // TODO: HouseholdReport Route
