@@ -19,7 +19,6 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         [HttpGet("device/download")]
         public ActionResult GetDeviceReport()
         {
-            //string filePath = "./Controllers/AnalysisAPIs/2106_ClientMeeting.pdf";
             string filePath = "../SmartHomeManager.Domain/AnalysisDomain/Files/2106_ClientMeeting.pdf";
             string fileName = "testing.pdf";
 
