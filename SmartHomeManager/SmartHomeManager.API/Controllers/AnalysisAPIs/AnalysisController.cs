@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
+
 namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 {
     [Route("api/analysis")]
@@ -15,6 +16,15 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 
         // TODO: Device Route
         // GET /api/analysis/device/download/{deviceId}
+        [HttpGet("{deviceId}")]
+        [Route("api/analysis/device/download")]
+        public HttpResponseMessage Get()
+        {
+            HttpResponseMessage result = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+            
+
+            return result;
+        }
 
         // TODO: HouseholdReport Route
         // GET /api/analysis/householdReport/download/{accountId}
