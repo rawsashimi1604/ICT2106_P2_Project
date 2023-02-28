@@ -24,7 +24,6 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         public ActionResult GetDeviceReport()
         {
 
-            // string fileName = "2106_ClientMeeting.pdf";
             string fileName = "testing.pdf";
 
             // Create a new PDF document
