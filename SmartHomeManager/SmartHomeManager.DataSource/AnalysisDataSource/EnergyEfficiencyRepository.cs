@@ -1,6 +1,8 @@
-﻿using SmartHomeManager.Domain.AnalysisDomain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using SmartHomeManager.Domain.AnalysisDomain.Entities;
 using SmartHomeManager.Domain.Common;
 using SmartHomeManager.Domain.NotificationDomain.Entities;
+using SmartHomeManager.Domain.RoomDomain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,8 +59,8 @@ namespace SmartHomeManager.DataSource.AnalysisDataSource
         public async Task<IEnumerable<EnergyEfficiency>> GetAllAsync()
         {
             // TODO: actual implementation of database get all...
-            //return await _applicationDbContext.EnergyEfficiency.ToListAsync();
-            throw new NotImplementedException();
+            return await _applicationDbContext.EnergyEfficiency.ToListAsync();
+            //throw new NotImplementedException();
             // For temp data uncomment this...    
             //return _tempData;
         }
@@ -66,6 +68,9 @@ namespace SmartHomeManager.DataSource.AnalysisDataSource
         {
             return await _applicationDbContext.EnergyEfficiency.FindAsync(id);
         }
+
+  
+
 
 
         public async Task<bool> SaveAsync()
@@ -81,9 +86,18 @@ namespace SmartHomeManager.DataSource.AnalysisDataSource
             }
         }
 
-        public Task<bool> UpdateAsync(EnergyEfficiency entity)
+        public async Task<bool> UpdateAsync(EnergyEfficiency entity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await _applicationDbContext.Update(entity);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+            
         }
     }
 }
