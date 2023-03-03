@@ -10,6 +10,7 @@ using iText.Layout.Element;
 using iText.Layout.Properties;
 using SmartHomeManager.Domain.AnalysisDomain.Services;
 using SmartHomeManager.Domain.AnalysisDomain.Entities;
+using SmartHomeManager.Domain.DeviceDomain.Interfaces;
 
 namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 {
@@ -22,9 +23,9 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         private readonly CarbonFootprintService _carbonFootprintService;
 
         // TODO: Create constructor to inject services...
-        public AnalysisController(IGenericRepository<CarbonFootprint> carbonFootprintRepository)
+        public AnalysisController(IGenericRepository<CarbonFootprint> carbonFootprintRepository, IDeviceRepository deviceRepository)
         {
-            _reportService = new ReportService();
+            _reportService = new(deviceRepository);
             _carbonFootprintService = new(carbonFootprintRepository);
         }
 
@@ -33,9 +34,9 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         // TODO: Device Route
         // GET /api/analysis/device/download/{deviceId}
         [HttpGet("device/download/")]
-        public FileContentResult GetDeviceReport()
+        public async Task<FileContentResult> GetDeviceReport()
         {
-            PdfFile file = _reportService.GetDeviceReport();
+            PdfFile file = await _reportService.GetDeviceReport();
             return File(file.FileContents, file.ContentType, file.FileName);
         }
 

@@ -11,7 +11,10 @@ namespace SmartHomeManager.Domain.DeviceDomain.Interfaces
 
 		public Task<IEnumerable<Device>> GetAllAsync();
 
-		public Task UpdateAsync(Device device);
+        public Task<IEnumerable<Device>> GetAllAsyncByAccountId(Guid accountId);
+
+        public Task UpdateAsync(Device device);
+
 
 		public Task DeleteAsync(Guid deviceId);
 
