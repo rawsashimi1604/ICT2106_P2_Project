@@ -3,6 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using SmartHomeManager.Domain.AnalysisDomain.Entities;
 using SmartHomeManager.Domain.AnalysisDomain.Services;
 using SmartHomeManager.Domain.Common;
+using Microsoft.AspNetCore.Hosting;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
+using iText.Layout.Properties;
+using SmartHomeManager.Domain.AnalysisDomain.Services;
+using SmartHomeManager.Domain.AnalysisDomain.Entities;
 
 namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 {
@@ -11,11 +18,13 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
     public class AnalysisController : ControllerBase
     {
         // TODO: Add private service variables
+        private readonly ReportService _reportService;
         private readonly CarbonFootprintService _carbonFootprintService;
 
         // TODO: Create constructor to inject services...
         public AnalysisController(IGenericRepository<CarbonFootprint> carbonFootprintRepository)
         {
+            _reportService = new ReportService();
             _carbonFootprintService = new(carbonFootprintRepository);
         }
 
@@ -23,15 +32,12 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 
         // TODO: Device Route
         // GET /api/analysis/device/download/{deviceId}
-        //[HttpGet("{deviceId}")]
-        //[Route("api/analysis/device/download")]
-        //public HttpResponseMessage Get()
-        //{
-        //    HttpResponseMessage result = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
-            
-
-        //    return result;
-        //}
+        [HttpGet("device/download/")]
+        public FileContentResult GetDeviceReport()
+        {
+            PdfFile file = _reportService.GetDeviceReport();
+            return File(file.FileContents, file.ContentType, file.FileName);
+        }
 
         // TODO: HouseholdReport Route
         // GET /api/analysis/householdReport/download/{accountId}

@@ -1,4 +1,5 @@
-﻿using SmartHomeManager.Domain.AnalysisDomain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using SmartHomeManager.Domain.AnalysisDomain.Entities;
 using SmartHomeManager.Domain.Common;
 using System;
 using System.Collections.Generic;
@@ -46,17 +47,33 @@ namespace SmartHomeManager.DataSource.AnalysisDataSource
 
         public Task<bool> DeleteAsync(CarbonFootprint entity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _applicationDbContext.Remove(entity);
+                return Task.FromResult(true);
+            }
+            catch
+            {
+                return Task.FromResult(false);
+            }
         }
 
         public Task<bool> DeleteByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _applicationDbContext.RemoveRange(id);
+                return Task.FromResult(true);
+            }
+            catch
+            {
+                return Task.FromResult(false);
+            }
         }
 
-        public Task<IEnumerable<CarbonFootprint>> GetAllAsync()
+        public async Task<IEnumerable<CarbonFootprint>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _applicationDbContext.CarbonFootprints.ToListAsync();
         }
 
         public async Task<CarbonFootprint?> GetByIdAsync(Guid id)
@@ -79,7 +96,15 @@ namespace SmartHomeManager.DataSource.AnalysisDataSource
 
             public Task<bool> UpdateAsync(CarbonFootprint entity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _applicationDbContext.Update(entity);
+                return Task.FromResult(true);
+            }
+            catch
+            {
+                return Task.FromResult(false);
+            }
         }
     }
 }

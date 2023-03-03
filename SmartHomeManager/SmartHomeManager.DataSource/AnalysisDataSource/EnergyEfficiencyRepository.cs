@@ -48,12 +48,28 @@ namespace SmartHomeManager.DataSource.AnalysisDataSource
 
         public Task<bool> DeleteAsync(EnergyEfficiency entity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _applicationDbContext.Remove(entity);
+                return Task.FromResult(true);
+            }
+            catch
+            {
+                return Task.FromResult(false);
+            }
         }
 
         public Task<bool> DeleteByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _applicationDbContext.RemoveRange(id);
+                return Task.FromResult(true);
+            }
+            catch
+            {
+                return Task.FromResult(false);
+            }
         }
 
         public async Task<IEnumerable<EnergyEfficiency>> GetAllAsync()
@@ -86,19 +102,17 @@ namespace SmartHomeManager.DataSource.AnalysisDataSource
             }
         }
 
-        public async Task<bool> UpdateAsync(EnergyEfficiency entity)
+        public Task<bool> UpdateAsync(EnergyEfficiency entity)
         {
             try
             {
-
-                //await _applicationDbContext.EnergyEfficiency.Update(entity);
-                return true;
+                _applicationDbContext.Update(entity);
+                return Task.FromResult(true);
             }
             catch
             {
-                return false;
+                return Task.FromResult(false);
             }
-            
         }
     }
 }
