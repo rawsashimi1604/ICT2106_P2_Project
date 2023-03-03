@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using SmartHomeManager.Domain.AccountDomain.Entities;
 using SmartHomeManager.Domain.AccountDomain.Services;
 using SmartHomeManager.Domain.Common;
+using SmartHomeManager.Domain.Common.Exceptions;
 using SmartHomeManager.Domain.NotificationDomain.Entities;
 using SmartHomeManager.Domain.NotificationDomain.Interfaces;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -25,18 +26,14 @@ namespace SmartHomeManager.Domain.NotificationDomain.Services
             _mockAccountService = new MockAccountService(mockAccountRepository);
         }
 
-        public async Task<Tuple<NotificationResult, Notification?>> SendNotification(string notificationMessage, Guid accountId)
+        public async Task<Notification?> SendNotification(string notificationMessage, Guid accountId)
         {
-            System.Diagnostics.Debug.WriteLine("Notification message:" + notificationMessage);
-
-
             var account = await _mockAccountService.GetAccount(accountId);
             
             //Check if account exist
             if (account == null)
             {
-                System.Diagnostics.Debug.WriteLine("Account not found");
-                return Tuple.Create(NotificationResult.Error_AccountNotFound, new Notification());
+                throw new AccountNotFoundException();
             }
 
             //Remove symbol to prevent SQL injection
@@ -56,10 +53,10 @@ namespace SmartHomeManager.Domain.NotificationDomain.Services
             // If something went wrong...
             if (!result)
             {
-                return Tuple.Create(NotificationResult.Error_DBInsertFail, (Notification?) null);
+                throw new DBInsertFailException();
             }
 
-            return Tuple.Create(NotificationResult.Success, notificationToBeAdded);
+            return notificationToBeAdded;
         }
     }
 }

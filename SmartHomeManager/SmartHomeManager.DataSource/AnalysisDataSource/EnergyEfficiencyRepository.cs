@@ -74,11 +74,7 @@ namespace SmartHomeManager.DataSource.AnalysisDataSource
 
         public async Task<IEnumerable<EnergyEfficiency>> GetAllAsync()
         {
-            // TODO: actual implementation of database get all...
             return await _applicationDbContext.EnergyEfficiency.ToListAsync();
-            //throw new NotImplementedException();
-            // For temp data uncomment this...    
-            //return _tempData;
         }
         public async Task<EnergyEfficiency?> GetByIdAsync(Guid id)
         {
