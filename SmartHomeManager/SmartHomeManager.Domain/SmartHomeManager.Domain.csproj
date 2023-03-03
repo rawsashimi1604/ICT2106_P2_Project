@@ -14,7 +14,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AnalysisDomain\DTOs\" />
-    <Folder Include="AnalysisDomain\Interfaces\" />
     <Folder Include="SceneDomain\Services\" />
     <Folder Include="SceneDomain\Entities\DTOs\" />
     <Folder Include="SceneDomain\Interfaces\" />
