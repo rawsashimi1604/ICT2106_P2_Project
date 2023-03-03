@@ -1,4 +1,5 @@
 ﻿using SmartHomeManager.Domain.AccountDomain.Entities;
+using SmartHomeManager.Domain.AccountDomain.Interfaces;
 using SmartHomeManager.Domain.AccountDomain.Services;
 using SmartHomeManager.Domain.AnalysisDomain.Entities;
 using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
@@ -16,17 +17,17 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
     internal class ForecastService { 
 
         private readonly IForecastRepository _forecastRepository;
-        private readonly MockAccountService _mockAccountService;
+        private readonly AccountService _accountService;
 
-        public ForecastService(IForecastRepository forecastRepository, IGenericRepository<Account> mockAccountRepository)
+        public ForecastService(IForecastRepository forecastRepository, IAccountRepository accountRepository)
         {
             _forecastRepository = forecastRepository;
-            _mockAccountService = new MockAccountService(mockAccountRepository);
+            _accountService = new AccountService(accountRepository);
         }
 
         public async Task<Tuple<IEnumerable<ForecastChart>?>> GetHouseHoldForecast(Guid accountid)
         {
-            var accountToBeFound = await _mockAccountService.GetAccount(accountid);
+            var accountToBeFound = await _accountService.GetAccountByAccountId(accountid);
             IEnumerable<ForecastChart> allForecastChart = null;
 
             //Check if account exist

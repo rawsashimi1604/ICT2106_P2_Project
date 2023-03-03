@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SmartHomeManager.Domain.AccountDomain.Entities;
+using SmartHomeManager.Domain.AccountDomain.Interfaces;
 using SmartHomeManager.Domain.AccountDomain.Services;
 using SmartHomeManager.Domain.Common;
 using SmartHomeManager.Domain.Common.Exceptions;
@@ -15,13 +16,13 @@ namespace SmartHomeManager.Domain.NotificationDomain.Services
     public class ReceiveNotificationService
     {
         private readonly INotificationRepository _notificationRepository;
-        private readonly MockAccountService _mockAccountService;
+        private readonly AccountService _AccountService;
 
 
-        public ReceiveNotificationService(INotificationRepository notificationRepository, IGenericRepository<Account> mockAccountRepository)
+        public ReceiveNotificationService(INotificationRepository notificationRepository, IAccountRepository accountRepository)
         {
             _notificationRepository = notificationRepository;
-            _mockAccountService = new MockAccountService(mockAccountRepository);
+            _AccountService = new AccountService(accountRepository);
         }
 
         //public async Task<Tuple<NotificationResult, IEnumerable<Notification>>> GetAllNotificationsAsync()
@@ -43,7 +44,7 @@ namespace SmartHomeManager.Domain.NotificationDomain.Services
         // List, ArrayList, Array...
         public async Task<IEnumerable<Notification>?> GetNotificationsAsync(Guid accountId)
         {
-            var accountToBeFound = await _mockAccountService.GetAccount(accountId);
+            var accountToBeFound = await _AccountService.CheckAccountExists(accountId);
             IEnumerable<Notification> allNotification = null;
 
             //Check if account exist
