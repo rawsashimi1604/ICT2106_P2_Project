@@ -10,3 +10,5 @@ namespace SmartHomeManager.DataSource.AnalysisDataSource
     {
     }
 }
+
+

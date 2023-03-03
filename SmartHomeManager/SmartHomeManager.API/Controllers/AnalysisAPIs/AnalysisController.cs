@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SmartHomeManager.Domain.AnalysisDomain.Entities;
+using SmartHomeManager.Domain.AnalysisDomain.Services;
+using SmartHomeManager.Domain.Common;
 using Microsoft.AspNetCore.Hosting;
 using iText.Kernel.Pdf;
 using iText.Layout;
@@ -16,17 +19,20 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
     {
         // TODO: Add private service variables
         private readonly ReportService _reportService;
+        private readonly CarbonFootprintService _carbonFootprintService;
 
         // TODO: Create constructor to inject services...
-        public AnalysisController()
+        public AnalysisController(IGenericRepository<CarbonFootprint> carbonFootprintRepository)
         {
             _reportService = new ReportService();
+            _carbonFootprintService = new(carbonFootprintRepository);
         }
+
         // TODO: Create API Routes...
 
         // TODO: Device Route
         // GET /api/analysis/device/download/{deviceId}
-        [HttpGet("device/download")]
+        [HttpGet("device/download/")]
         public FileContentResult GetDeviceReport()
         {
             PdfFile file = _reportService.GetDeviceReport();
@@ -44,5 +50,12 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 
         // TODO: CarbonFootprint Route
         // GET /api/analysis/householdReport/carbonFootprint/{accountId}
+        [HttpGet("/householdReport/carbonFootprint/{accountId}")]
+        [Produces("application/json")]
+        public async Task<IActionResult> GetCarbonFootprintData(Guid accountId)
+        {
+            string result = _carbonFootprintService.GetCarbonFootprintAsync(Guid.NewGuid(), 1, 1);
+            return StatusCode(200, result);
+        }
     }
 }
