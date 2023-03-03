@@ -48,6 +48,7 @@ using SmartHomeManager.Domain.NotificationDomain.Entities;
 using SmartHomeManager.Domain.NotificationDomain.Interfaces;
 using SmartHomeManager.Domain.AnalysisDomain.Entities;
 using SmartHomeManager.DataSource.AnalysisDataSource;
+using SmartHomeManager.Domain.DeviceDomain.Services;
 
 namespace SmartHomeManager.API;
 
