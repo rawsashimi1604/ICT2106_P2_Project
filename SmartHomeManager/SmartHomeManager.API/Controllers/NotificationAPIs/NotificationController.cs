@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SmartHomeManager.API.Controllers.NotificationAPIs.ViewModels;
 using SmartHomeManager.Domain.AccountDomain.Entities;
+using SmartHomeManager.Domain.AccountDomain.Interfaces;
 using SmartHomeManager.Domain.Common;
 using SmartHomeManager.Domain.Common.Exceptions;
 using SmartHomeManager.Domain.NotificationDomain.Entities;
@@ -21,10 +22,10 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
         private readonly ReceiveNotificationService _receiveNotificationService;
 
         // Dependency Injection of repos to services...
-        public NotificationController(INotificationRepository notificationRepository, IGenericRepository<Account> mockAccountRepository)
+        public NotificationController(INotificationRepository notificationRepository, IAccountRepository accountRepository)
         {
-            _sendNotificationService = new(notificationRepository, mockAccountRepository);
-            _receiveNotificationService = new(notificationRepository, mockAccountRepository);
+            _sendNotificationService = new(notificationRepository, accountRepository);
+            _receiveNotificationService = new(notificationRepository, accountRepository);
         }
 
         // API routes....
