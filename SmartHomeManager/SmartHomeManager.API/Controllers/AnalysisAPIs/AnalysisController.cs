@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.AspNetCore.Hosting;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
+using iText.Layout.Properties;
 
 namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 {
@@ -16,14 +20,30 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 
         // TODO: Device Route
         // GET /api/analysis/device/download/{deviceId}
-        [HttpGet("{deviceId}")]
-        [Route("api/analysis/device/download")]
-        public HttpResponseMessage Get()
+        [HttpGet("device/download")]
+        public ActionResult GetDeviceReport()
         {
-            HttpResponseMessage result = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+
+            string fileName = "testing.pdf";
+
+            // Create a new PDF document
+            PdfDocument pdfDoc = new PdfDocument(new PdfWriter("../SmartHomeManager.Domain/AnalysisDomain/Files/" + fileName));
+            Document doc = new Document(pdfDoc);
+
+            // Add content to the PDF document
+            Paragraph p1 = new Paragraph("Hello, World!").SetTextAlignment(TextAlignment.CENTER);
+            doc.Add(p1);
+
+            // Save the PDF document
+            doc.Close();
+
+            
+            string filePath = "../SmartHomeManager.Domain/AnalysisDomain/Files/" + fileName;
             
 
-            return result;
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+
+            return File(fileBytes, "application/force-download", fileName);
         }
 
         // TODO: HouseholdReport Route
