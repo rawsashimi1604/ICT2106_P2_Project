@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using SmartHomeManager.Domain.AccountDomain.Entities;
 using SmartHomeManager.Domain.AccountDomain.Services;
 using SmartHomeManager.Domain.Common;
+using SmartHomeManager.Domain.Common.Exceptions;
 using SmartHomeManager.Domain.NotificationDomain.Entities;
 using SmartHomeManager.Domain.NotificationDomain.Interfaces;
 
@@ -23,50 +24,45 @@ namespace SmartHomeManager.Domain.NotificationDomain.Services
             _mockAccountService = new MockAccountService(mockAccountRepository);
         }
 
-        public async Task<Tuple<NotificationResult, IEnumerable<Notification>>> GetAllNotificationsAsync()
+        //public async Task<Tuple<NotificationResult, IEnumerable<Notification>>> GetAllNotificationsAsync()
+        public async Task<IEnumerable<Notification>> GetAllNotificationsAsync()
         {
             // TODO: Pass in accountId
             IEnumerable<Notification> allNotification = null;
             try
             {
                 allNotification = await _notificationRepository.GetAllAsync();
-                return Tuple.Create(NotificationResult.Success, allNotification);
+                return allNotification;
             }
             catch (Exception ex)
             {
-                return Tuple.Create(NotificationResult.Error_DBReadFail, allNotification);
+                throw new DBReadFailException();
             }
         }
 
         // List, ArrayList, Array...
-        public async Task<Tuple<NotificationResult, IEnumerable<Notification>?>> GetNotificationsAsync(Guid accountId)
+        public async Task<IEnumerable<Notification>?> GetNotificationsAsync(Guid accountId)
         {
-
-            // TODO: Create logic for Get Notifications by AccountId
-            // Use GetAllByIdAsync
-            // Check if account exists
-            // Receive the top 5 most recent notifications by AccountId (filter the top 5 most recent)
-
             var accountToBeFound = await _mockAccountService.GetAccount(accountId);
             IEnumerable<Notification> allNotification = null;
 
             //Check if account exist
             if (accountToBeFound == null)
             {
-                System.Diagnostics.Debug.WriteLine("Account not found");
-                return Tuple.Create(NotificationResult.Error_AccountNotFound, allNotification);
+                throw new AccountNotFoundException();
             }
+
             allNotification = await _notificationRepository.GetAllByIdAsync(accountId);
-            //Check if DBReadFail
+
             try
             {
                 //Sort and get the latest 5 notifications
                 IEnumerable<Notification> latest5Notification = allNotification.OrderBy(noti => noti.SentTime).TakeLast(5);
-                return Tuple.Create(NotificationResult.Success, latest5Notification);
+                return latest5Notification;
             }
             catch (Exception ex)
             {
-                return Tuple.Create(NotificationResult.Error_DBReadFail, allNotification);
+                throw new DBReadFailException();
             }
         }
     }

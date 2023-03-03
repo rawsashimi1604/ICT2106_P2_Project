@@ -48,12 +48,8 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         [Produces("application/json")]
         public async Task<IActionResult> GetCarbonFootprintData(Guid accountId)
         {
-            string result = _carbonFootprintService.GetCarbonFootprintAsync(Guid.NewGuid());
+            string result = _carbonFootprintService.GetCarbonFootprintAsync(Guid.NewGuid(), 1, 1);
             return StatusCode(200, result);
         }
-
-
-
-
     }
 }
