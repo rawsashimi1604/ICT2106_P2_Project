@@ -17,8 +17,10 @@ const handleClick = () => {
         .then((response) =>{
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
+            const current = new Date();
+            const date = `${current.getDate()}${current.getMonth()+1}${current.getFullYear()}`
             link.href = url;
-            link.setAttribute('download', 'MyPdfReport.pdf');
+            link.setAttribute('download', date + '.pdf');
             document.body.appendChild(link);
             link.click();
     });
