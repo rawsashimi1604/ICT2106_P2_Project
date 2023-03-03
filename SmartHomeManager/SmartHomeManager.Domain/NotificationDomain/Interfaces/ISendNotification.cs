@@ -11,7 +11,7 @@ namespace SmartHomeManager.Domain.NotificationDomain.Interfaces
 {
     public interface ISendNotification
     {
-        public Task<Tuple<NotificationResult, Notification?>> SendNotification(string notificationMessage, Guid accountId);
+        public Task<Notification?> SendNotification(string notificationMessage, Guid accountId);
 
     }
 }

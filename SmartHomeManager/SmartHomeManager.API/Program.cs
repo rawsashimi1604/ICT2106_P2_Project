@@ -46,6 +46,8 @@ using SmartHomeManager.Domain.AccountDomain.Entities;
 using SmartHomeManager.Domain.Common;
 using SmartHomeManager.Domain.NotificationDomain.Entities;
 using SmartHomeManager.Domain.NotificationDomain.Interfaces;
+using SmartHomeManager.Domain.AnalysisDomain.Entities;
+using SmartHomeManager.DataSource.AnalysisDataSource;
 
 namespace SmartHomeManager.API;
 
@@ -99,6 +101,9 @@ public class Program
         // Inject dependencies for Notification Repository, so all implementations of IGenericRepository<Notification> will use the NotificationRepository implementation...
         builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
         builder.Services.AddScoped<IGenericRepository<Account>, MockAccountRepository>();
+
+        // ANALYSIS
+        builder.Services.AddScoped<IGenericRepository<CarbonFootprint>, CarbonFootprintRepository>();
 
         // ROOM
         builder.Services.AddScoped<IRoomRepository, RoomRepository>();
