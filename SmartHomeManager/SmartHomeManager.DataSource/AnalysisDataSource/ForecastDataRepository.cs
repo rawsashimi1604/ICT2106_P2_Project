@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartHomeManager.Domain.AnalysisDomain.Entities;
 using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
-using SmartHomeManager.Domain.Common;
-using SmartHomeManager.Domain.NotificationDomain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,21 +9,21 @@ using System.Threading.Tasks;
 
 namespace SmartHomeManager.DataSource.AnalysisDataSource
 {
-    public class ForecastRepository : IForecastRepository
+    public class ForecastDataRepository : IForecastDataRepository
     {
         private readonly ApplicationDbContext _applicationDbContext;
 
-        public ForecastRepository(ApplicationDbContext applicationDbContext)
+        public ForecastDataRepository(ApplicationDbContext applicationDbContext)
         {
             _applicationDbContext = applicationDbContext;
         }
 
-        public async Task<bool> AddAsync(ForecastChart entity)
+        public async Task<bool> AddAsync(ForecastChartData entity)
         {
             try
             {
                 // Attempt to add entity to db, check if operation was successful.
-                await _applicationDbContext.ForecastCharts.AddAsync(entity);
+                await _applicationDbContext.ForecastChartsData.AddAsync(entity);
                 //IEnumerable<Account> accounts =
                 //    await _applicationDbContext.Accounts.ToListAsync();
 
@@ -46,7 +44,7 @@ namespace SmartHomeManager.DataSource.AnalysisDataSource
             }
         }
 
-        public Task<bool> DeleteAsync(ForecastChart entity)
+        public Task<bool> DeleteAsync(ForecastChartData entity)
         {
             try
             {
@@ -72,25 +70,23 @@ namespace SmartHomeManager.DataSource.AnalysisDataSource
             }
         }
 
-        public async Task<IEnumerable<ForecastChart>> GetAllAsync()
+        public async Task<IEnumerable<ForecastChartData>> GetAllAsync()
         {
-            return await _applicationDbContext.ForecastCharts.ToListAsync();
+            return await _applicationDbContext.ForecastChartsData.ToListAsync();
         }
 
 
-        public async Task<IEnumerable<ForecastChart>> GetAllByIdAsync(Guid id)
+        public async Task<IEnumerable<ForecastChartData>> GetAllByIdAsync(Guid id)
         {
-            IEnumerable<ForecastChart> query = await _applicationDbContext.ForecastCharts.ToListAsync();
-            IEnumerable<ForecastChart> result = query.Where(x => x.AccountId == id);
+            IEnumerable<ForecastChartData> query = await _applicationDbContext.ForecastChartsData.ToListAsync();
+            IEnumerable<ForecastChartData> result = query.Where(x => x.ForecastChartId == id);
             return result;
         }
 
-        public async Task<ForecastChart?> GetByIdAsync(Guid id)
+        public async Task<ForecastChartData?> GetByIdAsync(Guid id)
         {
-            return await _applicationDbContext.ForecastCharts.FindAsync(id);
+            return await _applicationDbContext.ForecastChartsData.FindAsync(id);
         }
-
-
 
         public async Task<bool> SaveAsync()
         {
@@ -105,7 +101,7 @@ namespace SmartHomeManager.DataSource.AnalysisDataSource
             }
         }
 
-        public Task<bool> UpdateAsync(ForecastChart entity)
+        public Task<bool> UpdateAsync(ForecastChartData entity)
         {
             try
             {

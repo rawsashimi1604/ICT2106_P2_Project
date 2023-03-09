@@ -14,9 +14,11 @@ using System.Threading.Tasks;
 
 namespace SmartHomeManager.Domain.AnalysisDomain.Services
 {
-    internal class ForecastService { 
+    public class ForecastService
+    {
 
         private readonly IForecastRepository _forecastRepository;
+        private readonly IForecastDataRepository _forecastDataRepository;
         private readonly AccountService _accountService;
 
         public ForecastService(IForecastRepository forecastRepository, IAccountRepository accountRepository)
@@ -25,7 +27,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             _accountService = new AccountService(accountRepository);
         }
 
-        public async Task<Tuple<IEnumerable<ForecastChart>?>> GetHouseHoldForecast(Guid accountid)
+        public async Task<IEnumerable<ForecastChart>?> GetHouseHoldForecast(Guid accountid)
         {
             var accountToBeFound = await _accountService.GetAccountByAccountId(accountid);
             IEnumerable<ForecastChart> allForecastChart = null;
@@ -34,11 +36,29 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             if (accountToBeFound == null)
             {
                 System.Diagnostics.Debug.WriteLine("Account not found");
-                return Tuple.Create(allForecastChart);
+                return allForecastChart;
             }
-            allForecastChart = (IEnumerable<ForecastChart>?)await _forecastRepository.GetAllByIdAsync(accountid);
+            allForecastChart = await _forecastRepository.GetAllByIdAsync(accountid);
 
-            return Tuple.Create(allForecastChart);
+            return allForecastChart;
         }
+
+        public async Task<IEnumerable<ForecastChartData>?> GetHouseHoldForcastData(Guid forecastcartid)
+        {
+            var forecastChartToBeFound = await _forecastRepository.GetByIdAsync(forecastcartid);
+            IEnumerable<ForecastChartData> allForecastChartData = null;
+
+            //Check if account exist
+            if (forecastChartToBeFound == null)
+            {
+                System.Diagnostics.Debug.WriteLine("Forecast Chart not found");
+                return allForecastChartData;
+            }
+            allForecastChartData = await _forecastDataRepository.GetAllByIdAsync(forecastcartid);
+
+            return allForecastChartData;
+        }
+
+
     }
 }
