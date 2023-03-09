@@ -18,13 +18,13 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
     public class NotificationController : Controller
     {
 
-        private readonly SendNotificationService _sendNotificationService;
+        private readonly ISendNotification _sendNotificationService;
         private readonly ReceiveNotificationService _receiveNotificationService;
 
         // Dependency Injection of repos to services...
-        public NotificationController(INotificationRepository notificationRepository, IAccountRepository accountRepository)
+        public NotificationController(INotificationRepository notificationRepository, IAccountRepository accountRepository,ISendNotification sendNotification)
         {
-            _sendNotificationService = new(notificationRepository, accountRepository);
+            this._sendNotificationService = sendNotification;
             _receiveNotificationService = new(notificationRepository, accountRepository);
         }
 
@@ -38,7 +38,7 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
             // Map notfications to DTO....
             List<GetNotificationObjectDTO> getNotifications = new List<GetNotificationObjectDTO>();
 
-            IEnumerable<Notification> notifications;
+            IEnumerable<NotificationDomain> notifications;
 
             try
             {
@@ -78,7 +78,7 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
             List<GetNotificationObjectDTO> getNotifications = new List<GetNotificationObjectDTO>();
 
             // Use the service here...
-            IEnumerable<Notification> notifications;
+            IEnumerable<NotificationDomain> notifications;
 
             try
             {
@@ -117,7 +117,7 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
 
             // Map notfications to DTO....
             List<GetNotificationObjectDTO> getNotifications = new List<GetNotificationObjectDTO>();
-            Notification? notification;
+            NotificationDomain? notification;
 
             try
             {

@@ -24,14 +24,14 @@ namespace SmartHomeManager.DataSource.NotificationDataSource
             _applicationDbContext = applicationDbContext;
         }
 
-        public async Task<IEnumerable<Notification>> GetAllByIdAsync(Guid id)
+        public async Task<IEnumerable<NotificationDomain>> GetAllByIdAsync(Guid id)
         {
-            IEnumerable<Notification> query = await _applicationDbContext.Notifications.ToListAsync();
-            IEnumerable<Notification> result = query.Where(x => x.AccountId == id);
+            IEnumerable<NotificationDomain> query = await _applicationDbContext.Notifications.ToListAsync();
+            IEnumerable<NotificationDomain> result = query.Where(x => x.AccountId == id);
             return result;
         }
 
-        public async Task<bool> AddAsync(Notification entity)
+        public async Task<bool> AddAsync(NotificationDomain entity)
         {
             
             try
@@ -58,7 +58,7 @@ namespace SmartHomeManager.DataSource.NotificationDataSource
             }
         }
 
-        public Task<bool> DeleteAsync(Notification entity)
+        public Task<bool> DeleteAsync(NotificationDomain entity)
         {
             throw new NotImplementedException();
         }
@@ -68,7 +68,7 @@ namespace SmartHomeManager.DataSource.NotificationDataSource
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<Notification>> GetAllAsync()
+        public async Task<IEnumerable<NotificationDomain>> GetAllAsync()
         {
             // TODO: actual implementation of database get all...
             return await _applicationDbContext.Notifications.ToListAsync();
@@ -78,7 +78,7 @@ namespace SmartHomeManager.DataSource.NotificationDataSource
         }
 
 
-        public async Task<Notification?> GetByIdAsync(Guid id)
+        public async Task<NotificationDomain?> GetByIdAsync(Guid id)
         {
 
             //return await _applicationDbContext.Notifications.(id);
@@ -102,7 +102,7 @@ namespace SmartHomeManager.DataSource.NotificationDataSource
             }
         }
 
-        public Task<bool> UpdateAsync(Notification entity)
+        public Task<bool> UpdateAsync(NotificationDomain entity)
         {
             throw new NotImplementedException();
         }

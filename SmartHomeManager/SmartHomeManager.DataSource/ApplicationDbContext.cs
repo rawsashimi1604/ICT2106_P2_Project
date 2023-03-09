@@ -27,7 +27,7 @@ public class ApplicationDbContext : DbContext
         DeviceTypes = base.Set<DeviceType>();
         DeviceProfiles = base.Set<DeviceProfile>();
         Devices = base.Set<Device>();
-        Notifications = base.Set<Notification>();
+        Notifications = base.Set<NotificationDomain>();
         Profiles = base.Set<Profile>();
         RoomCoordinates = base.Set<RoomCoordinate>();
         Rooms = base.Set<Room>();
@@ -58,7 +58,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<DeviceType> DeviceTypes { get; }
     public DbSet<Device> Devices { get; }
     public DbSet<DeviceProfile> DeviceProfiles { get; }
-    public DbSet<Notification> Notifications { get; }
+    public DbSet<NotificationDomain> Notifications { get; }
     public DbSet<Profile> Profiles { get; }
     public DbSet<RoomCoordinate> RoomCoordinates { get; }
     public DbSet<Room> Rooms { get; }

@@ -11,6 +11,6 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Interfaces
 {
     public interface IForecastRepository : IGenericRepository<ForecastChart>
     {
-        public Task<IEnumerable<Notification>> GetAllByIdAsync(Guid id);
+        public Task<IEnumerable<NotificationDomain.Entities.NotificationDomain>> GetAllByIdAsync(Guid id);
     }
 }

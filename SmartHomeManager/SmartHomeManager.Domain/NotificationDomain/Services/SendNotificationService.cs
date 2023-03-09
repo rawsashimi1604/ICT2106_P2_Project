@@ -18,27 +18,23 @@ namespace SmartHomeManager.Domain.NotificationDomain.Services
             _accountService = new AccountService(accountRepository);
         }
 
-        public async Task<Notification?> SendNotification(string notificationMessage, Guid accountId)
+        public async Task<Entities.NotificationDomain?> SendNotification(string notificationMessage, Guid accountId)
         {
             var account = await _accountService.GetAccountByAccountId(accountId);
-            
-            //Check if account exist
-            if (account == null)
-            {
-                throw new AccountNotFoundException();
-            }
 
             //Remove symbol to prevent SQL injection
             notificationMessage = Regex.Replace(notificationMessage, "[^0-9A-Za-z _-]", "");
 
             // Generate notification object..
-            Notification notificationToBeAdded = new Notification
+            Entities.NotificationDomain notificationToBeAdded = new Entities.NotificationDomain
             {
                 AccountId = accountId,
                 NotificationMessage = notificationMessage,
                 SentTime = DateTime.Now,
                 Account = account
             };
+
+            return notificationToBeAdded;
 
             bool result = await _notificationRepository.AddAsync(notificationToBeAdded);
 
@@ -50,5 +46,6 @@ namespace SmartHomeManager.Domain.NotificationDomain.Services
 
             return notificationToBeAdded;
         }
+
     }
 }
