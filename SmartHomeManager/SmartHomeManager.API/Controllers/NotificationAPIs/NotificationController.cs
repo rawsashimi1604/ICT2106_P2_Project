@@ -18,14 +18,14 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
     public class NotificationController : Controller
     {
 
-        private readonly SendNotificationService _sendNotificationService;
-        private readonly ReceiveNotificationService _receiveNotificationService;
+        private readonly ISendNotification _sendNotificationService;
+        private readonly IReceiveNotification _receiveNotificationService;
 
         // Dependency Injection of repos to services...
-        public NotificationController(INotificationRepository notificationRepository, IAccountRepository accountRepository)
+        public NotificationController(IReceiveNotification receiveNotification,ISendNotification sendNotification)
         {
-            _sendNotificationService = new(notificationRepository, accountRepository);
-            _receiveNotificationService = new(notificationRepository, accountRepository);
+            this._sendNotificationService = sendNotification;
+            _receiveNotificationService = receiveNotification;
         }
 
         // API routes....
