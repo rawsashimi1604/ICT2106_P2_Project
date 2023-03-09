@@ -42,6 +42,12 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 
         // TODO: HouseholdReport Route
         // GET /api/analysis/householdReport/download/{accountId}
+        [HttpGet("householdReport/download")]
+        public async Task<FileContentResult> GetHouseholdReport()
+        {
+            PdfFile file = await _reportService.GetHouseholdReport();
+            return File(file.FileContents, file.ContentType, file.FileName);
+        }
 
         // TODO: HouseholdEnergyUsageForecast Route
         // GET /api/analysis/householdReport/energyUsageForecast/{accountId}

@@ -12,6 +12,7 @@
     <None Remove="SceneDomain\Interfaces\" />
     <None Remove="AnalysisDomain\Files\" />
     <None Remove="itext7" />
+    <None Remove="AnalysisDomain\Builders\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AnalysisDomain\DTOs\" />
@@ -19,6 +20,7 @@
     <Folder Include="SceneDomain\Entities\DTOs\" />
     <Folder Include="SceneDomain\Interfaces\" />
     <Folder Include="AnalysisDomain\Files\" />
+    <Folder Include="AnalysisDomain\Builders\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="EnergyProfile\**" />
