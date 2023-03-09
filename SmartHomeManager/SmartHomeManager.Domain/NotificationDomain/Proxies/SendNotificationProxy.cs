@@ -5,7 +5,7 @@ using SmartHomeManager.Domain.Common.Exceptions;
 using SmartHomeManager.Domain.NotificationDomain.Entities;
 using SmartHomeManager.Domain.NotificationDomain.Interfaces;
 
-namespace SmartHomeManager.Domain.NotificationDomain.Services
+namespace SmartHomeManager.Domain.NotificationDomain.Proxies
 {
     public class SendNotificationProxy : ISendNotification
     {
@@ -14,7 +14,7 @@ namespace SmartHomeManager.Domain.NotificationDomain.Services
 
         public SendNotificationProxy(ISendNotification sendNotificationService, IAccountRepository accountRepository)
         {
-            this._sendNotificationService = sendNotificationService;
+            _sendNotificationService = sendNotificationService;
             _accountService = new AccountService(accountRepository);
         }
 
@@ -30,7 +30,7 @@ namespace SmartHomeManager.Domain.NotificationDomain.Services
                 throw new AccountNotFoundException();
             }
 
-            return await _sendNotificationService.SendNotification(notificationMessage,accountId);
+            return await _sendNotificationService.SendNotification(notificationMessage, accountId);
 
         }
     }

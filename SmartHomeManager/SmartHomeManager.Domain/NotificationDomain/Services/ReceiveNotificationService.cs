@@ -13,18 +13,19 @@ using SmartHomeManager.Domain.NotificationDomain.Interfaces;
 
 namespace SmartHomeManager.Domain.NotificationDomain.Services
 { 
-    public class ReceiveNotificationService
+    public class ReceiveNotificationService : IReceiveNotification
     {
         private readonly INotificationRepository _notificationRepository;
+        private readonly AccountService _accountService;
 
-        public ReceiveNotificationService(INotificationRepository notificationRepository)
+        public ReceiveNotificationService(INotificationRepository notificationRepository, IAccountRepository accountRepository)
         {
             _notificationRepository = notificationRepository;
-        
+            _accountService = new AccountService(accountRepository);
         }
 
         //public async Task<Tuple<NotificationResult, IEnumerable<Notification>>> GetAllNotificationsAsync()
-        public async Task<IEnumerable<Entities.Notification>> GetAllNotificationsAsync()
+        public async Task<IEnumerable<Notification>> GetAllNotificationsAsync()
         {
             // TODO: Pass in accountId
             IEnumerable<Entities.Notification> allNotification = null;
@@ -40,7 +41,7 @@ namespace SmartHomeManager.Domain.NotificationDomain.Services
         }
 
         // List, ArrayList, Array...
-        public async Task<IEnumerable<Entities.Notification>?> GetNotificationsAsync(Guid accountId)
+        public async Task<IEnumerable<Notification>?> GetNotificationsAsync(Guid accountId)
         {
             var accountToBeFound = await _accountService.CheckAccountExists(accountId);
             IEnumerable<Entities.Notification> allNotification = null;

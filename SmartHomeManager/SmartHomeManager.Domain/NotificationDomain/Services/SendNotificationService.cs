@@ -18,7 +18,7 @@ namespace SmartHomeManager.Domain.NotificationDomain.Services
             _accountService = new AccountService(accountRepository);
         }
 
-        public async Task<Entities.Notification?> SendNotification(string notificationMessage, Guid accountId)
+        public async Task<Notification?> SendNotification(string notificationMessage, Guid accountId)
         {
             var account = await _accountService.GetAccountByAccountId(accountId);
 
@@ -26,15 +26,13 @@ namespace SmartHomeManager.Domain.NotificationDomain.Services
             notificationMessage = Regex.Replace(notificationMessage, "[^0-9A-Za-z _-]", "");
 
             // Generate notification object..
-            Entities.Notification notificationToBeAdded = new Entities.Notification
+            Notification notificationToBeAdded = new Notification
             {
                 AccountId = accountId,
                 NotificationMessage = notificationMessage,
                 SentTime = DateTime.Now,
                 Account = account
             };
-
-            return notificationToBeAdded;
 
             bool result = await _notificationRepository.AddAsync(notificationToBeAdded);
 

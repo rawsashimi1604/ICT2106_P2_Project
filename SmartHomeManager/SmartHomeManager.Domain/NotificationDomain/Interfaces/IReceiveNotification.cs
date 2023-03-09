@@ -1,10 +1,12 @@
 ﻿using System;
+using SmartHomeManager.Domain.NotificationDomain.Entities;
+
 namespace SmartHomeManager.Domain.NotificationDomain.Interfaces
 {
 	public interface IReceiveNotification
 	{
-        public Task<IEnumerable<Entities.NotificationDomain>> GetAllNotificationsAsync();
-        public Task<IEnumerable<Entities.NotificationDomain>?> GetNotificationsAsync(Guid accountId);
+        public Task<IEnumerable<Notification>> GetAllNotificationsAsync();
+        public Task<IEnumerable<Notification>?> GetNotificationsAsync(Guid accountId);
 
     }
 }

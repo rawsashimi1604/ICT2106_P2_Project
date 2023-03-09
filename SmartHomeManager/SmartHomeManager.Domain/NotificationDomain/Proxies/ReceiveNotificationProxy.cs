@@ -11,32 +11,32 @@ using SmartHomeManager.Domain.Common.Exceptions;
 using SmartHomeManager.Domain.NotificationDomain.Entities;
 using SmartHomeManager.Domain.NotificationDomain.Interfaces;
 
-namespace SmartHomeManager.Domain.NotificationDomain.Services
+namespace SmartHomeManager.Domain.NotificationDomain.Proxies
 {
-    public class ReceiveNotificationProxy:IReceiveNotification
+    public class ReceiveNotificationProxy : IReceiveNotification
     {
         private readonly AccountService _accountService;
         private readonly IReceiveNotification _receiveNotificationService;
 
         public ReceiveNotificationProxy(IReceiveNotification receiveNotificationService, IAccountRepository accountRepository)
         {
-            this._receiveNotificationService = receiveNotificationService;
+            _receiveNotificationService = receiveNotificationService;
             _accountService = new AccountService(accountRepository);
         }
 
-        public async Task<IEnumerable<Entities.NotificationDomain>> GetAllNotificationsAsync()
+        public async Task<IEnumerable<Notification>> GetAllNotificationsAsync()
         {
             return await _receiveNotificationService.GetAllNotificationsAsync();
         }
 
 
         // List, ArrayList, Array...
-        public async Task<IEnumerable<Entities.NotificationDomain>?> GetNotificationsAsync(Guid accountId)
+        public async Task<IEnumerable<Notification>?> GetNotificationsAsync(Guid accountId)
         {
             var accountToBeFound = await _accountService.CheckAccountExists(accountId);
 
             //Check if account exist
-            if (accountToBeFound == null)
+            if (accountToBeFound == false)
             {
                 throw new AccountNotFoundException();
             }
