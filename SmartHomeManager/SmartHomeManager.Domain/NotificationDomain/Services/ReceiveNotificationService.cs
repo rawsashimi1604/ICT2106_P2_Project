@@ -16,12 +16,11 @@ namespace SmartHomeManager.Domain.NotificationDomain.Services
     public class ReceiveNotificationService
     {
         private readonly INotificationRepository _notificationRepository;
-        private readonly AccountService _accountService;
 
-        public ReceiveNotificationService(INotificationRepository notificationRepository, IAccountRepository accountRepository)
+        public ReceiveNotificationService(INotificationRepository notificationRepository)
         {
             _notificationRepository = notificationRepository;
-            _accountService = new AccountService(accountRepository);
+        
         }
 
         //public async Task<Tuple<NotificationResult, IEnumerable<Notification>>> GetAllNotificationsAsync()
@@ -43,14 +42,9 @@ namespace SmartHomeManager.Domain.NotificationDomain.Services
         // List, ArrayList, Array...
         public async Task<IEnumerable<Entities.NotificationDomain>?> GetNotificationsAsync(Guid accountId)
         {
-            var accountToBeFound = await _accountService.CheckAccountExists(accountId);
             IEnumerable<Entities.NotificationDomain> allNotification = null;
 
-            //Check if account exist
-            if (accountToBeFound == null)
-            {
-                throw new AccountNotFoundException();
-            }
+            //Validation has been done in proxy
 
             allNotification = await _notificationRepository.GetAllByIdAsync(accountId);
 
