@@ -103,6 +103,7 @@ public class Program
         // NOTIFICATION
         // Inject dependencies for Notification Repository, so all implementations of IGenericRepository<Notification> will use the NotificationRepository implementation...
         builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+<<<<<<< HEAD
         
         // Inject scoped services into proxy...
         //builder.Services.AddSingleton<Domain.NotificationDomain.Interfaces.ISendNotification>(
@@ -117,6 +118,9 @@ public class Program
                 
         )
 
+=======
+        //builder.Services.AddSingleton<Domain.NotificationDomain.Interfaces.ISendNotification>(new SendNotificationProxy(new SendNotificationService(INotificationRepository,)));
+>>>>>>> c0313d3317a91af41ee0815667451ba9ef5f5da0
 
         // ANALYSIS
         builder.Services.AddScoped<IGenericRepository<CarbonFootprint>, CarbonFootprintRepository>();
