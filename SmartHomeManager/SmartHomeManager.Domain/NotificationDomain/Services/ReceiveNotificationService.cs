@@ -25,10 +25,10 @@ namespace SmartHomeManager.Domain.NotificationDomain.Services
         }
 
         //public async Task<Tuple<NotificationResult, IEnumerable<Notification>>> GetAllNotificationsAsync()
-        public async Task<IEnumerable<Entities.NotificationDomain>> GetAllNotificationsAsync()
+        public async Task<IEnumerable<Entities.Notification>> GetAllNotificationsAsync()
         {
             // TODO: Pass in accountId
-            IEnumerable<Entities.NotificationDomain> allNotification = null;
+            IEnumerable<Entities.Notification> allNotification = null;
             try
             {
                 allNotification = await _notificationRepository.GetAllAsync();
@@ -41,10 +41,10 @@ namespace SmartHomeManager.Domain.NotificationDomain.Services
         }
 
         // List, ArrayList, Array...
-        public async Task<IEnumerable<Entities.NotificationDomain>?> GetNotificationsAsync(Guid accountId)
+        public async Task<IEnumerable<Entities.Notification>?> GetNotificationsAsync(Guid accountId)
         {
             var accountToBeFound = await _accountService.CheckAccountExists(accountId);
-            IEnumerable<Entities.NotificationDomain> allNotification = null;
+            IEnumerable<Entities.Notification> allNotification = null;
 
             //Check if account exist
             if (accountToBeFound == null)
@@ -57,7 +57,7 @@ namespace SmartHomeManager.Domain.NotificationDomain.Services
             try
             {
                 //Sort and get the latest 5 notifications
-                IEnumerable<Entities.NotificationDomain> latest5Notification = allNotification.OrderBy(noti => noti.SentTime).TakeLast(5);
+                IEnumerable<Entities.Notification> latest5Notification = allNotification.OrderBy(noti => noti.SentTime).TakeLast(5);
                 return latest5Notification;
             }
             catch (Exception ex)

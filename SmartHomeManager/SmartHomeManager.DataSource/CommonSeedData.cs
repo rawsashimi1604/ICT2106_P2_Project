@@ -333,7 +333,7 @@ namespace SmartHomeManager.DataSource
             int AmountOfNotificationsToBeSeeded = 20;
             for (int i = 0; i < AmountOfNotificationsToBeSeeded; i++)
             {
-                NotificationDomain notification = new NotificationDomain
+                Notification notification = new Notification
                 {
                     AccountId = accounts[0].AccountId,
                     NotificationMessage = i + " - test notification",

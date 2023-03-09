@@ -11,7 +11,7 @@ namespace SmartHomeManager.Domain.NotificationDomain.Interfaces
 {
     public interface ISendNotification
     {
-        public Task<Entities.NotificationDomain?> SendNotification(string notificationMessage, Guid accountId);
+        public Task<Entities.Notification?> SendNotification(string notificationMessage, Guid accountId);
 
     }
 }

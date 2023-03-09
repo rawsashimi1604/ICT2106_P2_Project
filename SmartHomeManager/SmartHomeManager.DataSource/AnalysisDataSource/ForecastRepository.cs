@@ -78,11 +78,11 @@ namespace SmartHomeManager.DataSource.AnalysisDataSource
         }
 
 
-        async Task<IEnumerable<NotificationDomain>> IForecastRepository.GetAllByIdAsync(Guid id)
+        async Task<IEnumerable<Notification>> IForecastRepository.GetAllByIdAsync(Guid id)
         {
             IEnumerable<ForecastChart> query = await _applicationDbContext.ForecastCharts.ToListAsync();
             IEnumerable<ForecastChart> result = query.Where(x => x.AccountId == id);
-            return (IEnumerable<NotificationDomain>)result;
+            return (IEnumerable<Notification>)result;
         }
 
         public async Task<ForecastChart?> GetByIdAsync(Guid id)

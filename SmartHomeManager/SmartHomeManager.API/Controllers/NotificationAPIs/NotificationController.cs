@@ -38,7 +38,7 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
             // Map notfications to DTO....
             List<GetNotificationObjectDTO> getNotifications = new List<GetNotificationObjectDTO>();
 
-            IEnumerable<NotificationDomain> notifications;
+            IEnumerable<Notification> notifications;
 
             try
             {
@@ -78,7 +78,7 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
             List<GetNotificationObjectDTO> getNotifications = new List<GetNotificationObjectDTO>();
 
             // Use the service here...
-            IEnumerable<NotificationDomain> notifications;
+            IEnumerable<Notification> notifications;
 
             try
             {
@@ -117,7 +117,7 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
 
             // Map notfications to DTO....
             List<GetNotificationObjectDTO> getNotifications = new List<GetNotificationObjectDTO>();
-            NotificationDomain? notification;
+            Notification? notification;
 
             try
             {

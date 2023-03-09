@@ -7,7 +7,7 @@ using SmartHomeManager.Domain.NotificationDomain.Interfaces;
 
 namespace SmartHomeManager.Domain.NotificationDomain.Services
 {
-    public class SendNotificationProxy:ISendNotification
+    public class SendNotificationProxy : ISendNotification
     {
         private readonly ISendNotification _sendNotificationService;
         private readonly AccountService _accountService;
@@ -18,7 +18,7 @@ namespace SmartHomeManager.Domain.NotificationDomain.Services
             _accountService = new AccountService(accountRepository);
         }
 
-        public async Task<Entities.NotificationDomain?> SendNotification(string notificationMessage, Guid accountId)
+        public async Task<Notification?> SendNotification(string notificationMessage, Guid accountId)
         {
             //Include only validation and exception
 

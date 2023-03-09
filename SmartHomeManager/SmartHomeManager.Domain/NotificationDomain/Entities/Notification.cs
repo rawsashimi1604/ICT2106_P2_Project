@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SmartHomeManager.Domain.NotificationDomain.Entities
 {
-    public class NotificationDomain
+    public class Notification
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid NotificationId { get; set; }
@@ -20,9 +20,5 @@ namespace SmartHomeManager.Domain.NotificationDomain.Entities
 
         [ForeignKey("AccountId")]
         public Account Account { get; set; }
-
-        public class Interfaces
-        {
-        }
     }
 }

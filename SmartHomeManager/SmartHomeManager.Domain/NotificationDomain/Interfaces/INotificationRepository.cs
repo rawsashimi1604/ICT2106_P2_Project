@@ -8,8 +8,8 @@ using SmartHomeManager.Domain.NotificationDomain.Entities;
 
 namespace SmartHomeManager.Domain.NotificationDomain.Interfaces
 {
-    public interface INotificationRepository : IGenericRepository<Entities.NotificationDomain>
+    public interface INotificationRepository : IGenericRepository<Entities.Notification>
     {
-        public Task<IEnumerable<Entities.NotificationDomain>> GetAllByIdAsync(Guid id);
+        public Task<IEnumerable<Entities.Notification>> GetAllByIdAsync(Guid id);
     }
 }
