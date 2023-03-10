@@ -9,7 +9,7 @@ function getDeviceReport(){
 }
 
 function getDevicesByGUID(){
-    return HttpService.get(GET_DEVICES_BY_GUID_ROUTE)
+    return HttpService.get(GET_DEVICES_BY_GUID_ROUTE);
 }
 
 export default{

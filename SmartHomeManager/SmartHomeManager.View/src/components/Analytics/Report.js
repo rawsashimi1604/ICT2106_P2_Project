@@ -4,27 +4,13 @@ import {
     Button,
     Flex,
     Container,
+    Box,
 } from '@chakra-ui/react'
 import {
     DownloadIcon,
 } from '@chakra-ui/icons'
 
 import ReportService from 'requests/services/ReportService'
-
-
-// const [deviceId , setDeviceId] = useState([]);
-
-function getDevicesId(){
-
-    ReportService.getDevicesByGUID()
-    .then(response => {
-        console.log(response.data)
-        console.log("hello")
-    })
-
-}
-
-
 
 const handleClick = () => {
     // handling the post request...
@@ -41,23 +27,42 @@ const handleClick = () => {
     });
 }
 
+function Report() {
 
+    const [devices, setDevices] = useState([]);
 
+    function getDevicesByGUID(){
+        ReportService.getDevicesByGUID()
+            .then(response => {
+                console.log(response.data.devicesObject)
+                setDevices(response.data.devicesObject);
+            }).catch(e =>{
+                console.log(e);
+            })
+    }
 
-getDevicesId()
-
-
-function EfficiencyTable() {
+    useEffect(() => {
+        getDevicesByGUID();
+    }, [])
+    
     return (
         <>
             <Container>
                 <Flex>
                     <Select placeholder='Select Device'>
-                        <option value='option1'>Device 1</option>
-                        <option value='option2'>Device 2</option>
-                        <option value='option3'>Device 3</option>
-                        
+                        {
+                            devices?.map((device,i) =>{
+                                console.log(i)
+                                return(
+                                    <option key={i} value={device.deviceID}>
+                                        {device.deviceID}
+                                    </option>
+                                )
+                            })
+                        }
+
                     </Select>
+
                     <Button ml={10} px={12} py={5} onClick={handleClick}>
                         <DownloadIcon mr={4} />Download</Button>
                 </Flex>
@@ -66,4 +71,4 @@ function EfficiencyTable() {
     )
 }
 
-export default EfficiencyTable
+export default Report
