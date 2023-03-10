@@ -20,7 +20,7 @@ const handleClick = () => {
             const current = new Date();
             const date = `${current.getDate()}${current.getMonth()+1}${current.getFullYear()}`
             link.href = url;
-            link.setAttribute('download', date + '.pdf');
+            link.setAttribute('download', date + 'DeviceReport.pdf');
             document.body.appendChild(link);
             link.click();
     });
