@@ -1,4 +1,6 @@
-﻿namespace SmartHomeManager.API.Controllers.NotificationAPIs.ViewModels
+﻿using SmartHomeManager.Domain.Common.DTOs;
+
+namespace SmartHomeManager.API.Controllers.NotificationAPIs.DTOs
 {
     public class AddNotificationDTO : IDataObjectDTO
     {
