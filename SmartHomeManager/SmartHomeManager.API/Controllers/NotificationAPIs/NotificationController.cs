@@ -36,9 +36,9 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
         public async Task<IActionResult> GetAllNotifications()
         {
             // Map notfications to DTO....
-            List<GetNotificationObjectDTO> getNotifications = new List<GetNotificationObjectDTO>();
+            List<GetNotificationDTO> getNotifications = new List<GetNotificationDTO>();
 
-            IEnumerable<Notification> notifications;
+            IEnumerable<Notification> notifications = null;
 
             try
             {
@@ -46,26 +46,26 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
             }
             catch (Exception ex)
             {
-                return StatusCode(500, CreateResponseDTO(getNotifications, 500, ex.Message)
-                );
+                return StatusCode(500, DTONotificationFactory.getNotificationDTO(notifications, 500, ex.Message));
             }
 
-            foreach (var notification in notifications)
-            {
-                getNotifications.Add(new GetNotificationObjectDTO
-                {
-                    NotificationId = notification.NotificationId,
-                    AccountId = notification.AccountId,
-                    NotificationMessage = notification.NotificationMessage,
-                    SentTime = notification.SentTime,
-                });
-            }
+            return StatusCode(200, DTONotificationFactory.getNotificationDTO(notifications, 200, "Success"));
+            //foreach (var notification in notifications)
+            //{
+            //    getNotifications.Add(new GetNotificationObjectDTO
+            //    {
+            //        NotificationId = notification.NotificationId,
+            //        AccountId = notification.AccountId,
+            //        NotificationMessage = notification.NotificationMessage,
+            //        SentTime = notification.SentTime,
+            //    });
+            //}
 
-            // Success path...
-            return StatusCode(
-                200, 
-                CreateResponseDTO(getNotifications, 200, "Success")
-            );
+            //// Success path...
+            //return StatusCode(
+            //    200, 
+            //    CreateResponseDTO(getNotifications, 200, "Success")
+            //);
         }
 
         // TODO:    GET /api/notification/{accountId}
@@ -75,10 +75,10 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
         {
 
             // Map notfications to DTO....
-            List<GetNotificationObjectDTO> getNotifications = new List<GetNotificationObjectDTO>();
+            List<GetNotificationDTO> getNotifications = new List<GetNotificationDTO>();
 
             // Use the service here...
-            IEnumerable<Notification> notifications;
+            IEnumerable<Notification> notifications = null;
 
             try
             {
@@ -86,26 +86,27 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
             } 
             catch (AccountNotFoundException ex)
             {
-                return StatusCode(400, CreateResponseDTO(getNotifications, 400, ex.Message));
+                return StatusCode(500, DTONotificationFactory.getNotificationDTO(notifications, 400, ex.Message));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, CreateResponseDTO(getNotifications, 500, ex.Message)
-                );
-            }
-            
-            foreach (var notification in notifications)
-            {
-                getNotifications.Add(new GetNotificationObjectDTO
-                {
-                    NotificationId = notification.NotificationId,
-                    AccountId = notification.AccountId,
-                    NotificationMessage = notification.NotificationMessage,
-                    SentTime = notification.SentTime,
-                });
+                return StatusCode(500, DTONotificationFactory.getNotificationDTO(notifications, 500, ex.Message));
+                
             }
 
-            return StatusCode(200, CreateResponseDTO(getNotifications, 200, "Success"));
+            return StatusCode(200, DTONotificationFactory.getNotificationDTO(notifications, 200, "Success"));
+            //foreach (var notification in notifications)
+            //{
+            //    getNotifications.Add(new GetNotificationObjectDTO
+            //    {
+            //        NotificationId = notification.NotificationId,
+            //        AccountId = notification.AccountId,
+            //        NotificationMessage = notification.NotificationMessage,
+            //        SentTime = notification.SentTime,
+            //    });
+            //}
+
+            //return StatusCode(200, CreateResponseDTO(getNotifications, 200, "Success"));
         }
 
         // TODO:    POST /api/notification
@@ -116,29 +117,28 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
         {
 
             // Map notfications to DTO....
-            List<GetNotificationObjectDTO> getNotifications = new List<GetNotificationObjectDTO>();
+            List<GetNotificationDTO> getNotifications = new List<GetNotificationDTO>();
             Notification? notification;
 
             try
             {
                 notification = await _sendNotificationService
                 .SendNotification(
-                clientDTO.NotificationObject.Message,
-                clientDTO.NotificationObject.AccountId
+                clientDTO.Message,
+                clientDTO.AccountId
                 );
             } 
             catch (AccountNotFoundException ex)
             {
-                return StatusCode(400, CreateResponseDTO(getNotifications, 400, ex.Message));
+                return StatusCode(400, DTONotificationFactory.getNotificationDTO(notifications, 400, ex.Message));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, CreateResponseDTO(getNotifications, 500, ex.Message)
+                return StatusCode(500, DTONotificationFactory.getNotificationDTO(notifications, 500, ex.Message))
                 );
             }
 
-            
-            getNotifications.Add(new GetNotificationObjectDTO
+            getNotifications.Add(new GetNotificationDTO
             {
                 NotificationId = notification.NotificationId,
                 AccountId = notification.AccountId,
@@ -149,7 +149,7 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
             return StatusCode(200, CreateResponseDTO(getNotifications, 200, "Success"));
         }
 
-        private GetNotificationDTO CreateResponseDTO(List<GetNotificationObjectDTO> notificationList, int statusCode, string statusMessage)
+        /*private GetNotificationDTO CreateResponseDTO(List<GetNotificationDTO> notificationList, int statusCode, string statusMessage)
         {
             return new GetNotificationDTO
             {
@@ -160,6 +160,6 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
                     ServerMessage = statusMessage
                 }
             };
-        }
+        }*/
     }
 }
