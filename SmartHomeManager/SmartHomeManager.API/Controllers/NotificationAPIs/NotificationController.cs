@@ -22,7 +22,7 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
 
         private readonly SendNotificationService _sendNotificationService;
         private readonly ReceiveNotificationService _receiveNotificationService;
-        private readonly AbstractDTOFactory _dtoFactory;
+        private readonly AbstractDTOFactory<GetNotificationDTO, AddNotificationDTO> _dtoFactory;
 
         // Dependency Injection of repos to services...
         public NotificationController(INotificationRepository notificationRepository, IAccountRepository accountRepository)

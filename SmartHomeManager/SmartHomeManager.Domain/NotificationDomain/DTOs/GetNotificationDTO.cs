@@ -8,5 +8,6 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs.DTOs
         public Guid AccountId { get; set; }
         public string NotificationMessage { get; set; }
         public DateTime SentTime { get; set; }
+
     }
 }

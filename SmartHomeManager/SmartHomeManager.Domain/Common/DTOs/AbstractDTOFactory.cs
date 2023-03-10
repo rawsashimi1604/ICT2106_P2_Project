@@ -7,16 +7,16 @@ using SmartHomeManager.Domain.Common.DTOs;
 
 namespace SmartHomeManager.Domain.Common
 {
-    public abstract class AbstractDTOFactory
+    public abstract class AbstractDTOFactory<ResponseType, RequestType>
     {
-        public abstract ResponseDTO CreateResponseDTO(
+        public abstract ResponseDTO<ResponseType> CreateResponseDTO (
             ResponseDTOType type,
             IEnumerable<IEntity> data,
             int statusCode,
             string message
          );
 
-        public abstract RequestDTO CreateRequestDTO(
+        public abstract RequestDTO<RequestType> CreateRequestDTO (
             RequestDTOType type,
             IEnumerable<IEntity> data
         );

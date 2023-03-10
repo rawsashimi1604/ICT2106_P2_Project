@@ -6,5 +6,7 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs.DTOs
     {
         public string Message { get; set; }
         public Guid AccountId { get; set; }
+
+        public string TestString { get; set; }
     }
 }

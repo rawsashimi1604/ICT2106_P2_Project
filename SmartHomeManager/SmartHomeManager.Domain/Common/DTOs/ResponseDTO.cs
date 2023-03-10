@@ -1,7 +1,7 @@
 ﻿namespace SmartHomeManager.Domain.Common.DTOs
 {
     
-    public class ResponseDTO : DTO
+    public class ResponseDTO<IDataObjectDTO> : DTO<IDataObjectDTO>
     {
 
         public ResponseInformationDTO Response { get; set; }

@@ -6,9 +6,9 @@ using SmartHomeManager.Domain.NotificationDomain.Entities;
 
 namespace SmartHomeManager.Domain.NotificationDomain.DTOs
 {
-    public class NotificationDTOFactory : AbstractDTOFactory
+    public class NotificationDTOFactory : AbstractDTOFactory<GetNotificationDTO, AddNotificationDTO>
     {
-        public override RequestDTO CreateRequestDTO(RequestDTOType type, IEnumerable<IEntity> data)
+        public override RequestDTO<AddNotificationDTO> CreateRequestDTO (RequestDTOType type, IEnumerable<IEntity> data)
         {
             switch(type)
             {
@@ -22,12 +22,12 @@ namespace SmartHomeManager.Domain.NotificationDomain.DTOs
             }
         }
 
-        public override ResponseDTO CreateResponseDTO(ResponseDTOType type, IEnumerable<IEntity> data, int statusCode, string statusMessage)
+        public override ResponseDTO<GetNotificationDTO> CreateResponseDTO (ResponseDTOType type, IEnumerable<IEntity> data, int statusCode, string statusMessage)
         {
             switch(type)
             {
                 case ResponseDTOType.GET_NOTIFICATION:
-                    return CreateGetNotificationDTO(
+                    return CreateGetNotificationDTO (
                         (IEnumerable<Notification>) data,
                         statusCode,
                         statusMessage
@@ -47,7 +47,7 @@ namespace SmartHomeManager.Domain.NotificationDomain.DTOs
 
         // For GET /api/notifications/all
         // For GET /api/notifications/{accountId}
-        public ResponseDTO CreateGetNotificationDTO
+        public ResponseDTO<GetNotificationDTO> CreateGetNotificationDTO
         (
             IEnumerable<Notification> notifications,
             int statusCode,
@@ -58,7 +58,6 @@ namespace SmartHomeManager.Domain.NotificationDomain.DTOs
 
             if (notifications != null)
             {
-                System.Diagnostics.Debug.WriteLine("NotificationDTOFactory: notifications is not null.");
                 foreach (var notification in notifications)
                 {
                     getNotifications.Add(new GetNotificationDTO
@@ -71,7 +70,7 @@ namespace SmartHomeManager.Domain.NotificationDomain.DTOs
                 }
             }
 
-            ResponseDTO dto = new ResponseDTO
+            ResponseDTO<GetNotificationDTO> dto = new ResponseDTO<GetNotificationDTO>
             {
                 Data = getNotifications,
                 Response = new ResponseInformationDTO
@@ -86,7 +85,7 @@ namespace SmartHomeManager.Domain.NotificationDomain.DTOs
         }
 
         // For POST /api/notifications/{accountId}
-        public RequestDTO CreateAddNotificationDTO
+        public RequestDTO<AddNotificationDTO> CreateAddNotificationDTO
         (
             IEnumerable<Notification> notifications
         )
@@ -102,7 +101,7 @@ namespace SmartHomeManager.Domain.NotificationDomain.DTOs
                 });
             }
 
-            return new RequestDTO
+            return new RequestDTO<AddNotificationDTO>
             {
                 Data = getNotifications
             };
