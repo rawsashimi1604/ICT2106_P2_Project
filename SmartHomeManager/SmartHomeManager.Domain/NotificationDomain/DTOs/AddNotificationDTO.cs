@@ -2,11 +2,14 @@
 
 namespace SmartHomeManager.API.Controllers.NotificationAPIs.DTOs
 {
-    public class AddNotificationDTO : IDataObjectDTO
+    public class AddNotificationDTO : RequestDTO
+    {
+        public AddNotificationDTOData Request { get; set; }
+    }
+
+    public class AddNotificationDTOData : IDTOData
     {
         public string Message { get; set; }
         public Guid AccountId { get; set; }
-
-        public string TestString { get; set; }
     }
 }

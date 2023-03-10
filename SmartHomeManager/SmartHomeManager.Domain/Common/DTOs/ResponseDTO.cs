@@ -1,11 +1,14 @@
-﻿namespace SmartHomeManager.Domain.Common.DTOs
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SmartHomeManager.Domain.Common.DTOs
 {
-    
-    public class ResponseDTO<IDataObjectDTO> : DTO<IDataObjectDTO>
+    public abstract class ResponseDTO
     {
-
-        public ResponseInformationDTO Response { get; set; }
-
+        public IEnumerable<IDTOData> Data { get; set; }  
+        public ResponseInformation Response { get; set; }
     }
-
 }

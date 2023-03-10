@@ -1,13 +1,16 @@
-﻿namespace SmartHomeManager.Domain.Common.DTOs
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SmartHomeManager.Domain.Common.DTOs
 {
-    /*
-     * Used for defining what possible DTOs are available to send from the server side
-     * 
-     * Extend the enums as different types of requests are made available in the different controllers...
-     */
     public enum ResponseDTOType
     {
-        GET_NOTIFICATION,
-        ADD_NOTIFICATION
+        NOTIFICATION_GETALL,
+        NOTIFICATION_GETBYACCOUNT,
+        NOTIFICATION_ADD
+
     }
 }

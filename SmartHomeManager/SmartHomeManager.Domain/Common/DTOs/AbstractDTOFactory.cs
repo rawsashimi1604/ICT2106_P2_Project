@@ -3,22 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SmartHomeManager.Domain.Common.DTOs;
 
-namespace SmartHomeManager.Domain.Common
+namespace SmartHomeManager.Domain.Common.DTOs
 {
-    public abstract class AbstractDTOFactory<ResponseType, RequestType>
+    public abstract class AbstractDTOFactory
     {
-        public abstract ResponseDTO<ResponseType> CreateResponseDTO (
+        public abstract ResponseDTO CreateResponseDTO
+        (
             ResponseDTOType type,
             IEnumerable<IEntity> data,
             int statusCode,
-            string message
-         );
-
-        public abstract RequestDTO<RequestType> CreateRequestDTO (
-            RequestDTOType type,
-            IEnumerable<IEntity> data
+            string statusMessage
         );
     }
 }

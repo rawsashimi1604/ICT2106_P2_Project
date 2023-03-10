@@ -6,8 +6,5 @@ using System.Threading.Tasks;
 
 namespace SmartHomeManager.Domain.Common.DTOs
 {
-    public enum RequestDTOType
-    {
-        NOTIFICATION_ADD
-    }
+    public interface IDTOData { }
 }

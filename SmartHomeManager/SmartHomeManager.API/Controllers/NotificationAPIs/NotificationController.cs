@@ -22,7 +22,7 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
 
         private readonly SendNotificationService _sendNotificationService;
         private readonly ReceiveNotificationService _receiveNotificationService;
-        private readonly AbstractDTOFactory<GetNotificationDTO, AddNotificationDTO> _dtoFactory;
+        private readonly AbstractDTOFactory _dtoFactory;
 
         // Dependency Injection of repos to services...
         public NotificationController(INotificationRepository notificationRepository, IAccountRepository accountRepository)
@@ -39,9 +39,6 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
         [Produces("application/json")]
         public async Task<IActionResult> GetAllNotifications()
         {
-            // Map notfications to DTO....
-            List<GetNotificationDTO> getNotifications = new List<GetNotificationDTO>();
-
             IEnumerable<Notification> notifications = null;
 
             try
@@ -52,14 +49,14 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
             {
                 return StatusCode(
                     500,
-                    _dtoFactory.CreateResponseDTO(ResponseDTOType.GET_NOTIFICATION, notifications, 500, ex.Message)
+                    _dtoFactory.CreateResponseDTO(ResponseDTOType.NOTIFICATION_GETALL, notifications, 500, ex.Message)
                 );
             }
 
             return StatusCode(
                 200,
                 _dtoFactory.CreateResponseDTO(
-                    ResponseDTOType.GET_NOTIFICATION,
+                    ResponseDTOType.NOTIFICATION_GETALL,
                     notifications,
                     200,
                     "Success!"
@@ -72,30 +69,26 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
         [Produces("application/json")]
         public async Task<IActionResult> GetNotificationById(Guid accountId)
         {
-
-            // Map notfications to DTO....
-            List<GetNotificationDTO> getNotifications = new List<GetNotificationDTO>();
-
             // Use the service here...
             IEnumerable<Notification> notifications = null;
 
             try
             {
                 notifications = await _receiveNotificationService.GetNotificationsAsync(accountId);
-            } 
+            }
             catch (AccountNotFoundException ex)
             {
                 return StatusCode(
-                    400, 
-                    _dtoFactory.CreateResponseDTO(ResponseDTOType.GET_NOTIFICATION, notifications, 400, ex.Message
-                    )    
+                    400,
+                    _dtoFactory.CreateResponseDTO(ResponseDTOType.NOTIFICATION_GETBYACCOUNT, notifications, 400, ex.Message
+                    )
                 );
             }
             catch (Exception ex)
             {
                 return StatusCode(
                     500,
-                    _dtoFactory.CreateResponseDTO(ResponseDTOType.GET_NOTIFICATION, notifications, 500, ex.Message
+                    _dtoFactory.CreateResponseDTO(ResponseDTOType.NOTIFICATION_GETBYACCOUNT, notifications, 500, ex.Message
                     )
                 );
 
@@ -104,7 +97,7 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
             return StatusCode(
                 200,
                 _dtoFactory.CreateResponseDTO(
-                    ResponseDTOType.GET_NOTIFICATION,
+                    ResponseDTOType.NOTIFICATION_GETBYACCOUNT,
                     notifications,
                     200,
                     "Success!"
@@ -116,11 +109,9 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
         [HttpPost]
         [Consumes("application/json")]
         [Produces("application/json")]
+
         public async Task<IActionResult> AddNotification([FromBody] AddNotificationDTO clientDTO)
         {
-
-            // Map notfications to DTO....
-            List<GetNotificationDTO> getNotifications = new List<GetNotificationDTO>();
             List<Notification> notificationWrapper = new List<Notification>();
             Notification? notification;
 
@@ -128,18 +119,18 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
             {
                 notification = await _sendNotificationService
                     .SendNotification(
-                    clientDTO.Message,
-                    clientDTO.AccountId
+                    clientDTO.Request.Message,
+                    clientDTO.Request.AccountId
                 );
 
                 notificationWrapper.Add(notification);
-            } 
+            }
 
             catch (AccountNotFoundException ex)
             {
                 return StatusCode(
                     400,
-                    _dtoFactory.CreateResponseDTO(ResponseDTOType.ADD_NOTIFICATION, notificationWrapper, 400, ex.Message
+                    _dtoFactory.CreateResponseDTO(ResponseDTOType.NOTIFICATION_ADD, notificationWrapper, 400, ex.Message
                     )
                 );
             }
@@ -147,7 +138,7 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
             {
                 return StatusCode(
                     500,
-                    _dtoFactory.CreateResponseDTO(ResponseDTOType.ADD_NOTIFICATION, notificationWrapper, 500, ex.Message
+                    _dtoFactory.CreateResponseDTO(ResponseDTOType.NOTIFICATION_ADD, notificationWrapper, 500, ex.Message
                     )
                 );
             }
@@ -156,7 +147,7 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
             return StatusCode(
                 200,
                 _dtoFactory.CreateResponseDTO(
-                    ResponseDTOType.ADD_NOTIFICATION,
+                    ResponseDTOType.NOTIFICATION_ADD,
                     notificationWrapper,
                     200,
                     "Success!"

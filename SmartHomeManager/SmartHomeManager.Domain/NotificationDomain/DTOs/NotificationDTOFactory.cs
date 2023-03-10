@@ -6,39 +6,34 @@ using SmartHomeManager.Domain.NotificationDomain.Entities;
 
 namespace SmartHomeManager.Domain.NotificationDomain.DTOs
 {
-    public class NotificationDTOFactory : AbstractDTOFactory<GetNotificationDTO, AddNotificationDTO>
+    public class NotificationDTOFactory : AbstractDTOFactory
     {
-        public override RequestDTO<AddNotificationDTO> CreateRequestDTO (RequestDTOType type, IEnumerable<IEntity> data)
+
+        public override ResponseDTO CreateResponseDTO(ResponseDTOType type, IEnumerable<IEntity> data, int statusCode, string statusMessage)
         {
             switch(type)
             {
-                case RequestDTOType.ADD_NOTIFICATION:
-                    return CreateAddNotificationDTO(
-                        (IEnumerable<Notification>)data
-                    );
-
-                default:
-                    return null;
-            }
-        }
-
-        public override ResponseDTO<GetNotificationDTO> CreateResponseDTO (ResponseDTOType type, IEnumerable<IEntity> data, int statusCode, string statusMessage)
-        {
-            switch(type)
-            {
-                case ResponseDTOType.GET_NOTIFICATION:
-                    return CreateGetNotificationDTO (
-                        (IEnumerable<Notification>) data,
-                        statusCode,
-                        statusMessage
-                    );
-
-                case ResponseDTOType.ADD_NOTIFICATION:
+                case ResponseDTOType.NOTIFICATION_GETALL:
                     return CreateGetNotificationDTO(
                         (IEnumerable<Notification>) data, 
                         statusCode, 
                         statusMessage
                     );
+
+                case ResponseDTOType.NOTIFICATION_GETBYACCOUNT:
+                    return CreateGetNotificationDTO(
+                        (IEnumerable<Notification>) data,
+                        statusCode,
+                        statusMessage
+                    );
+
+                case ResponseDTOType.NOTIFICATION_ADD:
+                    return CreateGetNotificationDTO(
+                        (IEnumerable<Notification>)data,
+                        statusCode,
+                        statusMessage
+                    );
+
 
                 default:
                     return null;
@@ -47,20 +42,20 @@ namespace SmartHomeManager.Domain.NotificationDomain.DTOs
 
         // For GET /api/notifications/all
         // For GET /api/notifications/{accountId}
-        public ResponseDTO<GetNotificationDTO> CreateGetNotificationDTO
+        public GetNotificationDTO CreateGetNotificationDTO
         (
             IEnumerable<Notification> notifications,
             int statusCode,
             string statusMessage
         )
         {
-            List<GetNotificationDTO> getNotifications = new List<GetNotificationDTO>();
+            List<GetNotificationDTOData> getNotifications = new List<GetNotificationDTOData>();
 
             if (notifications != null)
             {
                 foreach (var notification in notifications)
                 {
-                    getNotifications.Add(new GetNotificationDTO
+                    getNotifications.Add(new GetNotificationDTOData
                     {
                         NotificationId = notification.NotificationId,
                         AccountId = notification.AccountId,
@@ -70,40 +65,14 @@ namespace SmartHomeManager.Domain.NotificationDomain.DTOs
                 }
             }
 
-            ResponseDTO<GetNotificationDTO> dto = new ResponseDTO<GetNotificationDTO>
+            return new GetNotificationDTO
             {
                 Data = getNotifications,
-                Response = new ResponseInformationDTO
+                Response = new ResponseInformation
                 {
                     ServerMessage = statusMessage,
                     StatusCode = statusCode
                 }
-            };
-
-
-            return dto;
-        }
-
-        // For POST /api/notifications/{accountId}
-        public RequestDTO<AddNotificationDTO> CreateAddNotificationDTO
-        (
-            IEnumerable<Notification> notifications
-        )
-        {
-            List<AddNotificationDTO> getNotifications = new List<AddNotificationDTO>();
-
-            foreach (var notification in notifications)
-            {
-                getNotifications.Add(new AddNotificationDTO
-                {
-                    Message = notification.NotificationMessage,
-                    AccountId = notification.AccountId
-                });
-            }
-
-            return new RequestDTO<AddNotificationDTO>
-            {
-                Data = getNotifications
             };
         }
     }
