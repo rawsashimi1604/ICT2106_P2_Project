@@ -15,7 +15,6 @@
     <None Remove="AnalysisDomain\Builders\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="AnalysisDomain\DTOs\" />
     <Folder Include="SceneDomain\Services\" />
     <Folder Include="SceneDomain\Entities\DTOs\" />
     <Folder Include="SceneDomain\Interfaces\" />
