@@ -44,28 +44,27 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         }
 
 
+        // TODO: GET /api/device/getDevicesByGUID/{accountId}
         [HttpGet("device/getDevicesByGUID")]
+        [Produces("application/json")]
         public async Task<IActionResult> GetDevicesByGUID()
         {
             // Map devices to DTO
-            List<GetDevicesObjectDTO> getDevicesByGUID = new List<GetDevicesObjectDTO>();
+            List<GetDevicesObjectDTO> getDevices = new List<GetDevicesObjectDTO>();
 
-            // Use the service there...
-            IEnumerable<Device> device;
+            // Use the service here...
+            IEnumerable<Device> devices;
 
+            devices = await _reportService.GetDevicesByGUID();
 
-            var deviceList = await _reportService.GetDevicesByGUID();
-
-            foreach (var devices in deviceList)
+            foreach (var device in devices)
             {
-                getDevicesByGUID.Add(new GetDevicesObjectDTO
+                getDevices.Add(new GetDevicesObjectDTO
                 {
-                    DeviceID = devices.DeviceId,
+                    DeviceID = device.DeviceId,
                 });
             }
-
-
-            return StatusCode(200, CreateResponseDTO(getDevicesByGUID, 200, "Success"));
+            return StatusCode(200, CreateResponseDTO(getDevices, 200, "Success"));
         }
 
         // TODO: HouseholdReport Route

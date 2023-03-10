@@ -84,7 +84,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             return new PdfFile(filebytes, "application/force-download", fileName);
         }
 
-        public async Task<IEnumerable<Device>> GetDevicesByGUID()
+        public async Task<IEnumerable<Device>?> GetDevicesByGUID()
         {
             Guid tempAccId = Guid.Parse("11111111-1111-1111-1111-111111111111");
 
