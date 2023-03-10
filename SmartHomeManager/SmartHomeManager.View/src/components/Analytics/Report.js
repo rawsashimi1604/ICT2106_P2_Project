@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import {
     Select,
     Button,
@@ -10,6 +10,21 @@ import {
 } from '@chakra-ui/icons'
 
 import ReportService from 'requests/services/ReportService'
+
+
+// const [deviceId , setDeviceId] = useState([]);
+
+function getDevicesId(){
+
+    ReportService.getDevicesByGUID()
+    .then(response => {
+        console.log(response.data)
+        console.log("hello")
+    })
+
+}
+
+
 
 const handleClick = () => {
     // handling the post request...
@@ -26,6 +41,12 @@ const handleClick = () => {
     });
 }
 
+
+
+
+getDevicesId()
+
+
 function EfficiencyTable() {
     return (
         <>
@@ -35,6 +56,7 @@ function EfficiencyTable() {
                         <option value='option1'>Device 1</option>
                         <option value='option2'>Device 2</option>
                         <option value='option3'>Device 3</option>
+                        
                     </Select>
                     <Button ml={10} px={12} py={5} onClick={handleClick}>
                         <DownloadIcon mr={4} />Download</Button>

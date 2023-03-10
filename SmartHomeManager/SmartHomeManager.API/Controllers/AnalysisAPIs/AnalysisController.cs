@@ -11,6 +11,9 @@ using iText.Layout.Properties;
 using SmartHomeManager.Domain.AnalysisDomain.Services;
 using SmartHomeManager.Domain.AnalysisDomain.Entities;
 using SmartHomeManager.Domain.DeviceDomain.Interfaces;
+using SmartHomeManager.Domain.DeviceDomain.Entities;
+using SmartHomeManager.Domain.AnalysisDomain.DTOs;
+using SmartHomeManager.API.Controllers.NotificationAPIs.ViewModels;
 
 namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 {
@@ -40,6 +43,31 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
             return File(file.FileContents, file.ContentType, file.FileName);
         }
 
+
+        [HttpGet("device/getDevicesByGUID")]
+        public async Task<IActionResult> GetDevicesByGUID()
+        {
+            // Map devices to DTO
+            List<GetDevicesObjectDTO> getDevicesByGUID = new List<GetDevicesObjectDTO>();
+
+            // Use the service there...
+            IEnumerable<Device> device;
+
+
+            var deviceList = await _reportService.GetDevicesByGUID();
+
+            foreach (var devices in deviceList)
+            {
+                getDevicesByGUID.Add(new GetDevicesObjectDTO
+                {
+                    DeviceID = devices.DeviceId,
+                });
+            }
+
+
+            return StatusCode(200, CreateResponseDTO(getDevicesByGUID, 200, "Success"));
+        }
+
         // TODO: HouseholdReport Route
         // GET /api/analysis/householdReport/download/{accountId}
         [HttpGet("householdReport/download")]
@@ -63,6 +91,23 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         {
             string result = _carbonFootprintService.GetCarbonFootprintAsync(Guid.NewGuid(), 1, 1);
             return StatusCode(200, result);
+        }
+
+
+
+
+
+        private GetDevicesDTO CreateResponseDTO(List<GetDevicesObjectDTO> deviceList, int statusCode, string statusMessage)
+        {
+            return new GetDevicesDTO
+            {
+                DevicesObject = deviceList,
+                ResponseObject = new ResponseObjectDTO
+                {
+                    StatusCode = statusCode,
+                    ServerMessage = statusMessage
+                }
+            };
         }
     }
 }
