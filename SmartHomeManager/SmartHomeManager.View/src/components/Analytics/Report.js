@@ -11,6 +11,7 @@ import {
 } from '@chakra-ui/icons'
 
 import ReportService from 'requests/services/ReportService'
+import DeviceOptions from './DeviceOptions'
 
 const handleClick = () => {
     // handling the post request...
@@ -34,7 +35,7 @@ function Report() {
     function getDevicesByGUID(){
         ReportService.getDevicesByGUID()
             .then(response => {
-                console.log(response.data.devicesObject)
+                console.log(response.data)
                 setDevices(response.data.devicesObject);
             }).catch(e =>{
                 console.log(e);
@@ -49,7 +50,7 @@ function Report() {
         <>
             <Container>
                 <Flex>
-                    <Select placeholder='Select Device'>
+                    {/* <Select placeholder='Select Device'>
                         {
                             devices?.map((device,i) =>{
                                 console.log(i)
@@ -61,7 +62,9 @@ function Report() {
                             })
                         }
 
-                    </Select>
+                    </Select> */}
+
+                    <DeviceOptions devices = {devices}/>
 
                     <Button ml={10} px={12} py={5} onClick={handleClick}>
                         <DownloadIcon mr={4} />Download</Button>
