@@ -27,9 +27,8 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
         }
         
 
-        public async Task<PdfFile> GetDeviceReport()
+        public async Task<PdfFile> GetDeviceReport(Guid deviceId)
         {
-            Guid tempDeviceId = Guid.Parse("33333333-3333-3333-3333-333333333333");
             string fileName = "device.pdf";
 
             // Create a new PDF document
@@ -37,7 +36,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             iText.Layout.Document doc = new iText.Layout.Document(pdfDoc);
 
             // Get device
-            Device? device = await _mockDeviceService.GetDeviceById(tempDeviceId);
+            Device? device = await _mockDeviceService.GetDeviceById(deviceId);
             
             // Get device log
 
@@ -84,11 +83,10 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             return new PdfFile(filebytes, "application/force-download", fileName);
         }
 
-        public async Task<IEnumerable<Device>?> GetDevicesByGUID()
+        public async Task<IEnumerable<Device>?> GetDevicesByGUID(Guid accountId)
         {
-            Guid tempAccId = Guid.Parse("11111111-1111-1111-1111-111111111111");
 
-            IEnumerable<Device> deviceList = await _mockDeviceService.GetAllDevicesByAccount(tempAccId);
+            IEnumerable<Device> deviceList = await _mockDeviceService.GetAllDevicesByAccount(accountId);
 
             return deviceList;
 

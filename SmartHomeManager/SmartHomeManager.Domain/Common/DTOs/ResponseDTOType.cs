@@ -10,7 +10,8 @@ namespace SmartHomeManager.Domain.Common.DTOs
     {
         NOTIFICATION_GETALL,
         NOTIFICATION_GETBYACCOUNT,
-        NOTIFICATION_ADD
+        NOTIFICATION_ADD,
+        DEVICE_GETBYACCOUNT,
 
     }
 }
