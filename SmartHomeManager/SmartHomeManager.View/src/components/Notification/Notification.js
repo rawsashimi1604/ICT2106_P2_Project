@@ -37,13 +37,13 @@ export default function Notification() {
     function getNotifications() {
         NotificationService.getNotificationsByAccountId(SESSION_ACCOUNT_GUID)
             .then(response => {
-                console.log(response.data)
-                setNotifications(response.data.notificationObjects);
+                console.log(response.data.data)
+                setNotifications(response.data.data);
             }).catch(e => {
                 console.log(e);
                 setErrors({ 
-                    statusCode: e.response.data.responseObject.statusCode,
-                    errorMessage: e.response.data.responseObject.serverMessage
+                    statusCode: e.response.data.response.statusCode,
+                    errorMessage: e.response.data.response.serverMessage
                 });
             }) 
     }

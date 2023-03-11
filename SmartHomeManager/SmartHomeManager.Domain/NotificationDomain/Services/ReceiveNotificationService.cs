@@ -13,7 +13,7 @@ using SmartHomeManager.Domain.NotificationDomain.Interfaces;
 
 namespace SmartHomeManager.Domain.NotificationDomain.Services
 { 
-    public class ReceiveNotificationService
+    public class ReceiveNotificationService : IReceiveNotification
     {
         private readonly INotificationRepository _notificationRepository;
         private readonly AccountService _accountService;
@@ -28,7 +28,7 @@ namespace SmartHomeManager.Domain.NotificationDomain.Services
         public async Task<IEnumerable<Notification>> GetAllNotificationsAsync()
         {
             // TODO: Pass in accountId
-            IEnumerable<Notification> allNotification = null;
+            IEnumerable<Entities.Notification> allNotification = null;
             try
             {
                 allNotification = await _notificationRepository.GetAllAsync();
@@ -44,20 +44,16 @@ namespace SmartHomeManager.Domain.NotificationDomain.Services
         public async Task<IEnumerable<Notification>?> GetNotificationsAsync(Guid accountId)
         {
             var accountToBeFound = await _accountService.CheckAccountExists(accountId);
-            IEnumerable<Notification> allNotification = null;
+            IEnumerable<Entities.Notification> allNotification = null;
 
-            //Check if account exist
-            if (accountToBeFound == null)
-            {
-                throw new AccountNotFoundException();
-            }
+            //Validation has been done in proxy
 
             allNotification = await _notificationRepository.GetAllByIdAsync(accountId);
 
             try
             {
                 //Sort and get the latest 5 notifications
-                IEnumerable<Notification> latest5Notification = allNotification.OrderBy(noti => noti.SentTime).TakeLast(5);
+                IEnumerable<Entities.Notification> latest5Notification = allNotification.OrderBy(noti => noti.SentTime).TakeLast(5);
                 return latest5Notification;
             }
             catch (Exception ex)

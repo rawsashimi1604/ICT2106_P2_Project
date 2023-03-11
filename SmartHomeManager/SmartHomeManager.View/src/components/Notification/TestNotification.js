@@ -24,7 +24,7 @@ export default function TestNotification(){
       // handling the post request...
       NotificationService.sendNotification(
         {
-          "notificationObject": {
+          "request": {
             "message": input,
             "accountId": SESSION_ACCOUNT_GUID
           }
@@ -32,8 +32,8 @@ export default function TestNotification(){
       ).then(response => {
         console.log(response)
         toast({
-          title: response.data.responseObject.statusCode,
-          description: `Notification sent, ${response.data.responseObject.serverMessage}`,
+          title: response.data.response.statusCode,
+          description: `Notification sent, ${response.data.response.serverMessage}`,
           status: "success",
           duration: 3000,
           isClosable: false
@@ -41,8 +41,8 @@ export default function TestNotification(){
       }).catch(e => {
         console.group(e)
         setErrors({ 
-          statusCode: e.response.data.responseObject.statusCode,
-          errorMessage: e.response.data.responseObject.serverMessage
+          statusCode: e.response.data.response.statusCode,
+          errorMessage: e.response.data.response.serverMessage
         });
       })
   };
