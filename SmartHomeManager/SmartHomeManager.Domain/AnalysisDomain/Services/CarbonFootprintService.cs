@@ -50,13 +50,13 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
         {
 
             // Check if the data exist in database
-            //1. Check if account exists
+            // 1. Check if account exists
             Account? account =  await _accountService.GetAccountByAccountId(accountId);
             if (account == null)
             {
                 throw new AccountNotFoundException();
             }
-            //2. Check if month and year input are valid eg no -ve
+            // 2. Check if month and year input are valid eg no -ve
             bool isMonthValid = month>=1 && month <= 12;
             bool isYearValid = year >= 2000 && year <= DateTime.Now.Year;
             if (!isMonthValid || !isYearValid)
@@ -103,6 +103,14 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             {
                 totalWatts += deviceLog.DeviceEnergyUsage;
             }
+
+            // If total watts has nothing, means there is no data logged.
+            // If no data is logged, we throw an exception to controller
+            if (totalWatts <= 0)
+            {
+                throw new NoCarbonFootprintDataException();
+            }
+
 
             // 4. add it to database
             CarbonFootprint carbonFootprintData = new CarbonFootprint
