@@ -22,19 +22,20 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
     {
         // TODO: Add private service variables
         private readonly ReportService _reportService;
-        private readonly CarbonFootprintService _carbonFootprintService;
+        private readonly ICarbonFootprint _carbonFootprintService;
         private readonly AbstractDTOFactory _dtoFactory;
+    
 
         // TODO: Create constructor to inject services...
         public AnalysisController(
-            ICarbonFootprintRepository carbonFootprintRepository, 
             IDeviceRepository deviceRepository, 
-            IDeviceLogRepository deviceLogRepository,
-            IAccountRepository accountRepository    
+            ICarbonFootprint carbonFootprint
+
         ) 
         {
             _reportService = new(deviceRepository);
-            _carbonFootprintService = new (carbonFootprintRepository, deviceLogRepository, accountRepository, deviceRepository);
+            _carbonFootprintService = carbonFootprint;
+          //  _carbonFootprintService = new (carbonFootprintRepository, deviceLogRepository, accountRepository, deviceRepository);
             _dtoFactory = new AnalysisDTOFactory();
         }
 
