@@ -52,6 +52,7 @@ using SmartHomeManager.Domain.DeviceDomain.Services;
 using ISendNotification = SmartHomeManager.Domain.NotificationDomain.Interfaces.ISendNotification;
 using SmartHomeManager.Domain.NotificationDomain.Services;
 using SmartHomeManager.Domain.NotificationDomain.Proxies;
+using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
 
 namespace SmartHomeManager.API;
 
@@ -102,7 +103,7 @@ public class Program
         // builder.Services.AddScoped<IProfileService, ProfileRepositoryMock>();
 
         // ANALYSIS
-        builder.Services.AddScoped<IGenericRepository<CarbonFootprint>, CarbonFootprintRepository>();
+        builder.Services.AddScoped<ICarbonFootprintRepository, CarbonFootprintRepository>();
 
         // ROOM
         builder.Services.AddScoped<IRoomRepository, RoomRepository>();

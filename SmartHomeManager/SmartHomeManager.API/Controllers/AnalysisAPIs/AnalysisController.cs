@@ -18,6 +18,7 @@ using SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces;
 using SmartHomeManager.Domain.AccountDomain.Interfaces;
 using SmartHomeManager.Domain.Common.Exceptions;
 using Microsoft.AspNetCore.Http.HttpResults;
+using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
 
 namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 {
@@ -32,7 +33,7 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 
         // TODO: Create constructor to inject services...
         public AnalysisController(
-            IGenericRepository<CarbonFootprint> carbonFootprintRepository, 
+            ICarbonFootprintRepository carbonFootprintRepository, 
             IDeviceRepository deviceRepository, 
             IDeviceLogRepository deviceLogRepository,
             IAccountRepository accountRepository    
@@ -90,7 +91,7 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         [Produces("application/json")]
         public async Task<IActionResult> GetCarbonFootprintData(Guid accountId,int month, int year)
         {
-            string result = null;
+            CarbonFootprint result = null;
             try
             {
                 result = await _carbonFootprintService.GetCarbonFootprintAsync(accountId, month, year);

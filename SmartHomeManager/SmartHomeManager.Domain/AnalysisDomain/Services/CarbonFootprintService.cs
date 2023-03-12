@@ -15,24 +15,26 @@ using SmartHomeManager.Domain.DeviceLoggingDomain.Entities;
 using SmartHomeManager.Domain.DeviceDomain.Interfaces;
 using SmartHomeManager.Domain.DeviceDomain.Services;
 using SmartHomeManager.Domain.DeviceDomain.Entities;
+using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
 
 namespace SmartHomeManager.Domain.AnalysisDomain.Services
 {
     public class CarbonFootprintService
     {
 
-        private readonly IGenericRepository<CarbonFootprint> _carbonFootprintRepository;
+        private readonly ICarbonFootprintRepository _carbonFootprintRepository;
         private readonly IDeviceInfoService _deviceLogService;
         private readonly IAccountService _accountService;
         private readonly MockDeviceService _deviceService;
 
         // According to the Energy Market Authority (EMA) of Singapore,
         // the average monthly electricity consumption per household in Singapore
-        // is about 391 kilowatt-hours (kWh) as of 2021. 
-        private const int NATIONAL_HOUSEHOLD_CONSUMPTION_MONTH_WATTS = 391000;
+        // is about 100 kilowatt-hours (kWh) as of 2021. 
+        private const double NATIONAL_HOUSEHOLD_CONSUMPTION_MONTH_WATTS = 100000f; // 100000 Wh
+        private const int HOURS_PER_MONTH = 730;
 
         public CarbonFootprintService(
-            IGenericRepository<CarbonFootprint> carbonFootprintRepository, 
+            ICarbonFootprintRepository carbonFootprintRepository, 
             IDeviceLogRepository deviceLogRepository, 
             IAccountRepository accountRepository,
             IDeviceRepository deviceRepository
@@ -44,7 +46,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             _deviceService = new MockDeviceService(deviceRepository);
         }
 
-        public async Task<string> GetCarbonFootprintAsync(Guid accountId, int month, int year)
+        public async Task<CarbonFootprint> GetCarbonFootprintAsync(Guid accountId, int month, int year)
         {
 
             // Check if the data exist in database
@@ -62,7 +64,12 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                 throw new InvalidDateInputException();
             }
 
-            //3. if the data alr exist, eg jan 2023 exist, return the data from database
+            // 3. if the data alr exist, eg jan 2023 exist, return the data from database
+            var carbonFootprintCheck = await _carbonFootprintRepository.GetCarbonFootprintByMonthAndYear(month, year);
+            if (carbonFootprintCheck != null)
+            {
+                return carbonFootprintCheck;
+            }
 
             //this is the flow where there is no data
             // Get all the usage data belonging to one accountId
@@ -97,19 +104,27 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                 totalWatts += deviceLog.DeviceEnergyUsage;
             }
 
-            // 3. compare to the national household probs fix value
+            // 4. add it to database
+            CarbonFootprint carbonFootprintData = new CarbonFootprint
+            {
+                AccountId = accountId,
+                HouseholdConsumption = totalWatts / HOURS_PER_MONTH,
+                NationalHouseholdConsumption = NATIONAL_HOUSEHOLD_CONSUMPTION_MONTH_WATTS,
+                MonthOfAnalysis = month,
+                YearOfAnalysis = year
+            };
 
+            try {
+                await _carbonFootprintRepository.AddAsync(carbonFootprintData);
+            }
+            catch (Exception ex)
+            {
+                throw new DBInsertFailException();
+            }
 
-
-            //4. add it to database
-            //5. return to controller
-            // Compare it to the national
-            // Add to the database
+            // 5. return to controller
             // Return to controller
-
-
-
-            return "carbon footprint";
+            return carbonFootprintData;
         }
 
     }

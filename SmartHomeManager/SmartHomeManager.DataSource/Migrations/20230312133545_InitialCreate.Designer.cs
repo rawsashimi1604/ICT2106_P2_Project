@@ -11,7 +11,7 @@ using SmartHomeManager.DataSource;
 namespace SmartHomeManager.DataSource.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230312130820_InitialCreate")]
+    [Migration("20230312133545_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -153,13 +153,14 @@ namespace SmartHomeManager.DataSource.Migrations
                     b.Property<double>("HouseholdConsumption")
                         .HasColumnType("REAL");
 
-                    b.Property<string>("MonthOfAnalysis")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("MonthOfAnalysis")
+                        .HasColumnType("INTEGER");
 
-                    b.Property<string>("YearOfAnalysis")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<double>("NationalHouseholdConsumption")
+                        .HasColumnType("REAL");
+
+                    b.Property<int>("YearOfAnalysis")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("CarbonFootprintId");
 
