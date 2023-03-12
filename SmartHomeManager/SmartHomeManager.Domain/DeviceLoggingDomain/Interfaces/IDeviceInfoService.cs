@@ -6,12 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces
-{
+{   
+    // To be passed into Team5 - Analysis.
     public interface IDeviceInfoService
     {
-        public IEnumerable<DeviceLog> getAllDeviceLog();
+        public Task<IEnumerable<DeviceLog>> GetAllDeviceLogAsync();
 
-        public IEnumerable<DeviceLog> getDeviceLogById(Guid deviceId);
+        public Task<IEnumerable<DeviceLog>> GetDeviceLogByIdAsync(Guid deviceId);
 
     }
 }

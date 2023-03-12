@@ -34,6 +34,15 @@ namespace SmartHomeManager.DataSource.DeviceLogDataSource
             return result;
         }
 
+        public async Task<IEnumerable<DeviceLog>> GetAllByDeviceId(Guid deviceId)
+        {
+            var allLogs = _db.DeviceLogs.ToList();
+
+            IEnumerable<DeviceLog> result = allLogs.Where(log => log.DeviceId == deviceId);
+
+            return result;
+        }
+
         public IEnumerable<DeviceLog> Get(Guid deviceId, DateTime date, DateTime endTime)
         {
             // get all logs
@@ -82,5 +91,7 @@ namespace SmartHomeManager.DataSource.DeviceLogDataSource
         {
             _dbSet.Update(entity);
         }
+
+        
     }
 }
