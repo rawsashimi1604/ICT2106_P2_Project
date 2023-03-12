@@ -19,12 +19,11 @@ using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
 
 namespace SmartHomeManager.Domain.AnalysisDomain.Services
 {
-    public class CarbonFootprintService
+    public class CarbonFootprintService:ICarbonFootprint
     {
 
         private readonly ICarbonFootprintRepository _carbonFootprintRepository;
         private readonly IDeviceInfoService _deviceLogService;
-        private readonly IAccountService _accountService;
         private readonly MockDeviceService _deviceService;
 
         // According to the Energy Market Authority (EMA) of Singapore,
@@ -35,36 +34,21 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
 
         public CarbonFootprintService(
             ICarbonFootprintRepository carbonFootprintRepository, 
-            IDeviceLogRepository deviceLogRepository, 
-            IAccountRepository accountRepository,
+            IDeviceLogRepository deviceLogRepository,
             IDeviceRepository deviceRepository
         )
         {
             _carbonFootprintRepository = carbonFootprintRepository;
             _deviceLogService = new DeviceLogReadService(deviceLogRepository);
-            _accountService = new AccountService(accountRepository);
             _deviceService = new MockDeviceService(deviceRepository);
         }
 
         public async Task<CarbonFootprint> GetCarbonFootprintAsync(Guid accountId, int month, int year)
         {
 
-            // Check if the data exist in database
-            //1. Check if account exists
-            Account? account =  await _accountService.GetAccountByAccountId(accountId);
-            if (account == null)
-            {
-                throw new AccountNotFoundException();
-            }
-            //2. Check if month and year input are valid eg no -ve
-            bool isMonthValid = month>=1 && month <= 12;
-            bool isYearValid = year >= 2000 && year <= DateTime.Now.Year;
-            if (!isMonthValid || !isYearValid)
-            {
-                throw new InvalidDateInputException();
-            }
+            //Data input such as accountexists and date validation has been implemented in proxy
 
-            // 3. if the data alr exist, eg jan 2023 exist, return the data from database
+            // If the data alr exist, eg jan 2023 exist, return the data from database
             var carbonFootprintCheck = await _carbonFootprintRepository.GetCarbonFootprintByMonthAndYear(month, year);
             if (carbonFootprintCheck != null)
             {
