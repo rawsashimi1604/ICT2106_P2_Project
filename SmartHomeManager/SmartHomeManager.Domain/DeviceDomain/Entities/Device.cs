@@ -3,11 +3,12 @@ using SmartHomeManager.Domain.AccountDomain.Entities;
 using SmartHomeManager.Domain.RoomDomain.Entities;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using SmartHomeManager.Domain.Common;
 
 namespace SmartHomeManager.Domain.DeviceDomain.Entities
 {
     [Index(nameof(DeviceSerialNumber), IsUnique = true)]
-    public class Device
+    public class Device : IEntity
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid DeviceId { get; set; }

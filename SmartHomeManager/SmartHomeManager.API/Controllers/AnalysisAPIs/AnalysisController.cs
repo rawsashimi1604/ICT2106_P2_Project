@@ -13,7 +13,8 @@ using SmartHomeManager.Domain.AnalysisDomain.Entities;
 using SmartHomeManager.Domain.DeviceDomain.Interfaces;
 using SmartHomeManager.Domain.DeviceDomain.Entities;
 using SmartHomeManager.Domain.AnalysisDomain.DTOs;
-using SmartHomeManager.API.Controllers.NotificationAPIs.ViewModels;
+using SmartHomeManager.Domain.Common.DTOs;
+
 
 namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 {
@@ -24,47 +25,40 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         // TODO: Add private service variables
         private readonly ReportService _reportService;
         private readonly CarbonFootprintService _carbonFootprintService;
+        private readonly AbstractDTOFactory _dtoFactory;
 
         // TODO: Create constructor to inject services...
         public AnalysisController(IGenericRepository<CarbonFootprint> carbonFootprintRepository, IDeviceRepository deviceRepository)
         {
             _reportService = new(deviceRepository);
             _carbonFootprintService = new(carbonFootprintRepository);
+            _dtoFactory = new AnalysisDTOFactory();
         }
 
         // TODO: Create API Routes...
 
         // TODO: Device Route
         // GET /api/analysis/device/download/{deviceId}
-        [HttpGet("device/download/")]
-        public async Task<FileContentResult> GetDeviceReport()
+        [HttpGet("device/download/{deviceId}")]
+        public async Task<FileContentResult> GetDeviceReport(Guid deviceId)
         {
-            PdfFile file = await _reportService.GetDeviceReport();
+            PdfFile file = await _reportService.GetDeviceReport(deviceId);
             return File(file.FileContents, file.ContentType, file.FileName);
         }
 
 
-        // TODO: GET /api/device/getDevicesByGUID/{accountId}
-        [HttpGet("device/getDevicesByGUID")]
+        // TODO: GET /api/device/{accountId}
+        [HttpGet("device/{accountId}")]
         [Produces("application/json")]
-        public async Task<IActionResult> GetDevicesByGUID()
+        public async Task<IActionResult> GetDevicesByGUID(Guid accountId)
         {
-            // Map devices to DTO
-            List<GetDevicesObjectDTO> getDevices = new List<GetDevicesObjectDTO>();
-
             // Use the service here...
             IEnumerable<Device> devices;
 
-            devices = await _reportService.GetDevicesByGUID();
+            devices = await _reportService.GetDevicesByGUID(accountId);
 
-            foreach (var device in devices)
-            {
-                getDevices.Add(new GetDevicesObjectDTO
-                {
-                    DeviceID = device.DeviceId,
-                });
-            }
-            return StatusCode(200, CreateResponseDTO(getDevices, 200, "Success"));
+            return StatusCode(200, _dtoFactory.CreateResponseDTO
+                (ResponseDTOType.DEVICE_GETBYACCOUNT, devices, 200, "Success"));
         }
 
         // TODO: HouseholdReport Route
@@ -90,23 +84,6 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         {
             string result = _carbonFootprintService.GetCarbonFootprintAsync(Guid.NewGuid(), 1, 1);
             return StatusCode(200, result);
-        }
-
-
-
-
-
-        private GetDevicesDTO CreateResponseDTO(List<GetDevicesObjectDTO> deviceList, int statusCode, string statusMessage)
-        {
-            return new GetDevicesDTO
-            {
-                DevicesObject = deviceList,
-                ResponseObject = new ResponseObjectDTO
-                {
-                    StatusCode = statusCode,
-                    ServerMessage = statusMessage
-                }
-            };
         }
     }
 }
