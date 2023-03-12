@@ -28,8 +28,8 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
 
         // According to the Energy Market Authority (EMA) of Singapore,
         // the average monthly electricity consumption per household in Singapore
-        // is about 100 kilowatt-hours (kWh) as of 2021. 
-        private const double NATIONAL_HOUSEHOLD_CONSUMPTION_MONTH_WATTS = 100000f; // 100000 Wh
+        // is about 310 kilowatt-hours (kWh) as of 2021. 
+        private const double NATIONAL_HOUSEHOLD_CONSUMPTION_MONTH_WATTS = 2700; // (for simulation)
         private const int HOURS_PER_MONTH = 730;
 
         public CarbonFootprintService(
