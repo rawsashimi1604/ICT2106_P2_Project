@@ -48,6 +48,16 @@ namespace SmartHomeManager.DataSource.DeviceLogDataSource
             // get all logs
             var allLogs = _db.DeviceLogs.ToList();
 
+            IEnumerable<DeviceLog> result = _db.DeviceLogs.ToList().Where(log => log.DeviceId == deviceId && log.DateLogged.Date == date && log.DateLogged.TimeOfDay >= date.TimeOfDay && log.EndTime?.TimeOfDay <= endTime.TimeOfDay);
+
+            return result;
+        }
+
+        public async Task<IEnumerable<DeviceLog>> GetAsync(Guid deviceId, DateTime date, DateTime endTime)
+        {
+            // get all logs
+            var allLogs = await _db.DeviceLogs.ToListAsync();
+
             IEnumerable<DeviceLog> result = _db.DeviceLogs.ToList().Where(log => log.DeviceId == deviceId && log.DateLogged.Date == date && log.DateLogged.TimeOfDay >= date.TimeOfDay && log.EndTime?.TimeOfDay <= endTime.TimeOfDay) ;
 
             return result;
