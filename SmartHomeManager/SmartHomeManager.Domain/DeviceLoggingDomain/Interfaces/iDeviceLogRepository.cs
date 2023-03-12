@@ -22,6 +22,8 @@ namespace SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces
 
         Task<IEnumerable<DeviceLog>> GetAll();
 
+        Task<IEnumerable<DeviceLog>> GetAllByDeviceId(Guid deviceId);
+
         //still missing write functions
 
         void Add(DeviceLog entity);
@@ -29,6 +31,7 @@ namespace SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces
         Task<DeviceLog?> Get(DateTime date, Guid deviceId, bool deviceState);
 
         Task<DeviceLog?> Get(DateTime date);
+        
 
         void Update(DeviceLog entity);
 
