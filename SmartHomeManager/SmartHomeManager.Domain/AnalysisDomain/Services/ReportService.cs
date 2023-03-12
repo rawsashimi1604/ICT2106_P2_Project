@@ -55,20 +55,20 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             return new PdfFile(fileBytes, "application/force-download", fileName);  
         }
 
-        public async Task <PdfFile> GetHouseholdReport()
+        public async Task <PdfFile> GetHouseholdReport(Guid accountId)
         {
-            Guid tempAccId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+           
             string fileName = "household.pdf";
 
             PdfDocument pdfDoc = new PdfDocument(new PdfWriter("../SmartHomeManager.Domain/AnalysisDomain/Files/" + fileName));
             iText.Layout.Document doc = new iText.Layout.Document(pdfDoc);
 
-            IEnumerable<Device> deviceList = await _mockDeviceService.GetAllDevicesByAccount(tempAccId);
+            IEnumerable<Device> deviceList = await _mockDeviceService.GetAllDevicesByAccount(accountId);
 
             var pdfBuilder = new PdfBuilder(fileName, pdfDoc);
 
             pdfBuilder
-                .addHouseholdHeader(tempAccId);
+                .addHouseholdHeader(accountId);
 
             foreach (var device in deviceList)
             {
