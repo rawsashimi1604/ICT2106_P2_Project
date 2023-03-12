@@ -48,6 +48,10 @@ using SmartHomeManager.Domain.NotificationDomain.Entities;
 using SmartHomeManager.Domain.NotificationDomain.Interfaces;
 using SmartHomeManager.Domain.AnalysisDomain.Entities;
 using SmartHomeManager.DataSource.AnalysisDataSource;
+using SmartHomeManager.Domain.DeviceDomain.Services;
+using ISendNotification = SmartHomeManager.Domain.NotificationDomain.Interfaces.ISendNotification;
+using SmartHomeManager.Domain.NotificationDomain.Services;
+using SmartHomeManager.Domain.NotificationDomain.Proxies;
 
 namespace SmartHomeManager.API;
 
@@ -97,10 +101,6 @@ public class Program
         builder.Services.AddScoped<IDeviceLogRepository, DeviceLogRepository>();
         // builder.Services.AddScoped<IProfileService, ProfileRepositoryMock>();
 
-        // NOTIFICATION
-        // Inject dependencies for Notification Repository, so all implementations of IGenericRepository<Notification> will use the NotificationRepository implementation...
-        builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
-
         // ANALYSIS
         builder.Services.AddScoped<IGenericRepository<CarbonFootprint>, CarbonFootprintRepository>();
 
@@ -114,6 +114,25 @@ public class Program
         builder.Services.AddScoped<AccountService>();
         builder.Services.AddScoped<EmailService>();
         builder.Services.AddScoped<ProfileService>();
+
+        // NOTIFICATION
+        // Inject dependencies for Notification Repository, so all implementations of IGenericRepository<Notification> will use the NotificationRepository implementation...
+        builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+
+        builder.Services.AddScoped<SendNotificationService>();
+        builder.Services.AddScoped<ISendNotification, SendNotificationProxy>(serviceProvider => {
+            var service = serviceProvider.GetRequiredService<SendNotificationService>();
+            var accountRepo = serviceProvider.GetRequiredService<IAccountRepository>(); 
+            return new SendNotificationProxy(service, accountRepo);
+        });
+
+        builder.Services.AddScoped<ReceiveNotificationService>();
+        builder.Services.AddScoped<IReceiveNotification, ReceiveNotificationProxy>(serviceProvider => {
+            var service = serviceProvider.GetRequiredService<ReceiveNotificationService>();
+            var accountRepo = serviceProvider.GetRequiredService<IAccountRepository>();
+            return new ReceiveNotificationProxy(service, accountRepo);
+        });
+
         #endregion DEPENDENCY INJECTIONS
 
         builder.Services.AddControllers();

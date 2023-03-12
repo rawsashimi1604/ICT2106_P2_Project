@@ -1,11 +1,13 @@
 import axios from "axios";
 
-const instance = axios.create()
+const instance = axios.create();
 
-// Add a request interceptor
+// Add a request interceptor for the PdfDownloadService instance
 instance.interceptors.request.use(
   function (config) {
     config.baseURL = `https://localhost:7140/`;
+    config.headers["Content-Type"] = "application/pdf";
+    config.responseType = "blob";
     return config;
   },
   function (error) {
