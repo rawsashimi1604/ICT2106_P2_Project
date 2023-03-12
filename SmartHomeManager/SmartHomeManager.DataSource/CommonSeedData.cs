@@ -9,9 +9,11 @@ using SmartHomeManager.Domain.SceneDomain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SmartHomeManager.DataSource
 {
@@ -130,7 +132,7 @@ namespace SmartHomeManager.DataSource
                     DeviceName = "Smart Fan",
                     DeviceBrand = "xiaomi",
                     DeviceModel = "smart fan",
-                    DeviceWatts = 100,
+                    DeviceWatts = 90,
                     DeviceTypeName = "Fan",
                     DeviceSerialNumber = "123",
                     AccountId = new ("11111111-1111-1111-1111-111111111111"),
@@ -142,7 +144,7 @@ namespace SmartHomeManager.DataSource
                     DeviceName = "Smart bulb",
                     DeviceBrand = "xiaomi",
                     DeviceModel = "smart bulb",
-                    DeviceWatts = 100,
+                    DeviceWatts = 40,
                     DeviceTypeName = "Light",
                     DeviceSerialNumber = "456",
                     AccountId = new ("11111111-1111-1111-1111-111111111111"),
@@ -154,7 +156,7 @@ namespace SmartHomeManager.DataSource
                     DeviceName = "Smart aircon",
                     DeviceBrand = "xiaomi",
                     DeviceModel = "smart aircon",
-                    DeviceWatts = 100,
+                    DeviceWatts = 2500,
                     DeviceTypeName = "Aircon",
                     DeviceSerialNumber = "789",
                     AccountId = new ("11111111-1111-1111-1111-111111111111"),
@@ -308,24 +310,72 @@ namespace SmartHomeManager.DataSource
 
             Random rnd = new Random();
             var DeviceLogs = new List<DeviceLog>();
-            for (int j = 13; j < 13 + 7; j++)
+            // years to seed: 2021, 2022
+            // months to seed: all
+            // days to seed:
+
+            foreach (var device in devices)
             {
-                // create objects
-                for (int i = 0; i < 23; i++)
+                System.Diagnostics.Debug.WriteLine("added to database");
+                for (int year = 2022; year < 2023; year++)
                 {
-                    DeviceLogs.Add(new DeviceLog()
+                    for (int month = 1; month <= 12; month++)
                     {
-                        LogId = Guid.NewGuid(),
-                        EndTime = DateTime.Parse($"2023-02-{j} {i + 1}:00:00.0000000"),
-                        DateLogged = DateTime.Parse($"2023-02-{j} 00:00:00.0000000"),
-                        DeviceEnergyUsage = rnd.Next(100, 1000),
-                        DeviceActivity = 1,
-                        DeviceState = false,
-                        DeviceId = devices[0].DeviceId,
-                        RoomId = rooms[0].RoomId,
-                    });
+                        int numberOfDays = 0;
+
+                        if (month == 1) numberOfDays = 31;
+                        if (month == 2) numberOfDays = 28;
+                        if (month == 3) numberOfDays = 31;
+                        if (month == 4) numberOfDays = 30;
+                        if (month == 5) numberOfDays = 31;
+                        if (month == 6) numberOfDays = 30;
+                        if (month == 7) numberOfDays = 31;
+                        if (month == 8) numberOfDays = 31;
+                        if (month == 9) numberOfDays = 30;
+                        if (month == 10) numberOfDays = 31;
+                        if (month == 11) numberOfDays = 30;
+                        if (month == 12) numberOfDays = 31;
+
+                        for (int day = 1; day <= numberOfDays; day++)
+                        {
+                            for (int hour = 0; hour < 24; hour++)
+                            {
+                                DeviceLogs.Add(new DeviceLog()
+                                {
+                                    LogId = Guid.NewGuid(),
+                                    EndTime = DateTime.Parse($"{year}-{month.ToString("D2")}-{day.ToString("D2")} {hour}:00:00.0000000"),
+                                    DateLogged = DateTime.Parse($"{year}-{month.ToString("D2")}-{day.ToString("D2")} 00:00:00.0000000"),
+                                    DeviceEnergyUsage = (float)(rnd.NextDouble() + 0.5) * device.DeviceWatts,
+                                    DeviceActivity = 1,
+                                    DeviceState = false,
+                                    DeviceId = device.DeviceId,
+                                    RoomId = rooms[0].RoomId,
+                                });
+                            }
+                        }
+                    }
                 }
             }
+
+
+            //for (int day = 13; day < 13 + 7; day++)
+            //{
+            //    // create objects
+            //    for (int hour = 0; hour < 23; hour++)
+            //    {
+            //        DeviceLogs.Add(new DeviceLog()
+            //        {
+            //            LogId = Guid.NewGuid(),
+            //            EndTime = DateTime.Parse($"2023-02-{day} {hour + 1}:00:00.0000000"),
+            //            DateLogged = DateTime.Parse($"2023-02-{day} 00:00:00.0000000"),
+            //            DeviceEnergyUsage = rnd.Next(100, 1000),
+            //            DeviceActivity = 1,
+            //            DeviceState = false,
+            //            DeviceId = devices[0].DeviceId,
+            //            RoomId = rooms[0].RoomId,
+            //        });
+            //    }
+            //}
 
             await context.DeviceLogs.AddRangeAsync(DeviceLogs);
             await context.SaveChangesAsync();

@@ -35,10 +35,11 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
             IGenericRepository<CarbonFootprint> carbonFootprintRepository, 
             IDeviceRepository deviceRepository, 
             IDeviceLogRepository deviceLogRepository,
-            IAccountRepository accountRepository) 
+            IAccountRepository accountRepository    
+        ) 
         {
             _reportService = new(deviceRepository);
-            _carbonFootprintService = new (carbonFootprintRepository, deviceLogRepository, accountRepository);
+            _carbonFootprintService = new (carbonFootprintRepository, deviceLogRepository, accountRepository, deviceRepository);
             _dtoFactory = new AnalysisDTOFactory();
         }
 
