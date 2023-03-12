@@ -85,11 +85,11 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         [Produces("application/json")]
         public async Task<IActionResult> GetCarbonFootprintData(Guid accountId,int month, int year)
         {
-            List<CarbonFootprint> result = new List<CarbonFootprint>();
+            IEnumerable<CarbonFootprint> result = new List<CarbonFootprint>();
 
             try
             {
-                result.Add(await _carbonFootprintService.GetCarbonFootprintAsync(accountId, month, year));
+                result = await _carbonFootprintService.GetCarbonFootprintAsync(accountId, month, year);
             }
             catch(AccountNotFoundException ex)
             {

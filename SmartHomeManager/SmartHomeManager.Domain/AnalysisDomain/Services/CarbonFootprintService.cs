@@ -46,9 +46,8 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             _deviceService = new MockDeviceService(deviceRepository);
         }
 
-        public async Task<CarbonFootprint> GetCarbonFootprintAsync(Guid accountId, int month, int year)
+        public async Task<IEnumerable<CarbonFootprint>> GetCarbonFootprintAsync(Guid accountId, int month, int year)
         {
-
             // Check if the data exist in database
             // 1. Check if account exists
             Account? account =  await _accountService.GetAccountByAccountId(accountId);
@@ -64,76 +63,114 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                 throw new InvalidDateInputException();
             }
 
-            // 3. if the data alr exist, eg jan 2023 exist, return the data from database
-            var carbonFootprintCheck = await _carbonFootprintRepository.GetCarbonFootprintByMonthAndYear(month, year);
-            if (carbonFootprintCheck != null)
-            {
-                return carbonFootprintCheck;
-            }
-
             //this is the flow where there is no data
             // Get all the usage data belonging to one accountId
 
-            // 1. Find which device belong to which account...
+            // Find which device belong to which account...
             //=> pass in account id and return all the device under that id
             IEnumerable<Device> devices = await _deviceService.GetAllDevicesByAccount(accountId);
             
-            //2. use rubin service to get all the logs by each device
+            // use rubin service to get all the logs by each device
             IEnumerable<DeviceLog> deviceLogs = await _deviceLogService.GetAllDeviceLogAsync();
 
-            // Filter data to obtain data within month range eg 1-31st Jan same for year
-            DateTime startDate = new DateTime(year, month, 1, 0, 0, 0);
-            DateTime endDate;
+            // Get the data for the past 6 months...
+            List<DateTime> months = GetPastSixMonths(year, month);
+            List<CarbonFootprint> result = new List<CarbonFootprint>();
 
-            // If its december, end date should be Jan of the following year
-            // If its not december, end date should be the following month 1st day.
-            endDate = month == 12 ? 
-                new DateTime(year + 1, 1, 1, 0, 0, 0) : 
-                new DateTime(year, month+1, 1, 0, 0, 0);
-
-            // Filter device logs by the specified date...
-            deviceLogs = deviceLogs.Where(deviceLog =>
-                deviceLog.DateLogged >= startDate && deviceLog.DateLogged < endDate.AddDays(1)
-            );
-
-            // Sum of watts...
-            // Sum it all up
-            double totalWatts = 0;
-            foreach (var deviceLog in deviceLogs)
+            
+            // For each month, add the data to database and create a DTO, add the resulting DTO to a list and return it to the controller.
+            foreach (DateTime dt in months)
             {
-                totalWatts += deviceLog.DeviceEnergyUsage;
+
+                // if the data alr exist, eg jan 2023 exist, return the data from database
+                var carbonFootprintCheck = await _carbonFootprintRepository.GetCarbonFootprintByMonthAndYear(month, year);
+                if (carbonFootprintCheck != null)
+                {
+                    result.Add(carbonFootprintCheck);
+                    break;
+                }
+
+                // Filter data to obtain data within month range eg 1-31st Jan same for year
+                DateTime startDate = new DateTime(dt.Year, dt.Month, 1, 0, 0, 0);
+                DateTime endDate;
+
+                // If its december, end date should be Jan of the following year
+                // If its not december, end date should be the following month 1st day.
+                endDate = dt.Month == 12 ?
+                    new DateTime(dt.Year + 1, 1, 1, 0, 0, 0) :
+                    new DateTime(dt.Year, dt.Month + 1, 1, 0, 0, 0);
+
+                // Filter device logs by the specified date...
+                deviceLogs = deviceLogs.Where(deviceLog =>
+                    deviceLog.DateLogged >= startDate && deviceLog.DateLogged < endDate.AddDays(1)
+                );
+
+                // Sum of watts...
+                // Sum it all up
+                double totalWatts = 0;
+                foreach (var deviceLog in deviceLogs)
+                {
+                    totalWatts += deviceLog.DeviceEnergyUsage;
+                }
+
+                // If total watts has nothing, means there is no data logged.
+                // If no data is logged, we throw an exception to controller
+                if (totalWatts <= 0)
+                {
+                    throw new NoCarbonFootprintDataException();
+                }
+
+                // add it to database
+                CarbonFootprint carbonFootprintData = new CarbonFootprint
+                {
+                    AccountId = accountId,
+                    HouseholdConsumption = totalWatts / HOURS_PER_MONTH,
+                    NationalHouseholdConsumption = NATIONAL_HOUSEHOLD_CONSUMPTION_MONTH_WATTS,
+                    MonthOfAnalysis = dt.Month,
+                    YearOfAnalysis = dt.Year
+                };
+
+                try
+                {
+                    await _carbonFootprintRepository.AddAsync(carbonFootprintData);
+                }
+                catch (Exception ex)
+                {
+                    throw new DBInsertFailException();
+                }
+
+                // Add it to a list
+                result.Add(carbonFootprintData);
             }
 
-            // If total watts has nothing, means there is no data logged.
-            // If no data is logged, we throw an exception to controller
-            if (totalWatts <= 0)
-            {
-                throw new NoCarbonFootprintDataException();
-            }
-
-
-            // 4. add it to database
-            CarbonFootprint carbonFootprintData = new CarbonFootprint
-            {
-                AccountId = accountId,
-                HouseholdConsumption = totalWatts / HOURS_PER_MONTH,
-                NationalHouseholdConsumption = NATIONAL_HOUSEHOLD_CONSUMPTION_MONTH_WATTS,
-                MonthOfAnalysis = month,
-                YearOfAnalysis = year
-            };
-
-            try {
-                await _carbonFootprintRepository.AddAsync(carbonFootprintData);
-            }
-            catch (Exception ex)
-            {
-                throw new DBInsertFailException();
-            }
+            
 
             // 5. return to controller
             // Return to controller
-            return carbonFootprintData;
+            return result;
         }
 
+
+        private List<DateTime> GetPastSixMonths(int year, int month)
+        {
+            List<DateTime> result = new List<DateTime>();
+
+            DateTime now = new DateTime(year, month, 1);
+            for (int i = 0; i < 6; i++)
+            {
+                int dtYear = now.Year;
+                int dtMonth = now.Month - i;
+                if (dtMonth <= 0)
+                {
+                    dtMonth += 12;
+                    dtYear -= 1;
+                }
+
+                DateTime dateTime = new DateTime(dtYear, dtMonth, 1);
+                result.Add(dateTime);
+            }
+
+            return result;
+        }
     }
 }

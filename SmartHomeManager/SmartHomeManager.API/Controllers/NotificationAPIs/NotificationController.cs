@@ -19,8 +19,6 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
     [ApiController]
     public class NotificationController : Controller
     {
-
-
         private readonly AbstractDTOFactory _dtoFactory;
         private readonly ISendNotification _sendNotificationService;
         private readonly IReceiveNotification _receiveNotificationService;
