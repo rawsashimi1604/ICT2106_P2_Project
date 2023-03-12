@@ -19,6 +19,8 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Entities
         public double HouseholdConsumption { get; set; }
         [Required]
         public string MonthOfAnalysis { get; set; }
+        [Required]
+        public string YearOfAnalysis { get; set; }
         [ForeignKey("AccountId")]
         public Account Account { get; set; }
     }

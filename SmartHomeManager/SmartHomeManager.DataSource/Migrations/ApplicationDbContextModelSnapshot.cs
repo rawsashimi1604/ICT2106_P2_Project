@@ -154,6 +154,10 @@ namespace SmartHomeManager.DataSource.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("YearOfAnalysis")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.HasKey("CarbonFootprintId");
 
                     b.HasIndex("AccountId");

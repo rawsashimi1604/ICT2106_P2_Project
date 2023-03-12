@@ -157,7 +157,8 @@ namespace SmartHomeManager.DataSource.Migrations
                     CarbonFootprintId = table.Column<Guid>(type: "TEXT", nullable: false),
                     AccountId = table.Column<Guid>(type: "TEXT", nullable: false),
                     HouseholdConsumption = table.Column<double>(type: "REAL", nullable: false),
-                    MonthOfAnalysis = table.Column<string>(type: "TEXT", nullable: false)
+                    MonthOfAnalysis = table.Column<string>(type: "TEXT", nullable: false),
+                    YearOfAnalysis = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {

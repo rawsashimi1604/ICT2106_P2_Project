@@ -29,7 +29,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
         // According to the Energy Market Authority (EMA) of Singapore,
         // the average monthly electricity consumption per household in Singapore
         // is about 391 kilowatt-hours (kWh) as of 2021. 
-        private const int NATIONAL_HOUSEHOLD_CONSUMPTION_WATTS = 391000;
+        private const int NATIONAL_HOUSEHOLD_CONSUMPTION_MONTH_WATTS = 391000;
 
         public CarbonFootprintService(
             IGenericRepository<CarbonFootprint> carbonFootprintRepository, 
@@ -70,20 +70,37 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             // 1. Find which device belong to which account...
             //=> pass in account id and return all the device under that id
             IEnumerable<Device> devices = await _deviceService.GetAllDevicesByAccount(accountId);
-
-            //2. use reubin service to get all the logs by each device
+            
+            //2. use rubin service to get all the logs by each device
             IEnumerable<DeviceLog> deviceLogs = await _deviceLogService.GetAllDeviceLogAsync();
 
+            // Filter data to obtain data within month range eg 1-31st Jan same for year
+            DateTime startDate = new DateTime(year, month, 1, 0, 0, 0);
+            DateTime endDate;
+
+            // If its december, end date should be Jan of the following year
+            // If its not december, end date should be the following month 1st day.
+            endDate = month == 12 ? 
+                new DateTime(year + 1, 1, 1, 0, 0, 0) : 
+                new DateTime(year, month+1, 1, 0, 0, 0);
+
+            // Filter device logs by the specified date...
+            deviceLogs = deviceLogs.Where(deviceLog =>
+                deviceLog.DateLogged >= startDate && deviceLog.DateLogged < endDate.AddDays(1)
+            );
+
             // Sum of watts...
+            // Sum it all up
+            double totalWatts = 0;
             foreach (var deviceLog in deviceLogs)
             {
-                System.Diagnostics.Debug.WriteLine("CarbonFootprintService: " + deviceLog.LogId + ":" + deviceLog.DeviceEnergyUsage);
+                totalWatts += deviceLog.DeviceEnergyUsage;
             }
 
-            // Sum it all up
-            //1. Filter data to obtain data within month range eg 1-31st Jan same for year
-            //2. sum everything up for month 
-            //3. compare to the national household probs fix value
+            // 3. compare to the national household probs fix value
+
+
+
             //4. add it to database
             //5. return to controller
             // Compare it to the national

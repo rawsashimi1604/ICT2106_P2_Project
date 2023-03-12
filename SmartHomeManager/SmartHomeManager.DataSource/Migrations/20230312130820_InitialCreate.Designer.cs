@@ -11,7 +11,7 @@ using SmartHomeManager.DataSource;
 namespace SmartHomeManager.DataSource.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230215114542_InitialCreate")]
+    [Migration("20230312130820_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -154,6 +154,10 @@ namespace SmartHomeManager.DataSource.Migrations
                         .HasColumnType("REAL");
 
                     b.Property<string>("MonthOfAnalysis")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("YearOfAnalysis")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
