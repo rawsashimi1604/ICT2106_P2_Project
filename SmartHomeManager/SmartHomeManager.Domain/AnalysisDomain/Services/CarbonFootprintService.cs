@@ -19,12 +19,11 @@ using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
 
 namespace SmartHomeManager.Domain.AnalysisDomain.Services
 {
-    public class CarbonFootprintService
+    public class CarbonFootprintService : ICarbonFootprint
     {
 
         private readonly ICarbonFootprintRepository _carbonFootprintRepository;
         private readonly IDeviceInfoService _deviceLogService;
-        private readonly IAccountService _accountService;
         private readonly MockDeviceService _deviceService;
 
         // According to the Energy Market Authority (EMA) of Singapore,
@@ -35,33 +34,19 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
 
         public CarbonFootprintService(
             ICarbonFootprintRepository carbonFootprintRepository, 
-            IDeviceLogRepository deviceLogRepository, 
-            IAccountRepository accountRepository,
+            IDeviceLogRepository deviceLogRepository,
             IDeviceRepository deviceRepository
         )
         {
             _carbonFootprintRepository = carbonFootprintRepository;
             _deviceLogService = new DeviceLogReadService(deviceLogRepository);
-            _accountService = new AccountService(accountRepository);
             _deviceService = new MockDeviceService(deviceRepository);
         }
 
         public async Task<IEnumerable<CarbonFootprint>> GetCarbonFootprintAsync(Guid accountId, int month, int year)
         {
-            // Check if the data exist in database
-            // 1. Check if account exists
-            Account? account =  await _accountService.GetAccountByAccountId(accountId);
-            if (account == null)
-            {
-                throw new AccountNotFoundException();
-            }
-            // 2. Check if month and year input are valid eg no -ve
-            bool isMonthValid = month>=1 && month <= 12;
-            bool isYearValid = year >= 2000 && year <= DateTime.Now.Year;
-            if (!isMonthValid || !isYearValid)
-            {
-                throw new InvalidDateInputException();
-            }
+
+            //Data input such as accountexists and date validation has been implemented in proxy.
 
             //this is the flow where there is no data
             // Get all the usage data belonging to one accountId
@@ -70,24 +55,31 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             //=> pass in account id and return all the device under that id
             IEnumerable<Device> devices = await _deviceService.GetAllDevicesByAccount(accountId);
             
-            // use rubin service to get all the logs by each device
-            IEnumerable<DeviceLog> deviceLogs = await _deviceLogService.GetAllDeviceLogAsync();
+            
 
             // Get the data for the past 6 months...
             List<DateTime> months = GetPastSixMonths(year, month);
             List<CarbonFootprint> result = new List<CarbonFootprint>();
 
-            
+            foreach(DateTime dt in months)
+            {
+                System.Diagnostics.Debug.WriteLine(dt.Month + " " + dt.Year);
+            }
+
+
             // For each month, add the data to database and create a DTO, add the resulting DTO to a list and return it to the controller.
             foreach (DateTime dt in months)
             {
+                // use rubin service to get all the logs by each device
+                IEnumerable<DeviceLog> deviceLogs = await _deviceLogService.GetAllDeviceLogAsync();
+
 
                 // if the data alr exist, eg jan 2023 exist, return the data from database
-                var carbonFootprintCheck = await _carbonFootprintRepository.GetCarbonFootprintByMonthAndYear(month, year);
+                var carbonFootprintCheck = await _carbonFootprintRepository.GetCarbonFootprintByMonthAndYear(dt.Month, dt.Year);
                 if (carbonFootprintCheck != null)
                 {
                     result.Add(carbonFootprintCheck);
-                    break;
+                    continue;
                 }
 
                 // Filter data to obtain data within month range eg 1-31st Jan same for year
@@ -117,6 +109,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                 // If no data is logged, we throw an exception to controller
                 if (totalWatts <= 0)
                 {
+                    System.Diagnostics.Debug.WriteLine("NotFound: " + dt.Month + " " + dt.Year);
                     throw new NoCarbonFootprintDataException();
                 }
 
@@ -143,10 +136,14 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                 result.Add(carbonFootprintData);
             }
 
-            
-
             // 5. return to controller
             // Return to controller
+
+            foreach (var cf in result)
+            {
+                System.Diagnostics.Debug.WriteLine(cf.MonthOfAnalysis + " " + cf.YearOfAnalysis);
+            }
+
             return result;
         }
 

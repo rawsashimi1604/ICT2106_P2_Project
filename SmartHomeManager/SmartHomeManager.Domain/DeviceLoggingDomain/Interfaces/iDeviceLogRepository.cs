@@ -17,6 +17,7 @@ namespace SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces
         // bfe log repo have to state the methods needed from ds
         IEnumerable<DeviceLog> Get(Guid deviceId, DateTime date);
         IEnumerable<DeviceLog> Get(Guid deviceId, DateTime date, DateTime endTime);
+        Task<IEnumerable<DeviceLog>> GetAsync(Guid deviceId, DateTime date, DateTime endTime);
 
         Task<DeviceLog> GetByDate(DateTime date, Guid deviceId, bool deviceState);
 

@@ -310,53 +310,52 @@ namespace SmartHomeManager.DataSource
 
             Random rnd = new Random();
             var DeviceLogs = new List<DeviceLog>();
-            // years to seed: 2021, 2022
-            // months to seed: all
-            // days to seed:
 
-            foreach (var device in devices)
+            List<DateTime> pastTwelveMonths = GetPastTwelveMonths();
+
+            foreach(var dtMonth in pastTwelveMonths)
             {
-                System.Diagnostics.Debug.WriteLine("added to database");
-                for (int year = 2022; year < 2023; year++)
+                foreach (var device in devices)
                 {
+                    var year = dtMonth.Year;
+                    var month = dtMonth.Month;
+
                     // Use 3 months for now for dev purposes...
-                    for (int month = 1; month <= 2; month++)
+                    int numberOfDays = 0;
+
+                    if (month == 1) numberOfDays = 31;
+                    if (month == 2) numberOfDays = 28;
+                    if (month == 3) numberOfDays = 31;
+                    if (month == 4) numberOfDays = 30;
+                    if (month == 5) numberOfDays = 31;
+                    if (month == 6) numberOfDays = 30;
+                    if (month == 7) numberOfDays = 31;
+                    if (month == 8) numberOfDays = 31;
+                    if (month == 9) numberOfDays = 30;
+                    if (month == 10) numberOfDays = 31;
+                    if (month == 11) numberOfDays = 30;
+                    if (month == 12) numberOfDays = 31;
+
+                    for (int day = 1; day <= numberOfDays; day++)
                     {
-                        int numberOfDays = 0;
-
-                        if (month == 1) numberOfDays = 31;
-                        if (month == 2) numberOfDays = 28;
-                        if (month == 3) numberOfDays = 31;
-                        if (month == 4) numberOfDays = 30;
-                        if (month == 5) numberOfDays = 31;
-                        if (month == 6) numberOfDays = 30;
-                        if (month == 7) numberOfDays = 31;
-                        if (month == 8) numberOfDays = 31;
-                        if (month == 9) numberOfDays = 30;
-                        if (month == 10) numberOfDays = 31;
-                        if (month == 11) numberOfDays = 30;
-                        if (month == 12) numberOfDays = 31;
-
-                        for (int day = 1; day <= numberOfDays; day++)
+                        for (int hour = 0; hour < 24; hour++)
                         {
-                            for (int hour = 0; hour < 24; hour++)
+                            DeviceLogs.Add(new DeviceLog()
                             {
-                                DeviceLogs.Add(new DeviceLog()
-                                {
-                                    LogId = Guid.NewGuid(),
-                                    EndTime = DateTime.Parse($"{year}-{month.ToString("D2")}-{day.ToString("D2")} {hour}:00:00.0000000"),
-                                    DateLogged = DateTime.Parse($"{year}-{month.ToString("D2")}-{day.ToString("D2")} 00:00:00.0000000"),
-                                    DeviceEnergyUsage = (float)(rnd.NextDouble() + 0.5) * device.DeviceWatts,
-                                    DeviceActivity = 1,
-                                    DeviceState = false,
-                                    DeviceId = device.DeviceId,
-                                    RoomId = rooms[0].RoomId,
-                                });
-                            }
+                                LogId = Guid.NewGuid(),
+                                EndTime = DateTime.Parse($"{year}-{month.ToString("D2")}-{day.ToString("D2")} {hour}:00:00.0000000"),
+                                DateLogged = DateTime.Parse($"{year}-{month.ToString("D2")}-{day.ToString("D2")} 00:00:00.0000000"),
+                                DeviceEnergyUsage = (float)(rnd.NextDouble() + 0.5) * device.DeviceWatts,
+                                DeviceActivity = 1,
+                                DeviceState = false,
+                                DeviceId = device.DeviceId,
+                                RoomId = rooms[0].RoomId,
+                            });
                         }
                     }
                 }
             }
+            
 
 
             //for (int day = 13; day < 13 + 7; day++)
@@ -413,5 +412,30 @@ namespace SmartHomeManager.DataSource
             await context.DeviceProducts.AddRangeAsync(deviceProducts);
             await context.SaveChangesAsync();
         }
+
+        private static List<DateTime> GetPastTwelveMonths()
+        {
+            List<DateTime> result = new List<DateTime>();
+
+            DateTime now = DateTime.Now;
+            for (int i = 0; i < 12; i++)
+            {
+                int dtYear = now.Year;
+                int dtMonth = now.Month - i;
+                if (dtMonth <= 0)
+                {
+                    dtMonth += 12;
+                    dtYear -= 1;
+                }
+
+                DateTime dateTime = new DateTime(dtYear, dtMonth, 1);
+                result.Add(dateTime);
+            }
+
+            return result;
+        }
+
     }
+
+
 }

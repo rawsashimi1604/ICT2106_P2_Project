@@ -13,6 +13,7 @@
     <None Remove="AnalysisDomain\Files\" />
     <None Remove="itext7" />
     <None Remove="AnalysisDomain\Builders\" />
+    <None Remove="AnalysisDomain\Proxies\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SceneDomain\Services\" />
@@ -20,6 +21,7 @@
     <Folder Include="SceneDomain\Interfaces\" />
     <Folder Include="AnalysisDomain\Files\" />
     <Folder Include="AnalysisDomain\Builders\" />
+    <Folder Include="AnalysisDomain\Proxies\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="EnergyProfile\**" />

@@ -53,6 +53,7 @@ using ISendNotification = SmartHomeManager.Domain.NotificationDomain.Interfaces.
 using SmartHomeManager.Domain.NotificationDomain.Services;
 using SmartHomeManager.Domain.NotificationDomain.Proxies;
 using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
+using SmartHomeManager.Domain.AnalysisDomain.Services;
 
 namespace SmartHomeManager.API;
 
@@ -101,9 +102,7 @@ public class Program
         // DEVICELOG
         builder.Services.AddScoped<IDeviceLogRepository, DeviceLogRepository>();
         // builder.Services.AddScoped<IProfileService, ProfileRepositoryMock>();
-
-        // ANALYSIS
-        builder.Services.AddScoped<ICarbonFootprintRepository, CarbonFootprintRepository>();
+        
 
         // ROOM
         builder.Services.AddScoped<IRoomRepository, RoomRepository>();
@@ -134,6 +133,16 @@ public class Program
             var accountRepo = serviceProvider.GetRequiredService<IAccountRepository>();
             return new ReceiveNotificationProxy(service, accountRepo);
         });
+
+        // ANALYSIS
+        builder.Services.AddScoped<ICarbonFootprintRepository, CarbonFootprintRepository>();
+        builder.Services.AddScoped<CarbonFootprintService>();
+        builder.Services.AddScoped<ICarbonFootprint, CarbonFootprintProxy>(serviceProvider => {
+            var service = serviceProvider.GetRequiredService<CarbonFootprintService>();
+            var accountRepo = serviceProvider.GetRequiredService<IAccountRepository>();
+            return new CarbonFootprintProxy(service, accountRepo);
+        });
+
 
         #endregion DEPENDENCY INJECTIONS
 
