@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SmartHomeManager.Domain.DeviceDomain.Entities;
+using SmartHomeManager.Domain.DeviceLoggingDomain.Entities;
 using SmartHomeManager.Domain.DeviceLoggingDomain.Entities.DTO;
 using SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces;
 using SmartHomeManager.Domain.DeviceLoggingDomain.Mocks;
@@ -17,7 +18,7 @@ namespace SmartHomeManager.Domain.DeviceLoggingDomain.Services
     // get device log by date and time
     // get watts from devices
 
-    public class DeviceLogReadService
+    public class DeviceLogReadService : IDeviceInfoService
     {
         private readonly IDeviceLogRepository _deviceLogRepository;
         private readonly IProfileService _profileService;
@@ -100,6 +101,19 @@ namespace SmartHomeManager.Domain.DeviceLoggingDomain.Services
 
             }).ToList();
             return resp;
+        }
+
+        // Mocks for team5...
+        public async Task<IEnumerable<DeviceLog>> GetAllDeviceLogAsync()
+        {
+            var result = await _deviceLogRepository.GetAll();
+            return result;
+        }
+
+        public async Task<IEnumerable<DeviceLog>> GetDeviceLogByIdAsync(Guid deviceId)
+        {
+            var result = await _deviceLogRepository.GetAllByDeviceId(deviceId);
+            return result;
         }
     }
 }
