@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using SmartHomeManager.Domain.AnalysisDomain.Entities;
 using SmartHomeManager.Domain.Common;
+using SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces;
+using SmartHomeManager.Domain.DeviceLoggingDomain.Services;
 using SmartHomeManager.Domain.AccountDomain.Interfaces;
 using SmartHomeManager.Domain.AccountDomain.Services;
 using SmartHomeManager.Domain.AccountDomain.Entities;
@@ -16,13 +18,13 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
     {
 
         private readonly IGenericRepository<CarbonFootprint> _carbonFootprintRepository;
+        private readonly IDeviceInfoService _deviceLogService;
         private readonly IAccountService _accountService;
-       
 
-        public CarbonFootprintService(IGenericRepository<CarbonFootprint> carbonFootprintRepository, IAccountRepository accountRepository)
-    
+        public CarbonFootprintService(IGenericRepository<CarbonFootprint> carbonFootprintRepository, IDeviceLogRepository deviceLogRepository, IAccountRepository accountRepository)
         {
             _carbonFootprintRepository = carbonFootprintRepository;
+            _deviceLogService = new DeviceLogReadService(deviceLogRepository);
             _accountService = new AccountService(accountRepository);
         }
 
@@ -62,6 +64,14 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             // Compare it to the national
             // Add to the database
             // Return to controller
+
+            // Test the device log service...
+            var deviceLogs = await _deviceLogService.GetAllDeviceLogAsync();
+            
+            foreach (var deviceLog in deviceLogs)
+            {
+                System.Diagnostics.Debug.WriteLine("CarbonFootprintService: " + deviceLog.LogId + ":" + deviceLog.DeviceEnergyUsage);
+            }
 
             return "carbon footprint";
         }

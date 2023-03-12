@@ -14,6 +14,7 @@ using SmartHomeManager.Domain.DeviceDomain.Interfaces;
 using SmartHomeManager.Domain.DeviceDomain.Entities;
 using SmartHomeManager.Domain.AnalysisDomain.DTOs;
 using SmartHomeManager.Domain.Common.DTOs;
+using SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces;
 using SmartHomeManager.Domain.AccountDomain.Interfaces;
 using SmartHomeManager.Domain.Common.Exceptions;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -30,10 +31,14 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         private readonly AbstractDTOFactory _dtoFactory;
 
         // TODO: Create constructor to inject services...
-        public AnalysisController(IGenericRepository<CarbonFootprint> carbonFootprintRepository, IDeviceRepository deviceRepository,IAccountRepository accountRepository)
+        public AnalysisController(
+            IGenericRepository<CarbonFootprint> carbonFootprintRepository, 
+            IDeviceRepository deviceRepository, 
+            IDeviceLogRepository deviceLogRepository,
+            IAccountRepository accountRepository) 
         {
             _reportService = new(deviceRepository);
-            _carbonFootprintService = new (carbonFootprintRepository,accountRepository);
+            _carbonFootprintService = new (carbonFootprintRepository, deviceLogRepository, accountRepository);
             _dtoFactory = new AnalysisDTOFactory();
         }
 
