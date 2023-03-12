@@ -319,7 +319,8 @@ namespace SmartHomeManager.DataSource
                 System.Diagnostics.Debug.WriteLine("added to database");
                 for (int year = 2022; year < 2023; year++)
                 {
-                    for (int month = 1; month <= 12; month++)
+                    // Use 3 months for now for dev purposes...
+                    for (int month = 1; month <= 2; month++)
                     {
                         int numberOfDays = 0;
 
