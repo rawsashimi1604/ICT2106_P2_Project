@@ -1,4 +1,5 @@
 ﻿using System;
+using SmartHomeManager.Domain.AnalysisDomain.Entities;
 using SmartHomeManager.Domain.Common;
 using SmartHomeManager.Domain.Common.DTOs;
 using SmartHomeManager.Domain.DeviceDomain.Entities;
@@ -13,6 +14,9 @@ namespace SmartHomeManager.Domain.AnalysisDomain.DTOs
             {
                 case ResponseDTOType.DEVICE_GETBYACCOUNT:
                     return CreateGetDevicesDTO((IEnumerable<Device>)data, statusCode, statusMessage);
+
+                case ResponseDTOType.ANALYSIS_CARBONFOOTPRINT_GETBYACCOUNTMONTHYEAR:
+                    return CreateGetCarbonfootprintDTO((IEnumerable<CarbonFootprint>)data, statusCode, statusMessage);
 
                 default:
                     return null;
@@ -44,6 +48,40 @@ namespace SmartHomeManager.Domain.AnalysisDomain.DTOs
             return new GetDevicesDTO
             {
                 Data = getDevices,
+                Response = new ResponseInformation
+                {
+                    ServerMessage = statusMessage,
+                    StatusCode = statusCode
+                }
+            };
+        }
+
+        public GetCarbonFootprintDTO CreateGetCarbonfootprintDTO(
+            IEnumerable<CarbonFootprint> carbonFootprints,
+            int statusCode,
+            string statusMessage
+        )
+        {
+            List<GetCarbonFootprintDTOData> getCarbonFootprints = new List<GetCarbonFootprintDTOData>();
+            
+            if (carbonFootprints != null)
+            {
+                foreach (var carbonFootprint in carbonFootprints) {
+                    getCarbonFootprints.Add(new GetCarbonFootprintDTOData
+                    {
+                        CarbonFootprintId = carbonFootprint.CarbonFootprintId,
+                        AccountId= carbonFootprint.AccountId,
+                        HouseholdConsumption = carbonFootprint.HouseholdConsumption,
+                        NationalHouseholdConsumption = carbonFootprint.NationalHouseholdConsumption,
+                        MonthOfAnalysis = carbonFootprint.MonthOfAnalysis,
+                        YearOfAnalysis = carbonFootprint.YearOfAnalysis
+                    });
+                }
+            }
+
+            return new GetCarbonFootprintDTO
+            {
+                Data = getCarbonFootprints,
                 Response = new ResponseInformation
                 {
                     ServerMessage = statusMessage,

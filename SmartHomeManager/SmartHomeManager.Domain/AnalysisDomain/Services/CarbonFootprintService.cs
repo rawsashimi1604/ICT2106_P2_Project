@@ -88,6 +88,14 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                 totalWatts += deviceLog.DeviceEnergyUsage;
             }
 
+            // If total watts has nothing, means there is no data logged.
+            // If no data is logged, we throw an exception to controller
+            if (totalWatts <= 0)
+            {
+                throw new NoCarbonFootprintDataException();
+            }
+
+
             // 4. add it to database
             CarbonFootprint carbonFootprintData = new CarbonFootprint
             {
