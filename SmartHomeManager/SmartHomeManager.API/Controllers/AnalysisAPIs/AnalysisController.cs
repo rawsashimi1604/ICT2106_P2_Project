@@ -37,7 +37,7 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
             IDeviceLogRepository deviceLogRepository,
             IAccountRepository accountRepository) 
         {
-            _reportService = new(deviceRepository);
+            _reportService = new(deviceRepository,deviceLogRepository);
             _carbonFootprintService = new (carbonFootprintRepository, deviceLogRepository, accountRepository);
             _dtoFactory = new AnalysisDTOFactory();
         }

@@ -14,18 +14,22 @@ using SmartHomeManager.Domain.DeviceDomain.Entities;
 using SmartHomeManager.Domain.DeviceLoggingDomain.Entities;
 using SmartHomeManager.Domain.DeviceDomain.Interfaces;
 using SmartHomeManager.Domain.DeviceDomain.Services;
+using SmartHomeManager.Domain.DeviceLoggingDomain.Services;
+using SmartHomeManager.Domain.DeviceLoggingDomain.Mocks;
+using SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces;
 
 namespace SmartHomeManager.Domain.AnalysisDomain.Services
 {
     public class ReportService
     {
         private readonly MockDeviceService _mockDeviceService;
+        private readonly DeviceLogReadService _deviceLogReadService;
 
-        public ReportService(IDeviceRepository deviceRepository)
+        public ReportService(IDeviceRepository deviceRepository, IDeviceLogRepository deviceLogRepository)
         {
             _mockDeviceService = new(deviceRepository);
+            _deviceLogReadService = new(deviceLogRepository);
         }
-        
 
         public async Task<PdfFile> GetDeviceReport(Guid deviceId)
         {
@@ -37,8 +41,9 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
 
             // Get device
             Device? device = await _mockDeviceService.GetDeviceById(deviceId);
-            
+
             // Get device log
+            var deviceLog = await _deviceLogReadService.GetDeviceLogByIdAsync(deviceId);
 
             // TODO: Null check (validation) ...
 
@@ -47,7 +52,18 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             var pdfBuilder = new PdfBuilder(fileName, pdfDoc);
             pdfBuilder
                 .addDeviceDetails(device)
-                .addGeneratedTime();
+                .addDeviceLogHeader();
+
+            var totalUsage = 0.0;
+
+            foreach(var log in deviceLog)
+            {
+                pdfBuilder.addDeviceLogById(log);
+                totalUsage = totalUsage + log.DeviceEnergyUsage;
+            }
+
+           pdfBuilder.addDeviceLogTotalUsage(totalUsage)
+                        .addGeneratedTime();
            
             var fileBytes = pdfBuilder.Build();
 
