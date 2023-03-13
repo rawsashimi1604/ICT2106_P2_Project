@@ -20,7 +20,8 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
             _document = new Document(pdfDocument);
             _fileName = fileName;
         }
-
+//-----------------------------------------------------------------------------
+        // Builder to add details for the device
         public PdfBuilder addDeviceDetails(Device device)
         {
             // Add header of the report
@@ -33,7 +34,8 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
             _document.Add(new Paragraph("Device Details")
                 .SetBold()
                 .SetUnderline()
-                .SetTextAlignment(TextAlignment.LEFT));
+                .SetTextAlignment(TextAlignment.CENTER)
+                .SetFontSize(15));
 
             // Create a table for device
             float[] deviceTableWidths = { 150F, 300F };
@@ -69,7 +71,58 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
 
             return this;
         }
+//-----------------------------------------------------------------------------
+        // Builder to add the device log header
+        public PdfBuilder addDeviceLogHeader()
+        {
+            // Create header for device log table
+            _document.Add(new Paragraph("Device Log")
+                .SetBold()
+                .SetFontSize(15)
+                .SetUnderline()
+                .SetTextAlignment(TextAlignment.CENTER));
+            return this;
+        }
+//-----------------------------------------------------------------------------
+        // Builder to add the device total energy usage
+        public PdfBuilder addDeviceLogTotalUsage(double totalUsage)
+        {
+            _document.Add(new Paragraph($"Total Usage for Device : {totalUsage}")
+                .SetTextAlignment(TextAlignment.CENTER)
+                .SetBold()
+                .SetFontSize(15));
+            return this;
+        }
 
+//-----------------------------------------------------------------------------
+        // Builder to add the device log by the device id
+        public PdfBuilder addDeviceLogById(DeviceLog deviceLog)
+        {
+            _document.Add(new Paragraph($"Log {deviceLog.LogId}")
+                .SetTextAlignment(TextAlignment.LEFT)
+                .SetBold());
+
+            // Create a table for device log
+            float[] deviceLogTableWidth = { 150F, 300F };
+            Table deviceLogTable = new Table(deviceLogTableWidth);
+
+            // Add cells to the device log table
+            deviceLogTable.AddCell(new Cell().Add(new Paragraph("Date Logged")
+                .SetBold()));
+            deviceLogTable.AddCell(new Cell().Add(new Paragraph($"{deviceLog.DateLogged}")));
+            deviceLogTable.AddCell(new Cell().Add(new Paragraph("End Time")
+                .SetBold()));
+            deviceLogTable.AddCell(new Cell().Add(new Paragraph($"{deviceLog.EndTime}")));
+            deviceLogTable.AddCell(new Cell().Add(new Paragraph("Energy Usage")
+                .SetBold()));
+            deviceLogTable.AddCell(new Cell().Add(new Paragraph($"{deviceLog.DeviceEnergyUsage}")));
+
+            _document.Add(deviceLogTable);
+
+            return this;
+        }
+//-----------------------------------------------------------------------------
+        // Builder to add the devices
         public PdfBuilder addHouseholdDetails(Device device) {
 
             // Create header for device table
@@ -113,7 +166,8 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
 
             return this;
         }
-
+//-----------------------------------------------------------------------------
+        // Builder to add header for the household
         public PdfBuilder addHouseholdHeader(Guid accId)
         {
             _document.Add(new Paragraph($"Household Report For Account {accId}")
@@ -121,8 +175,18 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
                 .SetFontSize(20));
             return this;
         }
-
-
+//-----------------------------------------------------------------------------
+        //Builder to add total household energy usage
+        public PdfBuilder addTotalHouseUsage(double householdUsage)
+        {
+            _document.Add(new Paragraph($"Total household energy usage is {householdUsage}")
+                .SetTextAlignment(TextAlignment.CENTER).
+                SetBold()
+                .SetFontSize(15));
+            return this;
+        }
+//-----------------------------------------------------------------------------
+        // Builder to generated the current time 
         public PdfBuilder addGeneratedTime()
         {
             // create date time 
@@ -131,7 +195,8 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
                 .SetTextAlignment(TextAlignment.RIGHT));
             return this;
         }
-
+//-----------------------------------------------------------------------------
+        // Build the file
         public byte[] Build()
         {
             _document.Close();

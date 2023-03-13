@@ -29,11 +29,12 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         // TODO: Create constructor to inject services...
         public AnalysisController(
             IDeviceRepository deviceRepository, 
-            ICarbonFootprint carbonFootprint
+            ICarbonFootprint carbonFootprint,
+            IDeviceLogRepository deviceLogRepository
 
         ) 
         {
-            _reportService = new(deviceRepository);
+            _reportService = new(deviceRepository,deviceLogRepository);
             _carbonFootprintService = carbonFootprint;
           //  _carbonFootprintService = new (carbonFootprintRepository, deviceLogRepository, accountRepository, deviceRepository);
             _dtoFactory = new AnalysisDTOFactory();
