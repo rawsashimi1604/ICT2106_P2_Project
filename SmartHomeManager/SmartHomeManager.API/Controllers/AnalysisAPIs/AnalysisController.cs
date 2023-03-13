@@ -1,13 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SmartHomeManager.Domain.AnalysisDomain.Entities;
 using SmartHomeManager.Domain.AnalysisDomain.Services;
 using SmartHomeManager.Domain.Common;
-using Microsoft.AspNetCore.Hosting;
-using iText.Kernel.Pdf;
-using iText.Layout;
-using iText.Layout.Element;
-using iText.Layout.Properties;
 using SmartHomeManager.Domain.AnalysisDomain.Services;
 using SmartHomeManager.Domain.AnalysisDomain.Entities;
 using SmartHomeManager.Domain.DeviceDomain.Interfaces;
@@ -18,6 +12,7 @@ using SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces;
 using SmartHomeManager.Domain.AccountDomain.Interfaces;
 using SmartHomeManager.Domain.Common.Exceptions;
 using Microsoft.AspNetCore.Http.HttpResults;
+using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
 
 namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 {
@@ -27,18 +22,21 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
     {
         // TODO: Add private service variables
         private readonly ReportService _reportService;
-        private readonly CarbonFootprintService _carbonFootprintService;
+        private readonly ICarbonFootprint _carbonFootprintService;
         private readonly AbstractDTOFactory _dtoFactory;
+    
 
         // TODO: Create constructor to inject services...
         public AnalysisController(
-            IGenericRepository<CarbonFootprint> carbonFootprintRepository, 
             IDeviceRepository deviceRepository, 
-            IDeviceLogRepository deviceLogRepository,
-            IAccountRepository accountRepository) 
+            ICarbonFootprint carbonFootprint,
+            IDeviceLogRepository deviceLogRepository
+
+        ) 
         {
             _reportService = new(deviceRepository,deviceLogRepository);
-            _carbonFootprintService = new (carbonFootprintRepository, deviceLogRepository, accountRepository);
+            _carbonFootprintService = carbonFootprint;
+          //  _carbonFootprintService = new (carbonFootprintRepository, deviceLogRepository, accountRepository, deviceRepository);
             _dtoFactory = new AnalysisDTOFactory();
         }
 
@@ -89,24 +87,66 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         [Produces("application/json")]
         public async Task<IActionResult> GetCarbonFootprintData(Guid accountId,int month, int year)
         {
-            string result = null;
+            IEnumerable<CarbonFootprint> result = new List<CarbonFootprint>();
+
             try
             {
                 result = await _carbonFootprintService.GetCarbonFootprintAsync(accountId, month, year);
             }
             catch(AccountNotFoundException ex)
             {
-                return StatusCode(400, ex.Message);
+                return StatusCode(
+                    400,
+                    _dtoFactory.CreateResponseDTO(
+                        ResponseDTOType.ANALYSIS_CARBONFOOTPRINT_GETBYACCOUNTMONTHYEAR,
+                        result,
+                        400,
+                        ex.Message
+                    ));
             }
             catch (InvalidDateInputException ex)
             {
-                return StatusCode(400, ex.Message);
+                return StatusCode(
+                    400,
+                    _dtoFactory.CreateResponseDTO(
+                        ResponseDTOType.ANALYSIS_CARBONFOOTPRINT_GETBYACCOUNTMONTHYEAR,
+                        result,
+                        400,
+                        ex.Message
+                    ));
+            }
+            catch (NoCarbonFootprintDataException ex) 
+            {
+                return StatusCode(
+                    500,
+                    _dtoFactory.CreateResponseDTO(
+                        ResponseDTOType.ANALYSIS_CARBONFOOTPRINT_GETBYACCOUNTMONTHYEAR,
+                        result,
+                        500,
+                        ex.Message
+                    ));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(
+                    500,
+                    _dtoFactory.CreateResponseDTO(
+                        ResponseDTOType.ANALYSIS_CARBONFOOTPRINT_GETBYACCOUNTMONTHYEAR,
+                        result,
+                        500,
+                        ex.Message
+                    ));
             }
-            return StatusCode(200, result);
+
+            return StatusCode(
+                200, 
+                _dtoFactory.CreateResponseDTO(
+                    ResponseDTOType.ANALYSIS_CARBONFOOTPRINT_GETBYACCOUNTMONTHYEAR,
+                    result,
+                    200,
+                    "Success"
+                )
+            );
         } 
     }
 }
