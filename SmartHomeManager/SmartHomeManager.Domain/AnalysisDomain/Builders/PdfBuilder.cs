@@ -90,7 +90,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
             _document.Add(new Paragraph($"Total Usage for Device : {totalUsage}")
                 .SetTextAlignment(TextAlignment.CENTER)
                 .SetBold()
-                .SetFontSize(20));
+                .SetFontSize(15));
             return this;
         }
 
@@ -173,6 +173,16 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
             _document.Add(new Paragraph($"Household Report For Account {accId}")
                 .SetBold()
                 .SetFontSize(20));
+            return this;
+        }
+//-----------------------------------------------------------------------------
+        //Builder to add total household energy usage
+        public PdfBuilder addTotalHouseUsage(double householdUsage)
+        {
+            _document.Add(new Paragraph($"Total household energy usage is {householdUsage}")
+                .SetTextAlignment(TextAlignment.CENTER).
+                SetBold()
+                .SetFontSize(15));
             return this;
         }
 //-----------------------------------------------------------------------------

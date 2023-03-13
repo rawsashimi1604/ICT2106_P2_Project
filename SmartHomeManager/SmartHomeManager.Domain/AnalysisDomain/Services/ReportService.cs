@@ -45,9 +45,6 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             // Get device log
             var deviceLog = await _deviceLogReadService.GetDeviceLogByIdAsync(deviceId);
 
-            // TODO: Null check (validation) ...
-
-
             // Retrieve fileBytes using pdfBuilder
             var pdfBuilder = new PdfBuilder(fileName, pdfDoc);
             pdfBuilder
@@ -86,13 +83,26 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             pdfBuilder
                 .addHouseholdHeader(accountId);
 
+            var totalHouseholdUsage = 0.0;
+
             foreach (var device in deviceList)
             {
+                var totalDeviceUsage = 0.0;
                 pdfBuilder
-                    .addHouseholdDetails(device);
+                    .addHouseholdDetails(device)
+                    .addDeviceLogHeader();
+                // Get device log
+                var deviceLog = await _deviceLogReadService.GetDeviceLogByIdAsync(device.DeviceId);
+                foreach(var log in deviceLog)
+                {
+                    pdfBuilder.addDeviceLogById(log);
+                    totalDeviceUsage = totalDeviceUsage + log.DeviceEnergyUsage;  
+                }
+                pdfBuilder.addDeviceLogTotalUsage(totalDeviceUsage);
+                totalHouseholdUsage = totalHouseholdUsage + totalDeviceUsage;
             }
-
-            pdfBuilder.addGeneratedTime();
+            pdfBuilder.addTotalHouseUsage(totalHouseholdUsage)
+                      .addGeneratedTime();
 
             var filebytes = pdfBuilder.Build();
 
