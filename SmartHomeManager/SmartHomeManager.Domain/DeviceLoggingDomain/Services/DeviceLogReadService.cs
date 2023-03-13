@@ -115,5 +115,11 @@ namespace SmartHomeManager.Domain.DeviceLoggingDomain.Services
             var result = await _deviceLogRepository.GetAsync(deviceId, start, end);
             return result;
         }
+
+        public async Task<IEnumerable<DeviceLog>> GetDeviceLogByIdAsync(Guid deviceId)
+        {
+            var result = await _deviceLogRepository.GetAllByDeviceId(deviceId);
+            return result;
+        }
     }
 }
