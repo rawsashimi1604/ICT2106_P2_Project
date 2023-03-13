@@ -98,26 +98,28 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
         // Builder to add the device log by the device id
         public PdfBuilder addDeviceLogById(DeviceLog deviceLog)
         {
-            _document.Add(new Paragraph($"Log {deviceLog.LogId}")
-                .SetTextAlignment(TextAlignment.LEFT)
-                .SetBold());
+            //_document.Add(new Paragraph($"Log {deviceLog.LogId}")
+            //    .SetTextAlignment(TextAlignment.LEFT)
+            //    .SetBold());
 
-            // Create a table for device log
-            float[] deviceLogTableWidth = { 150F, 300F };
-            Table deviceLogTable = new Table(deviceLogTableWidth);
+            _document.Add(new Paragraph($"Date: {deviceLog.DateLogged}, End Time: {deviceLog.EndTime} \n Energy Usage: {deviceLog.DeviceEnergyUsage}"));
 
-            // Add cells to the device log table
-            deviceLogTable.AddCell(new Cell().Add(new Paragraph("Date Logged")
-                .SetBold()));
-            deviceLogTable.AddCell(new Cell().Add(new Paragraph($"{deviceLog.DateLogged}")));
-            deviceLogTable.AddCell(new Cell().Add(new Paragraph("End Time")
-                .SetBold()));
-            deviceLogTable.AddCell(new Cell().Add(new Paragraph($"{deviceLog.EndTime}")));
-            deviceLogTable.AddCell(new Cell().Add(new Paragraph("Energy Usage")
-                .SetBold()));
-            deviceLogTable.AddCell(new Cell().Add(new Paragraph($"{deviceLog.DeviceEnergyUsage}")));
+            //// Create a table for device log
+            //float[] deviceLogTableWidth = { 150F, 300F };
+            //Table deviceLogTable = new Table(deviceLogTableWidth);
 
-            _document.Add(deviceLogTable);
+            //// Add cells to the device log table
+            //deviceLogTable.AddCell(new Cell().Add(new Paragraph("Date Logged")
+            //    .SetBold()));
+            //deviceLogTable.AddCell(new Cell().Add(new Paragraph($"{deviceLog.DateLogged}")));
+            //deviceLogTable.AddCell(new Cell().Add(new Paragraph("End Time")
+            //    .SetBold()));
+            //deviceLogTable.AddCell(new Cell().Add(new Paragraph($"{deviceLog.EndTime}")));
+            //deviceLogTable.AddCell(new Cell().Add(new Paragraph("Energy Usage")
+            //    .SetBold()));
+            //deviceLogTable.AddCell(new Cell().Add(new Paragraph($"{deviceLog.DeviceEnergyUsage}")));
+
+            //_document.Add(deviceLogTable);
 
             return this;
         }
