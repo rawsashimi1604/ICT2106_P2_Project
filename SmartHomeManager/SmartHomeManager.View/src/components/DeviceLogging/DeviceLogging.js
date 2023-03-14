@@ -37,13 +37,8 @@ function DeviceLogging() {
     useEffect(() => {
         const fetchDeviceID = async () => {
             try {
-                const res = await fetch('https://localhost:7140/api/DeviceLog/{22222222-2222-2222-2222-222222222222}', {
-                    method: 'GET',
-                    headers: {
-                        accept: 'text/plain',
-                    },
-                })
-                const data = await res.json()
+                const res = await axios.get(`https://localhost:7140/api/DeviceLog/{22222222-2222-2222-2222-222222222222}`)
+                const data = await res.data
                 setAllDevice1ID(data)
             } catch (error) {
                 console.error(error)

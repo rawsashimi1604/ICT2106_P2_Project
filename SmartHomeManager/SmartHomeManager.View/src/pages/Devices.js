@@ -1,10 +1,10 @@
 import React from "react";
-import DeviceLogging from "components/DeviceLogging/DeviceLogging";
+import DeviceLogTab from "components/DeviceLogging/DeviceLogTab";
 function Devices() {
     return (
-        <div className="container mt-3">
-            <DeviceLogging />
-        </div>
+        <>
+            <DeviceLogTab/>
+        </>
     );
 }
 export default Devices;

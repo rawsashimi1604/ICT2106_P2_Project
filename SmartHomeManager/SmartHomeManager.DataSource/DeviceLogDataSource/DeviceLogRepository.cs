@@ -47,7 +47,7 @@ namespace SmartHomeManager.DataSource.DeviceLogDataSource
         // there should only be 1 device log where device state is True everyday
         public async Task<DeviceLog?> Get(DateTime date, Guid deviceId, bool deviceState)
         {
-            var result = await _dbSet.FindAsync(date, deviceId, deviceState);
+            var result = await _dbSet.FindAsync(deviceId);
             return result;
         }
 
@@ -63,11 +63,14 @@ namespace SmartHomeManager.DataSource.DeviceLogDataSource
             return query;
         }
 
-        public async Task<DeviceLog> GetByDate(DateTime date, Guid deviceId, bool deviceState)
+        public async Task<IEnumerable<DeviceLog>> GetByDate(DateTime date, Guid deviceId, bool deviceState)
         {
-            var result = await _dbSet.FindAsync(date, deviceId, deviceState);
+            var allLogs = await _db.DeviceLogs.ToListAsync();
+            IEnumerable<DeviceLog> result = allLogs.Where(log => log.DeviceId == deviceId && log.DateLogged.Date == date && log.DeviceState == deviceState);
+
             return result;
         }
+
 
         public async Task SaveChangesAsync()
         {

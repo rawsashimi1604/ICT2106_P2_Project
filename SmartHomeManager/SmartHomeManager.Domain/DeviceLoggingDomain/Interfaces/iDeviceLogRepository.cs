@@ -18,7 +18,7 @@ namespace SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces
         IEnumerable<DeviceLog> Get(Guid deviceId, DateTime date);
         IEnumerable<DeviceLog> Get(Guid deviceId, DateTime date, DateTime endTime);
 
-        Task<DeviceLog> GetByDate(DateTime date, Guid deviceId, bool deviceState);
+        Task<IEnumerable<DeviceLog>> GetByDate(DateTime date, Guid deviceId, bool deviceState);
 
         Task<IEnumerable<DeviceLog>> GetAll();
 

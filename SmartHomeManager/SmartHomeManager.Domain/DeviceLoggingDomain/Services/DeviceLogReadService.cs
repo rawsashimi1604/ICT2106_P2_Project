@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SmartHomeManager.Domain.DeviceDomain.Entities;
+using SmartHomeManager.Domain.DeviceLoggingDomain.Entities;
 using SmartHomeManager.Domain.DeviceLoggingDomain.Entities.DTO;
 using SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces;
 using SmartHomeManager.Domain.DeviceLoggingDomain.Mocks;
@@ -55,24 +56,13 @@ namespace SmartHomeManager.Domain.DeviceLoggingDomain.Services
         }
 
         // look for logs (to update)
-        public async Task<GetDeviceLogWebRequest> GetDeviceLogByDate(DateTime date, Guid deviceId, bool deviceState)
+        public async Task<IEnumerable<DeviceLog>> GetDeviceLogByDate(DateTime date, Guid deviceId, bool deviceState)
         {
-            var res = await _deviceLogRepository.GetByDate(date.Date, deviceId, deviceState);
-            if (res == null) return null;
-
-            var ret = new GetDeviceLogWebRequest
-            {
-                EndTime = res.EndTime,
-                DateLogged = res.DateLogged,
-                DeviceEnergyUsage = (int)res.DeviceEnergyUsage,
-                DeviceActivity = (int)res.DeviceActivity,
-                DeviceState = res.DeviceState
-            };
-
-            return ret;
+            var res = await _deviceLogRepository.GetByDate(date, deviceId, deviceState);
             
-
+            return res;
         }
+
         // using this i already can get by week and day. 
         public IEnumerable<GetDeviceLogWebRequest> GetDeviceLogByDateAndTime(Guid deviceId, DateTime date, DateTime endTime)
         {

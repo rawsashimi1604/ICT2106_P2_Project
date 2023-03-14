@@ -46,17 +46,6 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
         }
 
 
-        /*        // PUT: api/DeviceLogs/5
-                // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-                [HttpPut("{id}")]
-                public async Task<IActionResult<GetDeviceLogWebRequest> GetDeviceLog(DateTime date, DateTime startTime, DateTime endTime)
-                {
-                     var result = await _logReadService.GetDeviceLogByDateAndTime(date, startTime, endTime);
-                     if (result == null) return NotFound();
-                     return result; 
-                }
-        */
-
         // get log by their date, start time,end time, device id.
         // once found log bring out their device watt usage
 
@@ -87,8 +76,9 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
             if (!result.Any()) return NotFound();
             return Ok(result);
         }
-            // date passed shld be start date of the week
-            // GET: api/Analytics/DeviceLog/deviceId?date=xxxxxx
+
+        // date passed shld be start date of the week
+        // GET: api/Analytics/DeviceLog/deviceId?date=xxxxxx
         [HttpGet("{deviceId}/{date}")]
         [Consumes("application/json")]
         [Produces("application/json")]
@@ -112,39 +102,42 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
         // this is update from switching off device
         // PUT: api/DeviceLogs/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutDeviceLog(DateTime date, Guid deviceId, EditDeviceLogWebRequest deviceLogWebRequest)
+        [HttpPut("stateOff/{deviceId}/{date}")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public async Task<IActionResult> PutDeviceLog(DateTime date, Guid deviceId)
         {
             var res = await _logReadService.GetDeviceLogByDate(date, deviceId, true);
+                
 
-            if (res == null) return BadRequest();
-
-            var endTime = DateTime.Now;
-            var startTime = deviceLogWebRequest.DateLogged.TimeOfDay.TotalSeconds;
-            var deviceUsage = deviceLogWebRequest.DeviceActivity;
-            var deviceActivity = deviceLogWebRequest.DeviceEnergyUsage;
-            var deviceWatt = getDeviceWatts(deviceId);
-            // calculating new usage and activity
-            var timeDifference = (endTime.TimeOfDay.TotalSeconds - startTime)/3600;
-            var totalWatts = timeDifference * deviceWatt;
             
-   
-            await _logWriteService.UpdateDeviceLog(deviceId, timeDifference, totalWatts, endTime, false);
+                foreach (var item in res)
+                {
+                    var endTime = DateTime.Now;
+                    var startTime = item.DateLogged.TimeOfDay.TotalSeconds;
+                    var deviceWatt =  getDeviceWatts(deviceId);
+                    // calculating new usage and activity
+                    var timeDifference = (endTime.TimeOfDay.TotalSeconds - startTime) / 3600;
+                    var totalWatts = deviceWatt * timeDifference;
 
-            return NoContent();
+                    await _logWriteService.UpdateDeviceLog(date,item.DeviceId, timeDifference, totalWatts, endTime, false);
+                }
 
+            res = await _logReadService.GetDeviceLogByDate(date, deviceId, true);
+            return Ok(res);
         }
 
 
-/*        // GET: api/Analytics/GetDevicesInProfile/profileId
-        [HttpGet("GetDevicesInProfile/{profileId}")]
-        public ActionResult<IEnumerable<Device>> GetDevicesFromProfile(Guid profileId)
-        {
-            var result = _logReadService.GetAllDevicesInProfile(profileId);
-            if (!result.Any()) return NotFound();
 
-            return Ok(result);
-        }*/
+        /*        // GET: api/Analytics/GetDevicesInProfile/profileId
+                [HttpGet("GetDevicesInProfile/{profileId}")]
+                public ActionResult<IEnumerable<Device>> GetDevicesFromProfile(Guid profileId)
+                {
+                    var result = _logReadService.GetAllDevicesInProfile(profileId);
+                    if (!result.Any()) return NotFound();
+
+                    return Ok(result);
+                }*/
 
 
         // POST: api/DeviceLogs
