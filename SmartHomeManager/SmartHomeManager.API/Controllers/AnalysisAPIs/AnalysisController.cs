@@ -68,7 +68,7 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         }
 
         [HttpGet("/householdReport/energyUsageForecast/{accountId}")]
-        [Produces("application/json")]
+        //[Produces("application/json")]
         public async Task<IActionResult> GetHouseholdForecast(Guid accountId)
         {
 
@@ -101,22 +101,22 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
                 });
             }
 
-            return StatusCode(200, "Success");
+            return (IActionResult)getForecastChart;
         }
 
-        [HttpGet("{accountId}")]
+        [HttpGet("/householdReport/energyUsageForecastData/{forecastID}")]
         [Produces("application/json")]
-        public async Task<IActionResult> GetHouseholdForecastData(Guid accountId)
+        public async Task<IActionResult> GetHouseholdForecastData(Guid forecastChartId)
         {
 
-            List<ForecastChartDataObjectDTO> getForecastChart = new List<ForecastChartDataObjectDTO>();
+            List<ForecastChartDataObjectDTO> getForecastChartData = new List<ForecastChartDataObjectDTO>();
 
             // Use the service here...
             IEnumerable<ForecastChartData> forecastChartDatas;
 
             try
             {
-                forecastChartDatas = await _forecastService.GetHouseHoldForcastData(accountId);
+                forecastChartDatas = await _forecastService.GetHouseHoldForcastData(forecastChartId);
             }
             catch (AccountNotFoundException ex)
             {
@@ -129,7 +129,7 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 
             foreach (var forecastChartData in forecastChartDatas)
             {
-                getForecastChart.Add(new ForecastChartDataObjectDTO
+                getForecastChartData.Add(new ForecastChartDataObjectDTO
                 {
                     ForecastChartDataId = forecastChartData.ForecastChartDataId,
                     ForcastChartId = forecastChartData.ForecastChartId,
@@ -140,7 +140,7 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
                 });
             }
 
-            return StatusCode(200, "Success");
+            return (IActionResult)getForecastChartData;
         }
     }
 }
