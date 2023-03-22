@@ -6,10 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SmartHomeManager.Domain.AccountDomain.Entities;
+using SmartHomeManager.Domain.Common;
 
 namespace SmartHomeManager.Domain.AnalysisDomain.Entities
 {
-    public class CarbonFootprint
+    public class CarbonFootprint : IEntity
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid CarbonFootprintId { get; set; }
@@ -18,7 +19,11 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Entities
         [Required]
         public double HouseholdConsumption { get; set; }
         [Required]
-        public string MonthOfAnalysis { get; set; }
+        public double NationalHouseholdConsumption { get; set; }
+        [Required]
+        public int MonthOfAnalysis { get; set; }
+        [Required]
+        public int YearOfAnalysis { get; set; }
         [ForeignKey("AccountId")]
         public Account Account { get; set; }
     }

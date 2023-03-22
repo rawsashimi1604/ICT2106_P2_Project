@@ -150,9 +150,14 @@ namespace SmartHomeManager.DataSource.Migrations
                     b.Property<double>("HouseholdConsumption")
                         .HasColumnType("REAL");
 
-                    b.Property<string>("MonthOfAnalysis")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("MonthOfAnalysis")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("NationalHouseholdConsumption")
+                        .HasColumnType("REAL");
+
+                    b.Property<int>("YearOfAnalysis")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("CarbonFootprintId");
 
