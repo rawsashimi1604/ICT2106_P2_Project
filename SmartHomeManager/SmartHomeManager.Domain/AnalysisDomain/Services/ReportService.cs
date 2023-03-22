@@ -8,59 +8,115 @@ using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using SmartHomeManager.Domain.AnalysisDomain.Builders;
 using SmartHomeManager.Domain.AnalysisDomain.Entities;
 using SmartHomeManager.Domain.DeviceDomain.Entities;
+using SmartHomeManager.Domain.DeviceLoggingDomain.Entities;
 using SmartHomeManager.Domain.DeviceDomain.Interfaces;
 using SmartHomeManager.Domain.DeviceDomain.Services;
+using SmartHomeManager.Domain.DeviceLoggingDomain.Services;
+using SmartHomeManager.Domain.DeviceLoggingDomain.Mocks;
+using SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces;
 
 namespace SmartHomeManager.Domain.AnalysisDomain.Services
 {
     public class ReportService
     {
         private readonly MockDeviceService _mockDeviceService;
+        private readonly DeviceLogReadService _deviceLogReadService;
 
-        public ReportService(IDeviceRepository deviceRepository)
+        public ReportService(IDeviceRepository deviceRepository, IDeviceLogRepository deviceLogRepository)
         {
             _mockDeviceService = new(deviceRepository);
+            _deviceLogReadService = new(deviceLogRepository);
         }
-        
 
-        public async Task<PdfFile> GetDeviceReport()
+        public async Task<PdfFile> GetDeviceReport(Guid deviceId)
         {
-            Guid tempDeviceId = Guid.Parse("33333333-3333-3333-3333-333333333333");
-            string fileName = "testing.pdf";
+            string fileName = "device.pdf";
 
             // Create a new PDF document
             PdfDocument pdfDoc = new PdfDocument(new PdfWriter("../SmartHomeManager.Domain/AnalysisDomain/Files/" + fileName));
             iText.Layout.Document doc = new iText.Layout.Document(pdfDoc);
 
-            // Get all devices
-            Device? device = await _mockDeviceService.GetDeviceById(tempDeviceId);
-            // TODO: Null check (validation) ...
+            // Get device
+            Device? device = await _mockDeviceService.GetDeviceById(deviceId);
+
+            // Get device log
+            var deviceLog = await _deviceLogReadService.GetDeviceLogByIdAsync(deviceId);
+
+            // Retrieve fileBytes using pdfBuilder
+            var pdfBuilder = new PdfBuilder(fileName, pdfDoc);
+            pdfBuilder
+                .addDeviceDetails(device)
+                .addDeviceLogHeader();
+
+            var totalUsage = 0.0;
+
+            foreach(var log in deviceLog)
+            {
+                pdfBuilder.addDeviceLogById(log);
+                totalUsage = totalUsage + log.DeviceEnergyUsage;
+            }
+
+           pdfBuilder.addDeviceLogTotalUsage(totalUsage)
+                        .addGeneratedTime();
+           
+            var fileBytes = pdfBuilder.Build();
 
 
-            // Add content to the PDF document
-            Paragraph p1 = new Paragraph("Hello, World!").SetTextAlignment(TextAlignment.CENTER);
-            doc.Add(p1);
-
-            // Add device id and name to pdf document
-            Paragraph paragraph = new Paragraph($"{device.DeviceId} {device.DeviceName}")
-                .SetTextAlignment(TextAlignment.CENTER);
-            doc.Add(paragraph);
-
-
-            // Save the PDF document
-            doc.Close();
-
-            string filePath = "../SmartHomeManager.Domain/AnalysisDomain/Files/" + fileName;
-            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
-
-            return new PdfFile(fileBytes, "application/force-download", fileName);
+            return new PdfFile(fileBytes, "application/force-download", fileName);  
         }
 
-        public void GetHouseholdReport()
+        public async Task <PdfFile> GetHouseholdReport(Guid accountId)
         {
-            throw new NotImplementedException();
+           
+            string fileName = "household.pdf";
+
+            PdfDocument pdfDoc = new PdfDocument(new PdfWriter("../SmartHomeManager.Domain/AnalysisDomain/Files/" + fileName));
+            iText.Layout.Document doc = new iText.Layout.Document(pdfDoc);
+
+            IEnumerable<Device> deviceList = await _mockDeviceService.GetAllDevicesByAccount(accountId);
+
+            var pdfBuilder = new PdfBuilder(fileName, pdfDoc);
+
+            pdfBuilder
+                .addHouseholdHeader(accountId);
+
+            var totalHouseholdUsage = 0.0;
+
+            foreach (var device in deviceList)
+            {
+                var totalDeviceUsage = 0.0;
+                pdfBuilder
+                    .addHouseholdDetails(device)
+                    .addDeviceLogHeader();
+                // Get device log
+                var deviceLog = await _deviceLogReadService.GetDeviceLogByIdAsync(device.DeviceId);
+                foreach(var log in deviceLog)
+                {
+                    pdfBuilder.addDeviceLogById(log);
+                    totalDeviceUsage = totalDeviceUsage + log.DeviceEnergyUsage;  
+                }
+                pdfBuilder.addDeviceLogTotalUsage(totalDeviceUsage);
+                totalHouseholdUsage = totalHouseholdUsage + totalDeviceUsage;
+            }
+            pdfBuilder.addTotalHouseUsage(totalHouseholdUsage)
+                      .addGeneratedTime();
+
+            var filebytes = pdfBuilder.Build();
+
+            return new PdfFile(filebytes, "application/force-download", fileName);
+        }
+
+        public async Task<IEnumerable<Device>?> GetDevicesByGUID(Guid accountId)
+        {
+
+            IEnumerable<Device> deviceList = await _mockDeviceService.GetAllDevicesByAccount(accountId);
+
+            return deviceList;
+
+
         }
     }
 }

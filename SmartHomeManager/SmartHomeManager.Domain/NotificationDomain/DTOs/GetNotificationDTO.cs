@@ -1,13 +1,17 @@
-﻿namespace SmartHomeManager.API.Controllers.NotificationAPIs.ViewModels
+﻿using System.Runtime.InteropServices.ComTypes;
+using SmartHomeManager.Domain.Common.DTOs;
+
+namespace SmartHomeManager.API.Controllers.NotificationAPIs.DTOs
 {
-    public class GetNotificationDTO
+
+    public class GetNotificationDTO : ResponseDTO
     {
-        public List<GetNotificationObjectDTO> NotificationObjects { get; set; }
-        public ResponseObjectDTO ResponseObject { get; set; }
+        
+        public ResponseInformation Response { get; set; }
+        public IEnumerable<GetNotificationDTOData> Data { get; set; }
     }
 
-
-    public class GetNotificationObjectDTO
+    public class GetNotificationDTOData : IDTOData
     {
         public Guid NotificationId { get; set; }
         public Guid AccountId { get; set; }

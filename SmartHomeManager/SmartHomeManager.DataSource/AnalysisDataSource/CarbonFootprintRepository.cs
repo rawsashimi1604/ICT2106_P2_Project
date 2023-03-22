@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SmartHomeManager.Domain.AccountDomain.Entities;
 using SmartHomeManager.Domain.AnalysisDomain.Entities;
+using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
 using SmartHomeManager.Domain.Common;
 using System;
 using System.Collections.Generic;
@@ -9,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SmartHomeManager.DataSource.AnalysisDataSource
 {
-    public class CarbonFootprintRepository : IGenericRepository<CarbonFootprint>
+    public class CarbonFootprintRepository : ICarbonFootprintRepository
     {
 
         private readonly ApplicationDbContext _applicationDbContext;
@@ -94,7 +96,7 @@ namespace SmartHomeManager.DataSource.AnalysisDataSource
             }
         }
 
-            public Task<bool> UpdateAsync(CarbonFootprint entity)
+        public Task<bool> UpdateAsync(CarbonFootprint entity)
         {
             try
             {
@@ -105,6 +107,16 @@ namespace SmartHomeManager.DataSource.AnalysisDataSource
             {
                 return Task.FromResult(false);
             }
+        }
+
+        public async Task<CarbonFootprint?> GetCarbonFootprintByMonthAndYear(int month, int year)
+        {
+            CarbonFootprint? data = await _applicationDbContext
+                .CarbonFootprints
+                .Where(cf => cf.YearOfAnalysis == year && cf.MonthOfAnalysis == month)
+                .FirstOrDefaultAsync();
+
+            return data;
         }
     }
 }
