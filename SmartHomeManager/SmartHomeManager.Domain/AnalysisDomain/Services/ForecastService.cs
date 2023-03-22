@@ -38,7 +38,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                 System.Diagnostics.Debug.WriteLine("Account not found");
                 return allForecastChart;
             }
-            allForecastChart = await _forecastRepository.GetAllByIdAsync(accountid);
+            allForecastChart = (IEnumerable<ForecastChart>?)await _forecastRepository.GetAllByIdAsync(accountid);
 
             return allForecastChart;
         }

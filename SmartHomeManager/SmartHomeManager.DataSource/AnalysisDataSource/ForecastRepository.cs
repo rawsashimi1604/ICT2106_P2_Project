@@ -118,6 +118,9 @@ namespace SmartHomeManager.DataSource.AnalysisDataSource
             }
         }
 
-
+        Task<IEnumerable<Notification>> IForecastRepository.GetAllByIdAsync(Guid id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

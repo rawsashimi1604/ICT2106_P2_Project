@@ -5,13 +5,13 @@ using SmartHomeManager.Domain.Common;
 using SmartHomeManager.Domain.AnalysisDomain.Services;
 using SmartHomeManager.Domain.AnalysisDomain.Entities;
 using SmartHomeManager.Domain.DeviceDomain.Interfaces;
-<<<<<<< HEAD
+
 using SmartHomeManager.Domain.Common.Exceptions;
 using SmartHomeManager.Domain.AnalysisDomain.DTOs;
 using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
 using Microsoft.Identity.Client;
 using SmartHomeManager.Domain.AccountDomain.Interfaces;
-=======
+
 using SmartHomeManager.Domain.DeviceDomain.Entities;
 using SmartHomeManager.Domain.AnalysisDomain.DTOs;
 using SmartHomeManager.Domain.Common.DTOs;
@@ -20,7 +20,6 @@ using SmartHomeManager.Domain.AccountDomain.Interfaces;
 using SmartHomeManager.Domain.Common.Exceptions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
->>>>>>> adec9c1cbe02521a89f69c120c2a73647cc66c6c
 
 namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 {
@@ -30,36 +29,30 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
     {
         // TODO: Add private service variables
         private readonly ReportService _reportService;
-<<<<<<< HEAD
-        private readonly CarbonFootprintService _carbonFootprintService;
+
+        
         private readonly ForecastService _forecastService;
-
-
-        // TODO: Create constructor to inject services...
-        public AnalysisController(IGenericRepository<CarbonFootprint> carbonFootprintRepository, IDeviceRepository deviceRepository, IForecastRepository forecastRepository, IAccountRepository accountRepository)
-        {
-            _reportService = new(deviceRepository);
-            _carbonFootprintService = new(carbonFootprintRepository);
-            _forecastService = new(forecastRepository, accountRepository);
-=======
         private readonly ICarbonFootprint _carbonFootprintService;
         private readonly AbstractDTOFactory _dtoFactory;
-    
 
-        // TODO: Create constructor to inject services...
         public AnalysisController(
-            IDeviceRepository deviceRepository, 
+            IDeviceRepository deviceRepository,
             ICarbonFootprint carbonFootprint,
-            IDeviceLogRepository deviceLogRepository
+            IDeviceLogRepository deviceLogRepository,
+            IForecastRepository forecastRepository,
+            IAccountRepository accountRepository
 
-        ) 
+        )
         {
-            _reportService = new(deviceRepository,deviceLogRepository);
+            _reportService = new(deviceRepository, deviceLogRepository);
             _carbonFootprintService = carbonFootprint;
-          //  _carbonFootprintService = new (carbonFootprintRepository, deviceLogRepository, accountRepository, deviceRepository);
+            _forecastService = new(forecastRepository, accountRepository);
+            //  _carbonFootprintService = new (carbonFootprintRepository, deviceLogRepository, accountRepository, deviceRepository);
             _dtoFactory = new AnalysisDTOFactory();
->>>>>>> adec9c1cbe02521a89f69c120c2a73647cc66c6c
         }
+
+        
+        
 
         // TODO: Create API Routes...
 
@@ -108,9 +101,66 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         [Produces("application/json")]
         public async Task<IActionResult> GetCarbonFootprintData(Guid accountId,int month, int year)
         {
-<<<<<<< HEAD
-            string result = _carbonFootprintService.GetCarbonFootprintAsync(Guid.NewGuid(), 1, 1);
-            return StatusCode(200, result);
+            IEnumerable<CarbonFootprint> result = new List<CarbonFootprint>();
+
+            try
+            {
+                result = await _carbonFootprintService.GetCarbonFootprintAsync(accountId, month, year);
+            }
+            catch (AccountNotFoundException ex)
+            {
+                return StatusCode(
+                    400,
+                    _dtoFactory.CreateResponseDTO(
+                        ResponseDTOType.ANALYSIS_CARBONFOOTPRINT_GETBYACCOUNTMONTHYEAR,
+                        result,
+                        400,
+                        ex.Message
+                    ));
+            }
+            catch (InvalidDateInputException ex)
+            {
+                return StatusCode(
+                    400,
+                    _dtoFactory.CreateResponseDTO(
+                        ResponseDTOType.ANALYSIS_CARBONFOOTPRINT_GETBYACCOUNTMONTHYEAR,
+                        result,
+                        400,
+                        ex.Message
+                    ));
+            }
+            catch (NoCarbonFootprintDataException ex)
+            {
+                return StatusCode(
+                    500,
+                    _dtoFactory.CreateResponseDTO(
+                        ResponseDTOType.ANALYSIS_CARBONFOOTPRINT_GETBYACCOUNTMONTHYEAR,
+                        result,
+                        500,
+                        ex.Message
+                    ));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(
+                    500,
+                    _dtoFactory.CreateResponseDTO(
+                        ResponseDTOType.ANALYSIS_CARBONFOOTPRINT_GETBYACCOUNTMONTHYEAR,
+                        result,
+                        500,
+                        ex.Message
+                    ));
+            }
+
+            return StatusCode(
+                200,
+                _dtoFactory.CreateResponseDTO(
+                    ResponseDTOType.ANALYSIS_CARBONFOOTPRINT_GETBYACCOUNTMONTHYEAR,
+                    result,
+                    200,
+                    "Success"
+                )
+            );
         }
 
         [HttpGet("/householdReport/energyUsageForecast/{accountId}")]
@@ -188,68 +238,5 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 
             return (IActionResult)getForecastChartData;
         }
-=======
-            IEnumerable<CarbonFootprint> result = new List<CarbonFootprint>();
-
-            try
-            {
-                result = await _carbonFootprintService.GetCarbonFootprintAsync(accountId, month, year);
-            }
-            catch(AccountNotFoundException ex)
-            {
-                return StatusCode(
-                    400,
-                    _dtoFactory.CreateResponseDTO(
-                        ResponseDTOType.ANALYSIS_CARBONFOOTPRINT_GETBYACCOUNTMONTHYEAR,
-                        result,
-                        400,
-                        ex.Message
-                    ));
-            }
-            catch (InvalidDateInputException ex)
-            {
-                return StatusCode(
-                    400,
-                    _dtoFactory.CreateResponseDTO(
-                        ResponseDTOType.ANALYSIS_CARBONFOOTPRINT_GETBYACCOUNTMONTHYEAR,
-                        result,
-                        400,
-                        ex.Message
-                    ));
-            }
-            catch (NoCarbonFootprintDataException ex) 
-            {
-                return StatusCode(
-                    500,
-                    _dtoFactory.CreateResponseDTO(
-                        ResponseDTOType.ANALYSIS_CARBONFOOTPRINT_GETBYACCOUNTMONTHYEAR,
-                        result,
-                        500,
-                        ex.Message
-                    ));
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(
-                    500,
-                    _dtoFactory.CreateResponseDTO(
-                        ResponseDTOType.ANALYSIS_CARBONFOOTPRINT_GETBYACCOUNTMONTHYEAR,
-                        result,
-                        500,
-                        ex.Message
-                    ));
-            }
-
-            return StatusCode(
-                200, 
-                _dtoFactory.CreateResponseDTO(
-                    ResponseDTOType.ANALYSIS_CARBONFOOTPRINT_GETBYACCOUNTMONTHYEAR,
-                    result,
-                    200,
-                    "Success"
-                )
-            );
-        } 
->>>>>>> adec9c1cbe02521a89f69c120c2a73647cc66c6c
     }
 }
