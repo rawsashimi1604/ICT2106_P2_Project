@@ -20,6 +20,7 @@ using SmartHomeManager.Domain.AccountDomain.Interfaces;
 using SmartHomeManager.Domain.Common.Exceptions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
+using SmartHomeManager.DataSource.AnalysisDataSource;
 
 namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 {
@@ -34,19 +35,22 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         private readonly ForecastService _forecastService;
         private readonly ICarbonFootprint _carbonFootprintService;
         private readonly AbstractDTOFactory _dtoFactory;
+        private readonly EnergyEfficiencyService _energyEfficiencyService;
 
         public AnalysisController(
             IDeviceRepository deviceRepository,
             ICarbonFootprint carbonFootprint,
             IDeviceLogRepository deviceLogRepository,
             IForecastRepository forecastRepository,
-            IAccountRepository accountRepository
+            IAccountRepository accountRepository,
+            IEnergyEfficiencyRepository energyEfficiencyRepository
 
         )
         {
             _reportService = new(deviceRepository, deviceLogRepository);
             _carbonFootprintService = carbonFootprint;
             _forecastService = new(forecastRepository, accountRepository);
+            _energyEfficiencyService = new(energyEfficiencyRepository, deviceRepository, accountRepository);
             //  _carbonFootprintService = new (carbonFootprintRepository, deviceLogRepository, accountRepository, deviceRepository);
             _dtoFactory = new AnalysisDTOFactory();
         }
@@ -94,6 +98,57 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 
         // TODO: HouseholdEnergyEfficiency Route
         // GET /api/analysis/householdReport/energyEfficiency/{accountId}
+        [HttpGet("householdReport/energyEfficiency/{accountId}")]
+        [Produces("application/json")]
+        public async Task<IActionResult> GetHouseholdEnergyEfficiency(Guid accountId)
+        {
+            IEnumerable<EnergyEfficiency> allEnergyEfficiency = new List<EnergyEfficiency>();
+
+            try {
+                allEnergyEfficiency = await _energyEfficiencyService.GetAllDeviceEnergyEfficiency(accountId);
+            }
+            catch (DBReadFailException ex)
+            {
+                return StatusCode(
+                400,
+                _dtoFactory.CreateResponseDTO(
+                    ResponseDTOType.ANALYSIS_ENERGYEFFICIENCY_GETALL,
+                    allEnergyEfficiency,
+                    400,
+                    ex.Message)
+                );
+            }
+            catch(AccountNotFoundException ex)
+            {
+                return StatusCode(
+                400,
+                _dtoFactory.CreateResponseDTO(
+                    ResponseDTOType.ANALYSIS_ENERGYEFFICIENCY_GETALL,
+                    allEnergyEfficiency,
+                    400,
+                    ex.Message)
+                );
+            }
+            catch(Exception ex) {
+                return StatusCode(
+                500,
+                _dtoFactory.CreateResponseDTO(
+                    ResponseDTOType.ANALYSIS_ENERGYEFFICIENCY_GETALL,
+                    allEnergyEfficiency,
+                    500,
+                    ex.Message)
+                );
+            }
+
+            return StatusCode(
+                200,
+                _dtoFactory.CreateResponseDTO(
+                    ResponseDTOType.ANALYSIS_ENERGYEFFICIENCY_GETALL,
+                    allEnergyEfficiency,
+                    200,
+                    "Success")
+                );
+        }
 
         // TODO: CarbonFootprint Route
         // GET /api/analysis/householdReport/carbonFootprint/{accountId}

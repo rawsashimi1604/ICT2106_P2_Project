@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartHomeManager.Domain.AnalysisDomain.Entities;
+using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
 using SmartHomeManager.Domain.Common;
 using SmartHomeManager.Domain.NotificationDomain.Entities;
 using SmartHomeManager.Domain.RoomDomain.Entities;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SmartHomeManager.DataSource.AnalysisDataSource
 {
-    public class EnergyEfficiencyRepository : IGenericRepository<EnergyEfficiency>
+    public class EnergyEfficiencyRepository : IEnergyEfficiencyRepository
     {
         private readonly ApplicationDbContext _applicationDbContext;
 
@@ -81,10 +82,6 @@ namespace SmartHomeManager.DataSource.AnalysisDataSource
             return await _applicationDbContext.EnergyEfficiency.FindAsync(id);
         }
 
-  
-
-
-
         public async Task<bool> SaveAsync()
         {
             try
@@ -109,6 +106,15 @@ namespace SmartHomeManager.DataSource.AnalysisDataSource
             {
                 return Task.FromResult(false);
             }
+        }
+        public async Task<EnergyEfficiency?> GetByDeviceIdAsync(Guid deviceId)
+        {
+            EnergyEfficiency? data = await _applicationDbContext
+                .EnergyEfficiency
+                .Where(cf => cf.DeviceId == deviceId)
+                .FirstOrDefaultAsync();
+
+            return data;
         }
     }
 }
