@@ -1,10 +1,6 @@
-﻿using SmartHomeManager.Domain.AccountDomain.Entities;
-using SmartHomeManager.Domain.AccountDomain.Interfaces;
-using SmartHomeManager.Domain.AccountDomain.Services;
-using SmartHomeManager.Domain.AnalysisDomain.DTOs;
+﻿using SmartHomeManager.Domain.AccountDomain.Services;
 using SmartHomeManager.Domain.AnalysisDomain.Entities;
 using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
-using SmartHomeManager.Domain.Common;
 using SmartHomeManager.Domain.Common.Exceptions;
 using SmartHomeManager.Domain.DeviceDomain.Entities;
 using SmartHomeManager.Domain.DeviceDomain.Interfaces;
@@ -12,55 +8,45 @@ using SmartHomeManager.Domain.DeviceDomain.Services;
 using SmartHomeManager.Domain.DeviceLoggingDomain.Entities;
 using SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces;
 using SmartHomeManager.Domain.DeviceLoggingDomain.Services;
-using SmartHomeManager.Domain.NotificationDomain.Entities;
-using SmartHomeManager.Domain.NotificationDomain.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace SmartHomeManager.Domain.AnalysisDomain.Services
 {
     public class ForecastService
     {
 
-        private readonly IForecastRepository _forecastRepository;
         private readonly IForecastDataRepository _forecastDataRepository;
         private readonly AccountService _accountService;
         private readonly IDeviceInfoService _deviceLogService;
         private readonly MockDeviceService _deviceService;
 
         public ForecastService(
-            IForecastRepository forecastRepository,
             IForecastDataRepository forecastDataRepository,
             AccountService accountRepository,
             IDeviceRepository deviceRepository,
             IDeviceLogRepository deviceLogRepository
         )
         {
-            _forecastRepository = forecastRepository;
             _forecastDataRepository= forecastDataRepository;
             _accountService = accountRepository;
             _deviceLogService = new DeviceLogReadService(deviceLogRepository);
             _deviceService = new MockDeviceService(deviceRepository);
         }
 
-        public async Task<IEnumerable<ForecastChart>> GetHouseHoldForecast(Guid accountid,int timespan)
+        public async Task<IEnumerable<ForecastChartData>> GetHouseHoldForecast(Guid accountId, int timespan)
         {
             // Find which device belong to which account...
             //=> pass in account id and return all the device under that id
-            IEnumerable<Device> devices = await _deviceService.GetAllDevicesByAccount(accountid);
+            IEnumerable<Device> devices = await _deviceService.GetAllDevicesByAccount(accountId);
 
-            var accountToBeFound = await _accountService.GetAccountByAccountId(accountid);
-            List<ForecastChart> results = new List<ForecastChart>();
+            var accountToBeFound = await _accountService.GetAccountByAccountId(accountId);
+            List<ForecastChartData> result = new List<ForecastChartData>();
 
             //Check if account exist
             if (accountToBeFound == null)
             {
                 System.Diagnostics.Debug.WriteLine("Account not found");
-                return results;
+                return result;
             }
 
             // Get the current date and time
@@ -69,23 +55,24 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             // Get the current month
             int month = now.Month;
 
-            int count = 0;
-
             // Get the current year
             int year = now.Year;
+
+            // Check if the current date / timespan already has a forecast done...
+            string dateOfAnalysis = DateTime.Today.ToString("dd/MM");
+            IEnumerable<ForecastChartData> cachedData = await _forecastDataRepository.GetCachedData(accountId, dateOfAnalysis, timespan);
+
+            // Data already exists, no need to recalculate...
+            if (cachedData.Count() > 0)
+            {
+                return cachedData;
+            }
 
 
             if (timespan == 0)
             {
                 // Get the data for the past 6 months...
                 List<DateTime> months = GetPastSixMonths(year, month);
-                List<ForecastChart> result = new List<ForecastChart>();
-
-                string guidStringChartDataId = "44444444-4444-4444-4444-444444444444";
-                Guid guidChartDataId = Guid.Parse(guidStringChartDataId);
-
-                string guidStringChartId = "33333333-3333-3333-3333-333333333333";
-                Guid guidChartId = Guid.Parse(guidStringChartId);
 
                 foreach (DateTime dt in months)
                 {
@@ -130,18 +117,19 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                         // Print the average watts per day for the current day
                         Console.WriteLine("Average watts per day for {0}/{1}/{2}: {3}", i, dt.Month, dt.Year, avgWattsPerDay);
 
-                        
-
+                        // Insert ForecastChartData into the database...
                         ForecastChartData forecastChartData = new ForecastChartData
                         {
-                            ForecastChartDataId = guidChartDataId,
-                            ForecastChartId = guidChartId,
+                            ForecastChartDataId = Guid.NewGuid(),
+                            AccountId = accountId,
+                            TimespanType = timespan,
+                            DateOfAnalysis = DateTime.Today.ToString("dd/MM"),
                             Label = date,
                             Value = avgWattsPerDay,
-                            IsForecast = true,
                             Index = i,
-
                         };
+
+                        result.Add(forecastChartData);
 
                         try
                         {
@@ -152,34 +140,16 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                             throw new DBInsertFailException();
                         }
                     }
-                    ForecastChart forecastChart = new ForecastChart
-                    {
-                        ForecastChartId = guidChartId,
-                        AccountId = accountid,
-                        TimespanType = 1,
-                        DateOfAnalysis = DateTime.Today.ToString("dd/MM"),
-                    };
-
-                    result.Add(forecastChart);
-
                 }
             }
 
             // For average every month for current year and year before
             else if (timespan == 1)
             {
-       
-                List<ForecastChart> result = new List<ForecastChart>();
 
                 // Define the start and end dates for the range of years you want to average
                 DateTime startYear = DateTime.Now.AddYears(-1); // Current year - 1
                 DateTime endYear = DateTime.Now; // Current year
-
-                string guidStringChartDataId = "55555555-5555-5555-5555-555555555555";
-                Guid guidChartDataId = Guid.Parse(guidStringChartDataId);
-
-                string guidStringChartId = "44444444-4444-4444-4444-444444444444";
-                Guid guidChartId = Guid.Parse(guidStringChartId);
 
                 // Loop through each month
                 for (int i = 1; i <= 12; i++)
@@ -206,18 +176,19 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                     
                     string date = string.Format("{0}/{1}", startDate.ToString("MMMM"), i);
 
-                    
 
                     ForecastChartData forecastChartData = new ForecastChartData
                     {
-                        ForecastChartDataId = guidChartDataId,
-                        ForecastChartId = guidChartId,
+                        ForecastChartDataId = Guid.NewGuid(),
+                        AccountId = accountId,
+                        TimespanType = timespan,
+                        DateOfAnalysis = DateTime.Today.ToString("dd/MM"),
                         Label = date,
                         Value = averageWatts,
-                        IsForecast = true,
                         Index = i,
-
                     };
+
+                    result.Add(forecastChartData);
 
                     try
                     {
@@ -229,28 +200,12 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                     }
 
                 }
-                ForecastChart forecastChart = new ForecastChart
-                {
-                    ForecastChartId = guidChartId,
-                    AccountId = accountid,
-                    TimespanType = 0,
-                    DateOfAnalysis = DateTime.Today.ToString("dd/MM"),
-                };
 
-                try
-                {
-                    await _forecastRepository.AddAsync(forecastChart);
-                }
-                catch (Exception ex)
-                {
-                    throw new DBInsertFailException();
-                }
 
-                result.Add(forecastChart);
+                
             }
             
-
-            return results;
+            return result;
         }
 
         private List<DateTime> GetPastSixMonths(int year, int month)
@@ -296,23 +251,5 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
 
             return result;
         }
-
-        public async Task<IEnumerable<ForecastChartData>> GetHouseHoldForcastData(Guid forecastchardatatid)
-        {
-            var forecastChartToBeFound = await _forecastRepository.GetByIdAsync(forecastchardatatid);
-            IEnumerable<ForecastChartData> allForecastChartData = null;
-
-            //Check if account exist
-            if (forecastChartToBeFound == null)
-            {
-                System.Diagnostics.Debug.WriteLine("Forecast Chart not found");
-                return allForecastChartData;
-            }
-            allForecastChartData = await _forecastDataRepository.GetAllByIdAsync(forecastchardatatid);
-
-            return allForecastChartData;
-        }
-
-
     }
 }

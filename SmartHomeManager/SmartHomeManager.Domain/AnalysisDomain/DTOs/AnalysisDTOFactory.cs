@@ -3,6 +3,7 @@ using SmartHomeManager.Domain.AnalysisDomain.Entities;
 using SmartHomeManager.Domain.Common;
 using SmartHomeManager.Domain.Common.DTOs;
 using SmartHomeManager.Domain.DeviceDomain.Entities;
+using SmartHomeManager.Domain.AnalysisDomain.DTOs;
 
 namespace SmartHomeManager.Domain.AnalysisDomain.DTOs
 {
@@ -18,11 +19,11 @@ namespace SmartHomeManager.Domain.AnalysisDomain.DTOs
                 case ResponseDTOType.ANALYSIS_CARBONFOOTPRINT_GETBYACCOUNTMONTHYEAR:
                     return CreateGetCarbonfootprintDTO((IEnumerable<CarbonFootprint>)data, statusCode, statusMessage);
 
+                case ResponseDTOType.ANAYLSIS_FORECAST_GETBYACCOUNTTIMESPAN:
+                    return CreateGetForecastChartDataDTO((IEnumerable<ForecastChartData>)data, statusCode, statusMessage);
                 default:
                     return null;
             }
-
-           
         }
 
         public GetDevicesDTO CreateGetDevicesDTO(
@@ -89,6 +90,44 @@ namespace SmartHomeManager.Domain.AnalysisDomain.DTOs
                 }
             };
         }
+
+        public GetForecastChartDataDTO CreateGetForecastChartDataDTO(
+            IEnumerable<ForecastChartData> forecastChartDatas,
+            int statusCode,
+            string statusMessage
+        )
+        {
+            List<ForecastChartDataObjectDTO> getForecastChartDatas = new List<ForecastChartDataObjectDTO>();
+
+            if (forecastChartDatas != null)
+            {
+                foreach (var forecastChart in forecastChartDatas)
+                {
+
+                    getForecastChartDatas.Add(new ForecastChartDataObjectDTO
+                    {
+                        ForecastChartDataId = forecastChart.ForecastChartDataId,
+                        AccountId = forecastChart.AccountId,
+                        TimespanType = forecastChart.TimespanType,
+                        Label = forecastChart.Label,
+                        Value = forecastChart.Value,
+                        Index= forecastChart.Index,
+                    });
+
+                }
+            }
+
+            return new GetForecastChartDataDTO
+            {
+                Data = getForecastChartDatas,
+                Response = new ResponseInformation
+                {
+                    ServerMessage = statusMessage,
+                    StatusCode = statusCode
+                }
+            };
+        }
+
     }
 }
 

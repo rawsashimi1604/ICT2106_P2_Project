@@ -40,7 +40,6 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
             IDeviceRepository deviceRepository,
             ICarbonFootprint carbonFootprint,
             IDeviceLogRepository deviceLogRepository,
-            IForecastRepository forecastRepository,
             AccountService accountRepository,
             IForecastDataRepository forecastDataRepository
 
@@ -48,7 +47,7 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         {
             _reportService = new(deviceRepository, deviceLogRepository);
             _carbonFootprintService = carbonFootprint;
-            _forecastService = new(forecastRepository, forecastDataRepository, accountRepository, deviceRepository, deviceLogRepository);
+            _forecastService = new(forecastDataRepository, accountRepository, deviceRepository, deviceLogRepository);
             //  _carbonFootprintService = new (carbonFootprintRepository, deviceLogRepository, accountRepository, deviceRepository);
             _dtoFactory = new AnalysisDTOFactory();
         }
@@ -169,41 +168,24 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         //[Produces("application/json")]
         public async Task<IActionResult> GetHouseholdForecast(Guid accountId, int timespan)
         {
-
             
-            IEnumerable<ForecastChart> result = new List<ForecastChart>();
-
-
-            try
-            {
-                result = await _forecastService.GetHouseHoldForecast(accountId, timespan);
-            }
-            catch (AccountNotFoundException ex)
-            {
-                return StatusCode(400, ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-
-
-            return (IActionResult)result;
-        }
-
-        [HttpGet("/householdReport/energyUsageForecastData/{forecastID}")]
-        [Produces("application/json")]
-        public async Task<IActionResult> GetHouseholdForecastData(Guid forecastChartId)
-        {
-
-            List<ForecastChartDataObjectDTO> getForecastChartData = new List<ForecastChartDataObjectDTO>();
-
             // Use the service here...
             IEnumerable<ForecastChartData> forecastChartDatas;
 
             try
             {
-                forecastChartDatas = await _forecastService.GetHouseHoldForcastData(forecastChartId);
+                forecastChartDatas = await _forecastService.GetHouseHoldForecast(accountId, timespan);
+
+                return StatusCode(
+                    200,
+                    _dtoFactory.CreateResponseDTO(
+                        ResponseDTOType.ANAYLSIS_FORECAST_GETBYACCOUNTTIMESPAN,
+                        forecastChartDatas,
+                        200,
+                        "Success"
+                    )
+                );
+
             }
             catch (AccountNotFoundException ex)
             {
@@ -214,7 +196,6 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
                 return StatusCode(500, ex.Message);
             }
 
-            return (IActionResult)getForecastChartData;
         }
     }
 }

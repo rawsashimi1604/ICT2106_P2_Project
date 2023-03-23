@@ -142,7 +142,6 @@ public class Program
             var accountRepo = serviceProvider.GetRequiredService<IAccountRepository>();
             return new CarbonFootprintProxy(service, accountRepo);
         });
-        builder.Services.AddScoped<IForecastRepository, ForecastRepository>();
         builder.Services.AddScoped<IForecastDataRepository, ForecastDataRepository>();
 
 

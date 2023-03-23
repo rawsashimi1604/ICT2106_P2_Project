@@ -102,6 +102,23 @@ namespace SmartHomeManager.DataSource.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ForecastChartsData",
+                columns: table => new
+                {
+                    ForecastChartDataId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    AccountId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    TimespanType = table.Column<int>(type: "INTEGER", nullable: false),
+                    DateOfAnalysis = table.Column<string>(type: "TEXT", nullable: false),
+                    Label = table.Column<string>(type: "TEXT", nullable: false),
+                    Value = table.Column<double>(type: "REAL", nullable: false),
+                    Index = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ForecastChartsData", x => x.ForecastChartDataId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "HomeSecurities",
                 columns: table => new
                 {
@@ -186,26 +203,6 @@ namespace SmartHomeManager.DataSource.Migrations
                     table.PrimaryKey("PK_EnergyProfiles", x => x.EnergyProfileId);
                     table.ForeignKey(
                         name: "FK_EnergyProfiles_Accounts_AccountId",
-                        column: x => x.AccountId,
-                        principalTable: "Accounts",
-                        principalColumn: "AccountId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ForecastCharts",
-                columns: table => new
-                {
-                    ForecastChartId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    AccountId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    TimespanType = table.Column<int>(type: "INTEGER", nullable: false),
-                    DateOfAnalysis = table.Column<string>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ForecastCharts", x => x.ForecastChartId);
-                    table.ForeignKey(
-                        name: "FK_ForecastCharts_Accounts_AccountId",
                         column: x => x.AccountId,
                         principalTable: "Accounts",
                         principalColumn: "AccountId",
@@ -311,28 +308,6 @@ namespace SmartHomeManager.DataSource.Migrations
                         column: x => x.DeviceGroup,
                         principalTable: "HomeSecurityDeviceDefinitions",
                         principalColumn: "DeviceGroup",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ForecastChartsData",
-                columns: table => new
-                {
-                    ForecastChartDataId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ForecastChartId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Label = table.Column<string>(type: "TEXT", nullable: false),
-                    Value = table.Column<double>(type: "REAL", nullable: false),
-                    IsForecast = table.Column<bool>(type: "INTEGER", nullable: false),
-                    Index = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ForecastChartsData", x => x.ForecastChartDataId);
-                    table.ForeignKey(
-                        name: "FK_ForecastChartsData_ForecastCharts_ForecastChartId",
-                        column: x => x.ForecastChartId,
-                        principalTable: "ForecastCharts",
-                        principalColumn: "ForecastChartId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -686,16 +661,6 @@ namespace SmartHomeManager.DataSource.Migrations
                 column: "AccountId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ForecastCharts_AccountId",
-                table: "ForecastCharts",
-                column: "AccountId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ForecastChartsData_ForecastChartId",
-                table: "ForecastChartsData",
-                column: "ForecastChartId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Histories_ProfileId",
                 table: "Histories",
                 column: "ProfileId");
@@ -816,9 +781,6 @@ namespace SmartHomeManager.DataSource.Migrations
 
             migrationBuilder.DropTable(
                 name: "DeviceConfigurationLookUps");
-
-            migrationBuilder.DropTable(
-                name: "ForecastCharts");
 
             migrationBuilder.DropTable(
                 name: "RuleHistories");

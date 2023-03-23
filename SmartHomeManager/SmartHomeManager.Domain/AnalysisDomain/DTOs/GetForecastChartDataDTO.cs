@@ -3,20 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SmartHomeManager.Domain.Common.DTOs;
 
 namespace SmartHomeManager.Domain.AnalysisDomain.DTOs
 {
-    public class ForecastChartDataDTO
+    public class GetForecastChartDataDTO : ResponseDTO
     {
-        public List<ForecastChartDataObjectDTO>? ForecastChartDataObject { get; set; }
+        public IEnumerable<ForecastChartDataObjectDTO> Data { get; set; }
+
+        public ResponseInformation Response { get; set; }
     }
-    public class ForecastChartDataObjectDTO
+    public class ForecastChartDataObjectDTO : IDTOData
     {
         public Guid ForecastChartDataId { get; set; }
-        public Guid ForcastChartId { get; set; }
+        public Guid AccountId { get; set; }
+        public int TimespanType { get; set; }
         public string? Label { get; set; }
         public double Value { get; set; }
-        public bool IsForecast { get; set; }
         public int Index { get; set; }
     }
 }

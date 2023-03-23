@@ -37,7 +37,6 @@ namespace SmartHomeManager.DataSource
             context.RuleHistories.RemoveRange(context.RuleHistories);
             context.DeviceProducts.RemoveRange(context.DeviceProducts);
 
-            context.ForecastCharts.RemoveRange(context.ForecastCharts);
             context.ForecastChartsData.RemoveRange(context.ForecastChartsData);
 
             await context.SaveChangesAsync();
@@ -414,36 +413,6 @@ namespace SmartHomeManager.DataSource
             };
 
             await context.DeviceProducts.AddRangeAsync(deviceProducts);
-            await context.SaveChangesAsync();
-
-            var forecastCharts = new List<ForecastChart>
-            {
-                new ForecastChart
-                {
-                    ForecastChartId = Guid.Parse("22222222-2222-2222-2222-222222222222"),
-                    AccountId = Guid.Parse("11111111-1111-1111-1111-111111111111"),
-                    TimespanType = 1,
-                    DateOfAnalysis = "Doe",
-                }
-            };
-
-            await context.ForecastCharts.AddRangeAsync(forecastCharts);
-            await context.SaveChangesAsync();
-
-            var forecastChartsData = new List<ForecastChartData>
-            {
-                new ForecastChartData
-                {
-                    ForecastChartDataId = Guid.Parse("33333333-3333-3333-3333-333333333333"),
-                    ForecastChartId = Guid.Parse("22222222-2222-2222-2222-222222222222"),
-                    Label = "March",
-                    Value = 1,
-                    IsForecast = true,
-                    Index = 8,
-                }
-            };
-
-            await context.ForecastChartsData.AddRangeAsync(forecastChartsData);
             await context.SaveChangesAsync();
         }
 

@@ -45,7 +45,6 @@ public class ApplicationDbContext : DbContext
         EnergyProfiles = base.Set<EnergyProfile>();
         DeviceProducts = base.Set<DeviceProduct>();
         CarbonFootprints = base.Set<CarbonFootprint>();
-        ForecastCharts = base.Set<ForecastChart>();
         ForecastChartsData = base.Set<ForecastChartData>();
         EnergyEfficiency = base.Set<EnergyEfficiency>();
     }
@@ -76,7 +75,6 @@ public class ApplicationDbContext : DbContext
     public DbSet<APIValue> APIValues { get; }
     public DbSet<EnergyProfile> EnergyProfiles { get; }
     public DbSet<CarbonFootprint> CarbonFootprints { get; }
-    public DbSet<ForecastChart> ForecastCharts { get; }
     public DbSet<ForecastChartData> ForecastChartsData { get; }
     public DbSet<EnergyEfficiency> EnergyEfficiency { get; }
 
