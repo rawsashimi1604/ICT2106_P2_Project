@@ -20,6 +20,7 @@ using SmartHomeManager.Domain.AccountDomain.Interfaces;
 using SmartHomeManager.Domain.Common.Exceptions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
+using SmartHomeManager.Domain.AccountDomain.Services;
 
 namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 {
@@ -40,13 +41,14 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
             ICarbonFootprint carbonFootprint,
             IDeviceLogRepository deviceLogRepository,
             IForecastRepository forecastRepository,
-            IAccountRepository accountRepository
+            AccountService accountRepository,
+            IForecastDataRepository forecastDataRepository
 
         )
         {
             _reportService = new(deviceRepository, deviceLogRepository);
             _carbonFootprintService = carbonFootprint;
-            _forecastService = new(forecastRepository, accountRepository);
+            _forecastService = new(forecastRepository, forecastDataRepository, accountRepository, deviceRepository, deviceLogRepository);
             //  _carbonFootprintService = new (carbonFootprintRepository, deviceLogRepository, accountRepository, deviceRepository);
             _dtoFactory = new AnalysisDTOFactory();
         }
@@ -163,19 +165,18 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
             );
         }
 
-        [HttpGet("/householdReport/energyUsageForecast/{accountId}")]
+        [HttpGet("/householdReport/energyUsageForecast/{accountId}/{timespan}")]
         //[Produces("application/json")]
-        public async Task<IActionResult> GetHouseholdForecast(Guid accountId)
+        public async Task<IActionResult> GetHouseholdForecast(Guid accountId, int timespan)
         {
 
-            List<ForecastChartObjectDTO> getForecastChart = new List<ForecastChartObjectDTO>();
+            
+            IEnumerable<ForecastChart> result = new List<ForecastChart>();
 
-            // Use the service here...
-            IEnumerable<ForecastChart> forecastCharts;
 
             try
             {
-                forecastCharts = await _forecastService.GetHouseHoldForecast(accountId);
+                result = await _forecastService.GetHouseHoldForecast(accountId, timespan);
             }
             catch (AccountNotFoundException ex)
             {
@@ -186,18 +187,8 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
                 return StatusCode(500, ex.Message);
             }
 
-            foreach (var forecastChart in forecastCharts)
-            {
-                getForecastChart.Add(new ForecastChartObjectDTO
-                {
-                    ForecastChartId = forecastChart.ForecastChartId,
-                    AccountId = forecastChart.AccountId,
-                    TimespanType = forecastChart.TimespanType,
-                    DateOfAnalysis = forecastChart.DateOfAnalysis,
-                });
-            }
 
-            return (IActionResult)getForecastChart;
+            return (IActionResult)result;
         }
 
         [HttpGet("/householdReport/energyUsageForecastData/{forecastID}")]
@@ -221,19 +212,6 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
             catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
-            }
-
-            foreach (var forecastChartData in forecastChartDatas)
-            {
-                getForecastChartData.Add(new ForecastChartDataObjectDTO
-                {
-                    ForecastChartDataId = forecastChartData.ForecastChartDataId,
-                    ForcastChartId = forecastChartData.ForecastChartId,
-                    Label = forecastChartData.Label,
-                    Value = forecastChartData.Value,
-                    IsForecast = forecastChartData.IsForecast,
-                    Index = forecastChartData.Index,
-                });
             }
 
             return (IActionResult)getForecastChartData;

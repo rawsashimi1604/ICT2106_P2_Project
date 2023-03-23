@@ -30,5 +30,10 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Entities
 
         [ForeignKey("ForecastChartId")]
         public ForecastChart ForecastChart { get; set; }
+
+        /*public static implicit operator forecastchartdata(forecastchartdata v)
+        {
+            throw new notimplementedexception();
+        }*/
     }
 }
