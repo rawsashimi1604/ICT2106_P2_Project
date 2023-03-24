@@ -58,6 +58,8 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             // Get the current year
             int year = now.Year;
 
+            double priceValue = 0;
+
             // Check if the current date / timespan already has a forecast done...
             string dateOfAnalysis = DateTime.Today.ToString("dd/MM");
             IEnumerable<ForecastChartData> cachedData = await _forecastDataRepository.GetCachedData(accountId, dateOfAnalysis, timespan);
@@ -73,37 +75,41 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             {
                 // Get the data for the past 6 months...
                 List<DateTime> months = GetPastSixMonths(year, month);
+                double totalWatts = 0;
+                int numLogs = 0;
+                DateTime today = DateTime.Today;
+                DateTime nextMonth = today.AddMonths(1);
+                string nextMonthString = nextMonth.ToString("MM");
+                int thisYear = DateTime.Now.Year;
+                int daysInMonth = DateTime.DaysInMonth(thisYear, DateTime.Now.Month);
+                double avgWattsPerDay = 0;
 
-                foreach (DateTime dt in months)
+                for (int i = 1; i <= daysInMonth; i++)
                 {
-                    // use rubin service to get all the logs by each device
-                    IEnumerable<DeviceLog> deviceLogs = await _deviceLogService.GetAllDeviceLogAsync();
-                    
-
-                    // Filter data to obtain data within month range eg 1-31st Jan same for year
-                    DateTime startDate = new DateTime(dt.Year, dt.Month, 1, 0, 0, 0);
-                    DateTime endDate;
-
-                    // If its december, end date should be Jan of the following year
-                    // If its not december, end date should be the following month 1st day.
-                    endDate = dt.Month == 12 ?
-                        new DateTime(dt.Year + 1, 1, 1, 0, 0, 0) :
-                        new DateTime(dt.Year, dt.Month + 1, 1, 0, 0, 0);
-
-                    // Filter device logs by the specified date...
-                    deviceLogs = deviceLogs.Where(deviceLog =>
-                        deviceLog.DateLogged >= startDate && deviceLog.DateLogged < endDate.AddDays(1)
-                    );
-
-                    int numDays = endDate.Subtract(startDate).Days;
-
-                    // Calculate the average watts per day for each day in the month
-                    for (int i = 1; i <= numDays; i++)
+                    foreach (DateTime dt in months)
                     {
+                        // use rubin service to get all the logs by each device
+                        IEnumerable<DeviceLog> deviceLogs = await _deviceLogService.GetAllDeviceLogAsync();
+
+
+                        // Filter data to obtain data within month range eg 1-31st Jan same for year
+                        DateTime startDate = new DateTime(dt.Year, dt.Month, 1, 0, 0, 0);
+                        DateTime endDate;
+
+                        // If its december, end date should be Jan of the following year
+                        // If its not december, end date should be the following month 1st day.
+                        endDate = dt.Month == 12 ?
+                            new DateTime(dt.Year + 1, 1, 1, 0, 0, 0) :
+                            new DateTime(dt.Year, dt.Month + 1, 1, 0, 0, 0);
+
+                        // Filter device logs by the specified date...
+                        deviceLogs = deviceLogs.Where(deviceLog =>
+                            deviceLog.DateLogged >= startDate && deviceLog.DateLogged < endDate.AddDays(1)
+                        );
+
                         DateTime currentDate = new DateTime(dt.Year, dt.Month, i, 0, 0, 0);
 
-                        double totalWatts = 0;
-                        int numLogs = 0;
+                        
                         foreach (var deviceLog in deviceLogs)
                         {
                             if (deviceLog.DateLogged.Date == currentDate.Date)
@@ -112,33 +118,35 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                                 numLogs++;
                             }
                         }
-                        double avgWattsPerDay = totalWatts / numLogs;
-                        string date = string.Format("{0}/{1}/{2}", i, dt.Month, dt.Year);
-                        // Print the average watts per day for the current day
-                        Console.WriteLine("Average watts per day for {0}/{1}/{2}: {3}", i, dt.Month, dt.Year, avgWattsPerDay);
+                        avgWattsPerDay = totalWatts/ numLogs;
+                        priceValue = avgWattsPerDay * 0.002;
 
-                        // Insert ForecastChartData into the database...
-                        ForecastChartData forecastChartData = new ForecastChartData
-                        {
-                            ForecastChartDataId = Guid.NewGuid(),
-                            AccountId = accountId,
-                            TimespanType = timespan,
-                            DateOfAnalysis = DateTime.Today.ToString("dd/MM"),
-                            Label = date,
-                            Value = avgWattsPerDay,
-                            Index = i,
-                        };
+                    }
 
-                        result.Add(forecastChartData);
+                    string date = string.Format("{0}/{1}", i, (month+1));
 
-                        try
-                        {
-                            await _forecastDataRepository.AddAsync(forecastChartData);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new DBInsertFailException();
-                        }
+                    // Insert ForecastChartData into the database...
+                    ForecastChartData forecastChartData = new ForecastChartData
+                    {
+                        ForecastChartDataId = Guid.NewGuid(),
+                        AccountId = accountId,
+                        TimespanType = timespan,
+                        DateOfAnalysis = DateTime.Today.ToString("dd/MM"),
+                        Label = date,
+                        WattsValue = avgWattsPerDay,
+                        PriceValue = priceValue,
+                        Index = i,
+                    };
+
+                    result.Add(forecastChartData);
+
+                    try
+                    {
+                        await _forecastDataRepository.AddAsync(forecastChartData);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new DBInsertFailException();
                     }
                 }
             }
@@ -167,14 +175,14 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                     // Calculate the total watts for the month
                     double totalWatts = deviceLogs.Sum(deviceLog => deviceLog.DeviceEnergyUsage);
 
-                    // Calculate the average watts for the month across the range of years
-                    int yearCount = endYear.Year - startYear.Year + 1; // Number of years in the range
-                    double averageWatts = totalWatts / yearCount;
+                    
+                    double averageWatts = totalWatts / 96;
+                    priceValue= averageWatts * 0.002;
 
                     // Output the average watts for the month
                     Console.WriteLine("Average watts for {0}: {1}", startDate.ToString("MMMM"), averageWatts);
                     
-                    string date = string.Format("{0}/{1}", startDate.ToString("MMMM"), i);
+                    string date = string.Format("{0}", startDate.ToString("MMMM"));
 
 
                     ForecastChartData forecastChartData = new ForecastChartData
@@ -184,7 +192,8 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                         TimespanType = timespan,
                         DateOfAnalysis = DateTime.Today.ToString("dd/MM"),
                         Label = date,
-                        Value = averageWatts,
+                        WattsValue = averageWatts,
+                        PriceValue = priceValue,
                         Index = i,
                     };
 
@@ -204,7 +213,117 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
 
                 
             }
-            
+
+            if (timespan == 2)
+            {
+                // Get the data for the past 6 months...
+                List<DateTime> months = GetPastSixMonths(year, month);
+                double totalWatts = 0;
+                int numLogs = 0;
+                DateTime today = DateTime.Today;
+                DateTime nextMonth = today.AddMonths(1);
+                string nextMonthString = nextMonth.ToString("MMMM");
+                int thisYear = DateTime.Now.Year;
+                int daysInMonth = DateTime.DaysInMonth(thisYear, DateTime.Now.Month);
+                double avgWattsPerDay = 0;
+                string day;
+
+                for (int i = 1; i <= 7; i++)
+                {
+                    foreach (DateTime dt in months)
+                    {
+                        // use rubin service to get all the logs by each device
+                        IEnumerable<DeviceLog> deviceLogs = await _deviceLogService.GetAllDeviceLogAsync();
+
+
+                        // Filter data to obtain data within month range eg 1-31st Jan same for year
+                        DateTime startDate = new DateTime(dt.Year, dt.Month, 1, 0, 0, 0);
+                        DateTime endDate;
+
+                        // If its december, end date should be Jan of the following year
+                        // If its not december, end date should be the following month 1st day.
+                        endDate = dt.Month == 12 ?
+                            new DateTime(dt.Year + 1, 1, 1, 0, 0, 0) :
+                            new DateTime(dt.Year, dt.Month + 1, 1, 0, 0, 0);
+
+                        // Filter device logs by the specified date...
+                        deviceLogs = deviceLogs.Where(deviceLog =>
+                            deviceLog.DateLogged >= startDate && deviceLog.DateLogged < endDate.AddDays(1)
+                        );
+
+                        DateTime currentDate = new DateTime(dt.Year, dt.Month, i, 0, 0, 0);
+
+
+                        foreach (var deviceLog in deviceLogs)
+                        {
+                            if (deviceLog.DateLogged.Date == currentDate.Date)
+                            {
+                                totalWatts += deviceLog.DeviceEnergyUsage;
+                                numLogs++;
+                            }
+                        }
+                        avgWattsPerDay = totalWatts / numLogs;
+                        priceValue = avgWattsPerDay * 0.002;
+
+                    }
+
+                    switch (i)
+                    {
+                        case 1:
+                            day = "Monday";
+                            break;
+                        case 2:
+                            day = "Tuesday";
+                            break;
+                        case 3:
+                            day = "Wednesday";
+                            break;
+                        case 4:
+                            day = "Thursday";
+                            break;
+                        case 5:
+                            day = "Friday";
+                            break;
+                        case 6:
+                            day = "Saturday";
+                            break;
+                        case 7:
+                            day = "Sunday";
+                            break;
+                        default:
+                            day = "Invalid day number";
+                            break;
+                    }
+
+
+
+                    // Insert ForecastChartData into the database...
+                    ForecastChartData forecastChartData = new ForecastChartData
+                    {
+                        ForecastChartDataId = Guid.NewGuid(),
+                        AccountId = accountId,
+                        TimespanType = timespan,
+                        DateOfAnalysis = DateTime.Today.ToString("dd/MM"),
+                        Label = day,
+                        WattsValue = avgWattsPerDay,
+                        PriceValue = priceValue,
+                        Index = i,
+                    };
+
+                    result.Add(forecastChartData);
+
+                    try
+                    {
+                        await _forecastDataRepository.AddAsync(forecastChartData);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new DBInsertFailException();
+                    }
+                }
+            }
+
+
             return result;
         }
 

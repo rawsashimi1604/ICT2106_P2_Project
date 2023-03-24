@@ -205,10 +205,13 @@ namespace SmartHomeManager.DataSource.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<double>("PriceValue")
+                        .HasColumnType("REAL");
+
                     b.Property<int>("TimespanType")
                         .HasColumnType("INTEGER");
 
-                    b.Property<double>("Value")
+                    b.Property<double>("WattsValue")
                         .HasColumnType("REAL");
 
                     b.HasKey("ForecastChartDataId");

@@ -13,7 +13,7 @@ import {
     Button,
 } from '@chakra-ui/react';
 import CarbonChart from './CarbonChart';
-import UsageBar from './UsageBar';
+import ForecastChart from './ForecastChart';
 import Report from './Report';
 import { EfficiencyBar } from './EfficiencyBar';
 
@@ -23,7 +23,7 @@ function AnalyticsTab() {
         <Tabs isFitted variant='enclosed'>
             <TabList mb='1em'>
                 <Tab>Carbon Footprint</Tab>
-                <Tab>Energy Usage</Tab>
+                <Tab>Forecast Energy Usage and Cost</Tab>
                 <Tab>Energy Efficiency</Tab>
                 <Tab>Report</Tab>
             </TabList>
@@ -32,7 +32,7 @@ function AnalyticsTab() {
                     <CarbonChart />
                 </TabPanel>
                 <TabPanel>
-                    <UsageBar />
+                    <ForecastChart />
                 </TabPanel>
                 <TabPanel>
                     <EfficiencyBar />

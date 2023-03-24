@@ -18,8 +18,10 @@ namespace SmartHomeManager.Domain.AnalysisDomain.DTOs
         public Guid ForecastChartDataId { get; set; }
         public Guid AccountId { get; set; }
         public int TimespanType { get; set; }
+        public string? DateOfAnalysis { get; set; }
         public string? Label { get; set; }
-        public double Value { get; set; }
+        public double WattsValue { get; set; }
+        public double PriceValue { get; set; }
         public int Index { get; set; }
     }
 }

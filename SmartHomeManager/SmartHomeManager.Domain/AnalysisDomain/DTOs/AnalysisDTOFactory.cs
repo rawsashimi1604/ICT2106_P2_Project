@@ -109,8 +109,10 @@ namespace SmartHomeManager.Domain.AnalysisDomain.DTOs
                         ForecastChartDataId = forecastChart.ForecastChartDataId,
                         AccountId = forecastChart.AccountId,
                         TimespanType = forecastChart.TimespanType,
+                        DateOfAnalysis= forecastChart.DateOfAnalysis,
                         Label = forecastChart.Label,
-                        Value = forecastChart.Value,
+                        WattsValue = forecastChart.WattsValue,
+                        PriceValue= forecastChart.PriceValue,
                         Index= forecastChart.Index,
                     });
 

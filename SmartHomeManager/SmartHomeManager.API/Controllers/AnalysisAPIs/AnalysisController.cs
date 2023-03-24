@@ -164,8 +164,8 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
             );
         }
 
-        [HttpGet("/householdReport/energyUsageForecast/{accountId}/{timespan}")]
-        //[Produces("application/json")]
+        [HttpGet("householdReport/energyUsageForecast/{accountId}/{timespan}")]
+        [Produces("application/json")]
         public async Task<IActionResult> GetHouseholdForecast(Guid accountId, int timespan)
         {
             

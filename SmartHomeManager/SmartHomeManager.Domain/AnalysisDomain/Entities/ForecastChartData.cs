@@ -28,7 +28,10 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Entities
         public string Label { get; set; }
 
         [Required]
-        public double Value { get; set; }
+        public double WattsValue { get; set; }
+
+        [Required]
+        public double PriceValue { get; set; }
 
         [Required]
         public int Index { get; set; }
