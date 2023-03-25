@@ -24,6 +24,7 @@ import ProfileLanding from "./pages/profile/ProfileLanding";
 import RegisterDevice from "./pages/RegisterDevice";
 import SelectNearbyDevice from "pages/SelectNearbyDevice";
 import Report from "pages/Analytics";
+import Limit from "pages/Limit";
 
 export function App() {
   return (
@@ -53,6 +54,7 @@ export function App() {
             <Route path="/configuration" element={<Configuration />} />
             <Route path="/energyProfile" element={<EnergyProfile />} />
             <Route path="/scenario" element={<Scenario />} />
+                      <Route path="/limit" element={<Limit />} />
             <Route
               path="/scenario/create/action-rule"
               element={<ActionRule />}
