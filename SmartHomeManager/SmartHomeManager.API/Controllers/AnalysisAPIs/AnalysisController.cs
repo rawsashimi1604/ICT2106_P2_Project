@@ -57,9 +57,9 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         // TODO: Device Route
         // GET /api/analysis/device/download/{deviceId}
         [HttpGet("device/download/{deviceId}")]
-        public async Task<FileContentResult> GetDeviceReport(Guid deviceId)
+        public async Task<FileContentResult> GetDeviceReport(Guid deviceId, string start, string end)
         {
-            PdfFile file = await _reportService.GetDeviceReport(deviceId);
+            PdfFile file = await _reportService.GetDeviceReport(deviceId, start, end);
             return File(file.FileContents, file.ContentType, file.FileName);
         }
 
@@ -81,9 +81,9 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         // TODO: HouseholdReport Route
         // GET /api/analysis/householdReport/download/{accountId}
         [HttpGet("householdReport/download/{accountId}")]
-        public async Task<FileContentResult> GetHouseholdReport(Guid accountId)
+        public async Task<FileContentResult> GetHouseholdReport(Guid accountId, DateTime start, DateTime end)
         {
-            PdfFile file = await _reportService.GetHouseholdReport(accountId);
+            PdfFile file = await _reportService.GetHouseholdReport(accountId, start, end);
             return File(file.FileContents, file.ContentType, file.FileName);
         }
 

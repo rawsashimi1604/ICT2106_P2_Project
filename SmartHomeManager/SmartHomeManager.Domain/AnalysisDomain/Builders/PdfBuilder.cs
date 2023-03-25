@@ -198,6 +198,13 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
             return this;
         }
 //-----------------------------------------------------------------------------
+        // Builder to test
+        public PdfBuilder Tester(DateTime start)
+        {
+            _document.Add(new Paragraph($"Time: {start}"));
+            return this;
+        }
+//-----------------------------------------------------------------------------
         // Build the file
         public byte[] Build()
         {
