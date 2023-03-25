@@ -43,7 +43,7 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
             IDeviceLogRepository deviceLogRepository
         )
         {
-            _reportService = new(deviceRepository, deviceLogRepository);
+            _reportService = new(deviceRepository, deviceLogRepository, forecast);
             _carbonFootprintService = carbonFootprint;
             _forecastService = forecast;
             _dtoFactory = new AnalysisDTOFactory();
@@ -56,10 +56,10 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 
         // TODO: Device Route
         // GET /api/analysis/device/download/{deviceId}
-        [HttpGet("device/download/{deviceId}")]
-        public async Task<FileContentResult> GetDeviceReport(Guid deviceId, string start, string end)
+        [HttpGet("device/download/{deviceId}/{lastMonths}")]
+        public async Task<FileContentResult> GetDeviceReport(Guid deviceId, int lastMonths)
         {
-            PdfFile file = await _reportService.GetDeviceReport(deviceId, start, end);
+            PdfFile file = await _reportService.GetDeviceReport(deviceId, lastMonths);
             return File(file.FileContents, file.ContentType, file.FileName);
         }
 
@@ -80,10 +80,10 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 
         // TODO: HouseholdReport Route
         // GET /api/analysis/householdReport/download/{accountId}
-        [HttpGet("householdReport/download/{accountId}")]
-        public async Task<FileContentResult> GetHouseholdReport(Guid accountId, DateTime start, DateTime end)
+        [HttpGet("householdReport/download/{accountId}/{lastMonths}")]
+        public async Task<FileContentResult> GetHouseholdReport(Guid accountId, int lastMonths)
         {
-            PdfFile file = await _reportService.GetHouseholdReport(accountId, start, end);
+            PdfFile file = await _reportService.GetHouseholdReport(accountId, lastMonths);
             return File(file.FileContents, file.ContentType, file.FileName);
         }
 

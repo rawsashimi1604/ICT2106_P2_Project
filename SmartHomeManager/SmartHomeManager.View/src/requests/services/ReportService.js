@@ -5,19 +5,19 @@ const GET_DEVICE_REPORT_API_ROUTE = `https://localhost:7140/api/analysis/device/
 const GET_DEVICES_BY_GUID_ROUTE = `https://localhost:7140/api/analysis/device/`
 const GET_HOUSEHOLD_REPORT_ROUTE = `https://localhost:7140/api/analysis/householdReport/download/`
 
-function getDeviceReport(deviceId, startDate , endDate){
-    return PdfDownloadService.get(`${GET_DEVICE_REPORT_API_ROUTE}${deviceId}?start=${startDate}&end=${endDate}`);
+function getDeviceReport(deviceId, lastMonths) {
+    return PdfDownloadService.get(`${GET_DEVICE_REPORT_API_ROUTE}${deviceId}/${lastMonths}`);
 }
 
-function getDevicesByGUID(accountId){
+function getDevicesByGUID(accountId) {
     return HttpService.get(GET_DEVICES_BY_GUID_ROUTE + accountId);
 }
 
-function getHouseholdReport(accountId){
-    return PdfDownloadService.get(GET_HOUSEHOLD_REPORT_ROUTE + accountId)
+function getHouseholdReport(accountId, lastMonths) {
+    return PdfDownloadService.get(GET_HOUSEHOLD_REPORT_ROUTE + accountId + "/" + lastMonths)
 }
 
-export default{
+export default {
     getDeviceReport,
     getDevicesByGUID,
     getHouseholdReport,

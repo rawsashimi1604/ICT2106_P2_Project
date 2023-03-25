@@ -20,6 +20,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
         private readonly AccountService _accountService;
         private readonly IDeviceInfoService _deviceLogService;
         private readonly MockDeviceService _deviceService;
+        private const double PRICE_PER_WATTS = 0.002;
 
         public ForecastService(
             IForecastDataRepository forecastDataRepository,
@@ -111,7 +112,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                             }
                         }
                         avgWattsPerDay = totalWatts/ numLogs;
-                        priceValue = avgWattsPerDay * 0.002;
+                        priceValue = avgWattsPerDay * PRICE_PER_WATTS;
 
                     }
 
@@ -169,7 +170,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
 
                     
                     double averageWatts = totalWatts / 96;
-                    priceValue= averageWatts * 0.002;
+                    priceValue= averageWatts * PRICE_PER_WATTS;
 
                     // Output the average watts for the month
                     Console.WriteLine("Average watts for {0}: {1}", startDate.ToString("MMMM"), averageWatts);

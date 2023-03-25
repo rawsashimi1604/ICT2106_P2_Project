@@ -14,5 +14,7 @@ namespace SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces
 
         public Task<IEnumerable<DeviceLog>> GetDeviceLogByIdAsync(Guid deviceId, DateTime start, DateTime end);
 
+        public Task<IEnumerable<DeviceLog>> GetDeviceLogByIdAsync(Guid deviceId);
+
     }
 }

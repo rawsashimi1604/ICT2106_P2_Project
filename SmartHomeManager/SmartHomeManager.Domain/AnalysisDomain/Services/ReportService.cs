@@ -18,21 +18,27 @@ using SmartHomeManager.Domain.DeviceLoggingDomain.Services;
 using SmartHomeManager.Domain.DeviceLoggingDomain.Mocks;
 using SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces;
 using System.Globalization;
+using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
+using PdfSharp.Charting;
 
 namespace SmartHomeManager.Domain.AnalysisDomain.Services
 {
     public class ReportService
     {
         private readonly MockDeviceService _mockDeviceService;
-        private readonly DeviceLogReadService _deviceLogReadService;
+        private readonly IDeviceInfoService _deviceLogService;
+        private readonly ICarbonFootprint _carbonFootprintService;
+        private readonly IForecast _forecastService;
+        private const double PRICE_PER_WATTS = 0.002;
 
-        public ReportService(IDeviceRepository deviceRepository, IDeviceLogRepository deviceLogRepository)
+        public ReportService(IDeviceRepository deviceRepository, IDeviceLogRepository deviceLogRepository, IForecast forecast)
         {
             _mockDeviceService = new(deviceRepository);
-            _deviceLogReadService = new(deviceLogRepository);
+            _deviceLogService = new DeviceLogReadService(deviceLogRepository);
+            _forecastService = forecast;
         }
 
-        public async Task<PdfFile> GetDeviceReport(Guid deviceId, string start, string end)
+        public async Task<PdfFile> GetDeviceReport(Guid deviceId, int lastMonths)
         {
             string fileName = "device.pdf";
 
@@ -44,30 +50,57 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             Device? device = await _mockDeviceService.GetDeviceById(deviceId);
 
             // Get device log
-            IEnumerable<DeviceLog> deviceLog = await _deviceLogReadService.GetDeviceLogByIdAsync(deviceId);
+            IEnumerable<DeviceLog> deviceLog = await _deviceLogService.GetDeviceLogByIdAsync(deviceId);
 
             // Retrieve fileBytes using pdfBuilder
             var pdfBuilder = new PdfBuilder(fileName, pdfDoc);
             pdfBuilder
                 .addDeviceDetails(device);
 
-            var totalUsage = 0.0;
 
-            var parsedStart = DateTime.Parse(start);
-            var parsedEnd = DateTime.Parse(end);
+            var overallUsage = 0.0;
+            var overallCost = 0.0;
+            var pastLastMonths = GetPastLastMonths(DateTime.Now.Year, DateTime.Now.Month, lastMonths);
 
-            pdfBuilder.Date(parsedStart, parsedEnd);
+            List<String> allMonthYearStrings = new List<String>();
+            List<double> allEnergyUsage = new List<double>();
+            List<double> allEnergyCost = new List<double>();
 
-            foreach (var log in deviceLog)
+     
+
+            foreach (var monthDt in pastLastMonths)
             {
-                if(log.DateLogged >= parsedStart && log.DateLogged <= parsedEnd)
+                System.Diagnostics.Debug.WriteLine("IN DEVICE PAST MONTHS : " + pastLastMonths);
+                // If its december, end date should be Jan of the following year
+                // If its not december, end date should be the following month 1st day.
+                var endDate = monthDt.Month == 12 ?
+                    new DateTime(monthDt.Year + 1, 1, 1, 0, 0, 0) :
+                    new DateTime(monthDt.Year, monthDt.Month + 1, 1, 0, 0, 0);
+
+                var monthData = await _deviceLogService.GetDeviceLogByIdAsync(deviceId,monthDt,endDate);
+
+                var totalUsage = 0.0;
+
+
+
+                foreach (var data in monthData)
                 {
-                    totalUsage = totalUsage + log.DeviceEnergyUsage;
+                    totalUsage += data.DeviceEnergyUsage;
+                    overallUsage += data.DeviceEnergyUsage;
                 }
+                var totalEnergyCost = PRICE_PER_WATTS * totalUsage;
+                overallCost += totalEnergyCost;
+                var monthYearString = $"{monthDt.ToString("MMM")}-{monthDt.Year}";
+
+                allMonthYearStrings.Add(monthYearString);
+                allEnergyCost.Add(totalEnergyCost);
+                allEnergyUsage.Add(totalUsage);
             }
 
-           pdfBuilder.addDeviceLogTotalUsage(totalUsage)
-                        .addGeneratedTime();
+            pdfBuilder.addMonthlyStats(lastMonths, allMonthYearStrings, allEnergyCost, allEnergyUsage)
+                      .addTotalUsageCost(overallUsage,overallCost)
+                      .addGeneratedTime();
+
            
             var fileBytes = pdfBuilder.Build();
 
@@ -75,7 +108,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             return new PdfFile(fileBytes, "application/force-download", fileName);  
         }
 
-        public async Task <PdfFile> GetHouseholdReport(Guid accountId, DateTime start, DateTime end)
+        public async Task <PdfFile> GetHouseholdReport(Guid accountId, int lastMonths)
         {
            
             string fileName = "household.pdf";
@@ -92,21 +125,60 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
 
             var totalHouseholdUsage = 0.0;
 
+            var pastLastMonths = GetPastLastMonths(DateTime.Now.Year, DateTime.Now.Month, lastMonths);
+            var householdUsage = 0.0;
+            var householdCost = 0.0;
+
             foreach (var device in deviceList)
             {
                 var totalDeviceUsage = 0.0;
                 pdfBuilder
                     .addHouseholdDetails(device);
-                // Get device log
-                var deviceLog = await _deviceLogReadService.GetDeviceLogByIdAsync(device.DeviceId, start, end);
-                foreach(var log in deviceLog)
+
+                List<String> allMonthYearStrings = new List<String>();
+                List<double> allEnergyUsage = new List<double>();
+                List<double> allEnergyCost = new List<double>();
+
+                var overallUsage = 0.0;
+                var overallCost = 0.0;
+                
+                foreach (var monthDt in pastLastMonths)
                 {
-                    totalDeviceUsage = totalDeviceUsage + log.DeviceEnergyUsage;  
+                    System.Diagnostics.Debug.WriteLine("PAST MONTHS: " + pastLastMonths);
+                    // If its december, end date should be Jan of the following year
+                    // If its not december, end date should be the following month 1st day.
+                    var endDate = monthDt.Month == 12 ?
+                        new DateTime(monthDt.Year + 1, 1, 1, 0, 0, 0) :
+                        new DateTime(monthDt.Year, monthDt.Month + 1, 1, 0, 0, 0);
+
+                    var monthData = await _deviceLogService.GetDeviceLogByIdAsync(device.DeviceId, monthDt, endDate);
+
+                    System.Diagnostics.Debug.WriteLine("HERE HERE: " + device.DeviceId + " MONTH : " + monthData);
+
+                    var totalUsage = 0.0;
+
+                    foreach (var data in monthData)
+                    {
+                        totalUsage += data.DeviceEnergyUsage;
+                        overallUsage += data.DeviceEnergyUsage;
+                    }
+                    var totalEnergyCost = PRICE_PER_WATTS * totalUsage;
+                    overallCost += totalEnergyCost;
+                    var monthYearString = $"{monthDt.ToString("MMM")}-{monthDt.Year}";
+
+                    allMonthYearStrings.Add(monthYearString);
+                    allEnergyCost.Add(totalEnergyCost);
+                    allEnergyUsage.Add(totalUsage);
                 }
-                pdfBuilder.addDeviceLogTotalUsage(totalDeviceUsage);
-                totalHouseholdUsage = totalHouseholdUsage + totalDeviceUsage;
+
+                householdUsage += overallUsage;
+                householdCost += overallCost;
+
+                pdfBuilder.addMonthlyStats(lastMonths, allMonthYearStrings, allEnergyCost, allEnergyUsage)
+                      .addTotalUsageCost(overallUsage, overallCost);
+
             }
-            pdfBuilder.addTotalHouseUsage(totalHouseholdUsage)
+            pdfBuilder.addHouseholdOverall(householdUsage,householdCost)
                       .addGeneratedTime();
 
             var filebytes = pdfBuilder.Build();
@@ -122,6 +194,33 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             return deviceList;
 
 
+        }
+
+        private List<DateTime> GetPastLastMonths(int year, int month, int lastMonths)
+        {
+            List<DateTime> result = new List<DateTime>();
+
+            for (int i = 0; i < lastMonths; i++)
+            {
+                int dtYear = year;
+                int dtMonth = month - i;
+                if (dtMonth <= 0)
+                {
+                    dtMonth += 12;
+                    dtYear -= 1;
+                }
+
+                DateTime dateTime = new DateTime(dtYear, dtMonth, 1);
+                result.Add(dateTime);
+            }
+
+            return result;
+        }
+
+        private bool generateChart(int lastMonths,List<String>Months, List<double> item)
+        {
+            
+            return true;
         }
     }
 }

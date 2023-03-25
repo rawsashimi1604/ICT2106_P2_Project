@@ -14,6 +14,9 @@
     <None Remove="itext7" />
     <None Remove="AnalysisDomain\Builders\" />
     <None Remove="AnalysisDomain\Proxies\" />
+    <None Remove="iTextSharp" />
+    <None Remove="itext7.commons" />
+    <None Remove="Chart.js" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SceneDomain\Services\" />
@@ -33,6 +36,8 @@
     <PackageReference Include="HtmlRenderer.PdfSharp" Version="1.5.0.6" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
     <PackageReference Include="itext7" Version="7.2.5" />
+    <PackageReference Include="itext7.commons" Version="7.2.5" />
+    <PackageReference Include="Chart.js" Version="3.7.1" />
   </ItemGroup>
 
   <ItemGroup>
