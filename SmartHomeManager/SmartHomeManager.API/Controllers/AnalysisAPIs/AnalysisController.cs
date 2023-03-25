@@ -5,6 +5,13 @@ using SmartHomeManager.Domain.Common;
 using SmartHomeManager.Domain.AnalysisDomain.Services;
 using SmartHomeManager.Domain.AnalysisDomain.Entities;
 using SmartHomeManager.Domain.DeviceDomain.Interfaces;
+
+using SmartHomeManager.Domain.Common.Exceptions;
+using SmartHomeManager.Domain.AnalysisDomain.DTOs;
+using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
+using Microsoft.Identity.Client;
+using SmartHomeManager.Domain.AccountDomain.Interfaces;
+
 using SmartHomeManager.Domain.DeviceDomain.Entities;
 using SmartHomeManager.Domain.AnalysisDomain.DTOs;
 using SmartHomeManager.Domain.Common.DTOs;
@@ -13,6 +20,7 @@ using SmartHomeManager.Domain.AccountDomain.Interfaces;
 using SmartHomeManager.Domain.Common.Exceptions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
+using SmartHomeManager.Domain.AccountDomain.Services;
 
 namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 {
@@ -22,22 +30,27 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
     {
         // TODO: Add private service variables
         private readonly ReportService _reportService;
+
+        
+        private readonly IForecast _forecastService;
         private readonly ICarbonFootprint _carbonFootprintService;
         private readonly AbstractDTOFactory _dtoFactory;
-    
 
-        // TODO: Create constructor to inject services...
         public AnalysisController(
-            IDeviceRepository deviceRepository, 
-            ICarbonFootprint carbonFootprint
-
-        ) 
+            IDeviceRepository deviceRepository,
+            IForecast forecast,
+            ICarbonFootprint carbonFootprint,
+            IDeviceLogRepository deviceLogRepository
+        )
         {
-            _reportService = new(deviceRepository);
+            _reportService = new(deviceRepository, deviceLogRepository);
             _carbonFootprintService = carbonFootprint;
-          //  _carbonFootprintService = new (carbonFootprintRepository, deviceLogRepository, accountRepository, deviceRepository);
+            _forecastService = forecast;
             _dtoFactory = new AnalysisDTOFactory();
         }
+
+        
+        
 
         // TODO: Create API Routes...
 
@@ -67,10 +80,10 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 
         // TODO: HouseholdReport Route
         // GET /api/analysis/householdReport/download/{accountId}
-        [HttpGet("householdReport/download")]
-        public async Task<FileContentResult> GetHouseholdReport()
+        [HttpGet("householdReport/download/{accountId}")]
+        public async Task<FileContentResult> GetHouseholdReport(Guid accountId)
         {
-            PdfFile file = await _reportService.GetHouseholdReport();
+            PdfFile file = await _reportService.GetHouseholdReport(accountId);
             return File(file.FileContents, file.ContentType, file.FileName);
         }
 
@@ -92,7 +105,7 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
             {
                 result = await _carbonFootprintService.GetCarbonFootprintAsync(accountId, month, year);
             }
-            catch(AccountNotFoundException ex)
+            catch (AccountNotFoundException ex)
             {
                 return StatusCode(
                     400,
@@ -114,7 +127,7 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
                         ex.Message
                     ));
             }
-            catch (NoCarbonFootprintDataException ex) 
+            catch (NoCarbonFootprintDataException ex)
             {
                 return StatusCode(
                     500,
@@ -138,7 +151,7 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
             }
 
             return StatusCode(
-                200, 
+                200,
                 _dtoFactory.CreateResponseDTO(
                     ResponseDTOType.ANALYSIS_CARBONFOOTPRINT_GETBYACCOUNTMONTHYEAR,
                     result,
@@ -146,6 +159,44 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
                     "Success"
                 )
             );
-        } 
+        }
+
+        [HttpGet("householdReport/energyUsageForecast/{accountId}/{timespan}")]
+        [Produces("application/json")]
+        public async Task<IActionResult> GetHouseholdForecast(Guid accountId, int timespan)
+        {
+            
+            // Use the service here...
+            IEnumerable<ForecastChartData> forecastChartDatas;
+
+            try
+            {
+                forecastChartDatas = await _forecastService.GetHouseHoldForecast(accountId, timespan);
+
+                return StatusCode(
+                    200,
+                    _dtoFactory.CreateResponseDTO(
+                        ResponseDTOType.ANAYLSIS_FORECAST_GETBYACCOUNTTIMESPAN,
+                        forecastChartDatas,
+                        200,
+                        "Success"
+                    )
+                );
+
+            }
+            catch (AccountNotFoundException ex)
+            {
+                return StatusCode(400, ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return StatusCode(400, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
+        }
     }
 }

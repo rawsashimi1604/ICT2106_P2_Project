@@ -14,18 +14,22 @@ using SmartHomeManager.Domain.DeviceDomain.Entities;
 using SmartHomeManager.Domain.DeviceLoggingDomain.Entities;
 using SmartHomeManager.Domain.DeviceDomain.Interfaces;
 using SmartHomeManager.Domain.DeviceDomain.Services;
+using SmartHomeManager.Domain.DeviceLoggingDomain.Services;
+using SmartHomeManager.Domain.DeviceLoggingDomain.Mocks;
+using SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces;
 
 namespace SmartHomeManager.Domain.AnalysisDomain.Services
 {
     public class ReportService
     {
         private readonly MockDeviceService _mockDeviceService;
+        private readonly DeviceLogReadService _deviceLogReadService;
 
-        public ReportService(IDeviceRepository deviceRepository)
+        public ReportService(IDeviceRepository deviceRepository, IDeviceLogRepository deviceLogRepository)
         {
             _mockDeviceService = new(deviceRepository);
+            _deviceLogReadService = new(deviceLogRepository);
         }
-        
 
         public async Task<PdfFile> GetDeviceReport(Guid deviceId)
         {
@@ -37,17 +41,26 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
 
             // Get device
             Device? device = await _mockDeviceService.GetDeviceById(deviceId);
-            
+
             // Get device log
-
-            // TODO: Null check (validation) ...
-
+            var deviceLog = await _deviceLogReadService.GetDeviceLogByIdAsync(deviceId);
 
             // Retrieve fileBytes using pdfBuilder
             var pdfBuilder = new PdfBuilder(fileName, pdfDoc);
             pdfBuilder
                 .addDeviceDetails(device)
-                .addGeneratedTime();
+                .addDeviceLogHeader();
+
+            var totalUsage = 0.0;
+
+            foreach(var log in deviceLog)
+            {
+                pdfBuilder.addDeviceLogById(log);
+                totalUsage = totalUsage + log.DeviceEnergyUsage;
+            }
+
+           pdfBuilder.addDeviceLogTotalUsage(totalUsage)
+                        .addGeneratedTime();
            
             var fileBytes = pdfBuilder.Build();
 
@@ -55,28 +68,41 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             return new PdfFile(fileBytes, "application/force-download", fileName);  
         }
 
-        public async Task <PdfFile> GetHouseholdReport()
+        public async Task <PdfFile> GetHouseholdReport(Guid accountId)
         {
-            Guid tempAccId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+           
             string fileName = "household.pdf";
 
             PdfDocument pdfDoc = new PdfDocument(new PdfWriter("../SmartHomeManager.Domain/AnalysisDomain/Files/" + fileName));
             iText.Layout.Document doc = new iText.Layout.Document(pdfDoc);
 
-            IEnumerable<Device> deviceList = await _mockDeviceService.GetAllDevicesByAccount(tempAccId);
+            IEnumerable<Device> deviceList = await _mockDeviceService.GetAllDevicesByAccount(accountId);
 
             var pdfBuilder = new PdfBuilder(fileName, pdfDoc);
 
             pdfBuilder
-                .addHouseholdHeader(tempAccId);
+                .addHouseholdHeader(accountId);
+
+            var totalHouseholdUsage = 0.0;
 
             foreach (var device in deviceList)
             {
+                var totalDeviceUsage = 0.0;
                 pdfBuilder
-                    .addHouseholdDetails(device);
+                    .addHouseholdDetails(device)
+                    .addDeviceLogHeader();
+                // Get device log
+                var deviceLog = await _deviceLogReadService.GetDeviceLogByIdAsync(device.DeviceId);
+                foreach(var log in deviceLog)
+                {
+                    pdfBuilder.addDeviceLogById(log);
+                    totalDeviceUsage = totalDeviceUsage + log.DeviceEnergyUsage;  
+                }
+                pdfBuilder.addDeviceLogTotalUsage(totalDeviceUsage);
+                totalHouseholdUsage = totalHouseholdUsage + totalDeviceUsage;
             }
-
-            pdfBuilder.addGeneratedTime();
+            pdfBuilder.addTotalHouseUsage(totalHouseholdUsage)
+                      .addGeneratedTime();
 
             var filebytes = pdfBuilder.Build();
 
