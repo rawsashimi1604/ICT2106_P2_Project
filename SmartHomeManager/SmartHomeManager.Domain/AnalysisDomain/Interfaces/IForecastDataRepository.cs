@@ -11,5 +11,11 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Interfaces
     public interface IForecastDataRepository : IGenericRepository<ForecastChartData>
     {
         public Task<IEnumerable<ForecastChartData>> GetAllByIdAsync(Guid id);
+
+        public Task<IEnumerable<ForecastChartData>> GetCachedData (
+            Guid accountId, string dateOfAnalysis, int timespanType
+        );
+
+
     }
 }

@@ -54,6 +54,7 @@ using SmartHomeManager.Domain.NotificationDomain.Services;
 using SmartHomeManager.Domain.NotificationDomain.Proxies;
 using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
 using SmartHomeManager.Domain.AnalysisDomain.Services;
+using SmartHomeManager.Domain.AnalysisDomain.Proxies;
 
 namespace SmartHomeManager.API;
 
@@ -142,8 +143,15 @@ public class Program
             var accountRepo = serviceProvider.GetRequiredService<IAccountRepository>();
             return new CarbonFootprintProxy(service, accountRepo);
         });
-        builder.Services.AddScoped<IForecastRepository, ForecastRepository>();
+
+
         builder.Services.AddScoped<IForecastDataRepository, ForecastDataRepository>();
+        builder.Services.AddScoped<ForecastService>();
+        builder.Services.AddScoped<IForecast, ForecastProxy>(serviceProvider => {
+            var service = serviceProvider.GetRequiredService<ForecastService>();
+            var accountRepo = serviceProvider.GetRequiredService<IAccountRepository>();
+            return new ForecastProxy(service, accountRepo);
+        });
 
 
         #endregion DEPENDENCY INJECTIONS

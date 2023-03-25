@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace SmartHomeManager.DataSource.AnalysisDataSource
 {
@@ -44,6 +45,19 @@ namespace SmartHomeManager.DataSource.AnalysisDataSource
             }
         }
 
+        public async Task<IEnumerable<ForecastChartData>> GetCachedData(Guid accountId, string dateOfAnalysis, int timespanType)
+        {   
+            IEnumerable<ForecastChartData> query = await _applicationDbContext.ForecastChartsData.ToListAsync();
+
+            IEnumerable<ForecastChartData> result = 
+                query.Where(x => 
+                    x.AccountId == accountId &&
+                    x.DateOfAnalysis == dateOfAnalysis &&
+                    x.TimespanType == timespanType
+                );
+            return result;
+        }
+
         public Task<bool> DeleteAsync(ForecastChartData entity)
         {
             try
@@ -79,7 +93,7 @@ namespace SmartHomeManager.DataSource.AnalysisDataSource
         public async Task<IEnumerable<ForecastChartData>> GetAllByIdAsync(Guid id)
         {
             IEnumerable<ForecastChartData> query = await _applicationDbContext.ForecastChartsData.ToListAsync();
-            IEnumerable<ForecastChartData> result = query.Where(x => x.ForecastChartId == id);
+            IEnumerable<ForecastChartData> result = query.Where(x => x.AccountId == id);
             return result;
         }
 
