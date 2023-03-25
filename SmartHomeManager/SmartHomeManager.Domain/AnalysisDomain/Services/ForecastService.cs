@@ -1,4 +1,5 @@
-﻿using SmartHomeManager.Domain.AccountDomain.Services;
+﻿using SmartHomeManager.Domain.AccountDomain.Interfaces;
+using SmartHomeManager.Domain.AccountDomain.Services;
 using SmartHomeManager.Domain.AnalysisDomain.Entities;
 using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
 using SmartHomeManager.Domain.Common.Exceptions;
@@ -12,7 +13,7 @@ using SmartHomeManager.Domain.DeviceLoggingDomain.Services;
 
 namespace SmartHomeManager.Domain.AnalysisDomain.Services
 {
-    public class ForecastService
+    public class ForecastService : IForecast
     {
 
         private readonly IForecastDataRepository _forecastDataRepository;
@@ -22,13 +23,13 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
 
         public ForecastService(
             IForecastDataRepository forecastDataRepository,
-            AccountService accountRepository,
+            IAccountRepository accountRepository,
             IDeviceRepository deviceRepository,
             IDeviceLogRepository deviceLogRepository
         )
         {
             _forecastDataRepository= forecastDataRepository;
-            _accountService = accountRepository;
+            _accountService = new(accountRepository);
             _deviceLogService = new DeviceLogReadService(deviceLogRepository);
             _deviceService = new MockDeviceService(deviceRepository);
         }
@@ -39,16 +40,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             //=> pass in account id and return all the device under that id
             IEnumerable<Device> devices = await _deviceService.GetAllDevicesByAccount(accountId);
 
-            var accountToBeFound = await _accountService.GetAccountByAccountId(accountId);
             List<ForecastChartData> result = new List<ForecastChartData>();
-
-            //Check if account exist
-            if (accountToBeFound == null)
-            {
-                System.Diagnostics.Debug.WriteLine("Account not found");
-                return result;
-            }
-
             // Get the current date and time
             DateTime now = DateTime.Now;
 

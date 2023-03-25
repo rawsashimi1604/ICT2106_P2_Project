@@ -22,6 +22,9 @@ namespace SmartHomeManager.DataSource
     {
         public static async Task Seed(ApplicationDbContext context)
         {
+
+            System.Diagnostics.Debug.WriteLine("Started Seeding");
+
             // Delete all existing database objects
             context.Accounts.RemoveRange(context.Accounts);
             await context.SaveChangesAsync();
@@ -40,6 +43,8 @@ namespace SmartHomeManager.DataSource
             context.ForecastChartsData.RemoveRange(context.ForecastChartsData);
 
             await context.SaveChangesAsync();
+
+            System.Diagnostics.Debug.WriteLine("Finished deleting...");
 
             // create objects
             var accounts = new List<Account>

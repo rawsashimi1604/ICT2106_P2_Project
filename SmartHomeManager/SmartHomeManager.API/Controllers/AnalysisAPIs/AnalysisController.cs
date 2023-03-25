@@ -32,23 +32,20 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         private readonly ReportService _reportService;
 
         
-        private readonly ForecastService _forecastService;
+        private readonly IForecast _forecastService;
         private readonly ICarbonFootprint _carbonFootprintService;
         private readonly AbstractDTOFactory _dtoFactory;
 
         public AnalysisController(
             IDeviceRepository deviceRepository,
+            IForecast forecast,
             ICarbonFootprint carbonFootprint,
-            IDeviceLogRepository deviceLogRepository,
-            AccountService accountRepository,
-            IForecastDataRepository forecastDataRepository
-
+            IDeviceLogRepository deviceLogRepository
         )
         {
             _reportService = new(deviceRepository, deviceLogRepository);
             _carbonFootprintService = carbonFootprint;
-            _forecastService = new(forecastDataRepository, accountRepository, deviceRepository, deviceLogRepository);
-            //  _carbonFootprintService = new (carbonFootprintRepository, deviceLogRepository, accountRepository, deviceRepository);
+            _forecastService = forecast;
             _dtoFactory = new AnalysisDTOFactory();
         }
 
@@ -188,6 +185,10 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 
             }
             catch (AccountNotFoundException ex)
+            {
+                return StatusCode(400, ex.Message);
+            }
+            catch (ArgumentException ex)
             {
                 return StatusCode(400, ex.Message);
             }
