@@ -49,22 +49,19 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             // Retrieve fileBytes using pdfBuilder
             var pdfBuilder = new PdfBuilder(fileName, pdfDoc);
             pdfBuilder
-                .addDeviceDetails(device)
-                .addDeviceLogHeader();
+                .addDeviceDetails(device);
 
             var totalUsage = 0.0;
 
             var parsedStart = DateTime.Parse(start);
             var parsedEnd = DateTime.Parse(end);
 
-            pdfBuilder.Tester(parsedStart);
-            pdfBuilder.Tester(parsedEnd);
+            pdfBuilder.Date(parsedStart, parsedEnd);
 
             foreach (var log in deviceLog)
             {
                 if(log.DateLogged >= parsedStart && log.DateLogged <= parsedEnd)
                 {
-                    pdfBuilder.addDeviceLogById(log);
                     totalUsage = totalUsage + log.DeviceEnergyUsage;
                 }
             }
@@ -99,13 +96,11 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             {
                 var totalDeviceUsage = 0.0;
                 pdfBuilder
-                    .addHouseholdDetails(device)
-                    .addDeviceLogHeader();
+                    .addHouseholdDetails(device);
                 // Get device log
                 var deviceLog = await _deviceLogReadService.GetDeviceLogByIdAsync(device.DeviceId, start, end);
                 foreach(var log in deviceLog)
                 {
-                    pdfBuilder.addDeviceLogById(log);
                     totalDeviceUsage = totalDeviceUsage + log.DeviceEnergyUsage;  
                 }
                 pdfBuilder.addDeviceLogTotalUsage(totalDeviceUsage);

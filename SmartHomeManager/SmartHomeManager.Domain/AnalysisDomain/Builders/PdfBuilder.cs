@@ -71,18 +71,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
 
             return this;
         }
-//-----------------------------------------------------------------------------
-        // Builder to add the device log header
-        public PdfBuilder addDeviceLogHeader()
-        {
-            // Create header for device log table
-            _document.Add(new Paragraph("Device Log")
-                .SetBold()
-                .SetFontSize(15)
-                .SetUnderline()
-                .SetTextAlignment(TextAlignment.CENTER));
-            return this;
-        }
+
 //-----------------------------------------------------------------------------
         // Builder to add the device total energy usage
         public PdfBuilder addDeviceLogTotalUsage(double totalUsage)
@@ -94,35 +83,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
             return this;
         }
 
-//-----------------------------------------------------------------------------
-        // Builder to add the device log by the device id
-        public PdfBuilder addDeviceLogById(DeviceLog deviceLog)
-        {
-            //_document.Add(new Paragraph($"Log {deviceLog.LogId}")
-            //    .SetTextAlignment(TextAlignment.LEFT)
-            //    .SetBold());
 
-            _document.Add(new Paragraph($"Date: {deviceLog.DateLogged}, End Time: {deviceLog.EndTime} \n Energy Usage: {deviceLog.DeviceEnergyUsage}"));
-
-            //// Create a table for device log
-            //float[] deviceLogTableWidth = { 150F, 300F };
-            //Table deviceLogTable = new Table(deviceLogTableWidth);
-
-            //// Add cells to the device log table
-            //deviceLogTable.AddCell(new Cell().Add(new Paragraph("Date Logged")
-            //    .SetBold()));
-            //deviceLogTable.AddCell(new Cell().Add(new Paragraph($"{deviceLog.DateLogged}")));
-            //deviceLogTable.AddCell(new Cell().Add(new Paragraph("End Time")
-            //    .SetBold()));
-            //deviceLogTable.AddCell(new Cell().Add(new Paragraph($"{deviceLog.EndTime}")));
-            //deviceLogTable.AddCell(new Cell().Add(new Paragraph("Energy Usage")
-            //    .SetBold()));
-            //deviceLogTable.AddCell(new Cell().Add(new Paragraph($"{deviceLog.DeviceEnergyUsage}")));
-
-            //_document.Add(deviceLogTable);
-
-            return this;
-        }
 //-----------------------------------------------------------------------------
         // Builder to add the devices
         public PdfBuilder addHouseholdDetails(Device device) {
@@ -199,9 +160,12 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
         }
 //-----------------------------------------------------------------------------
         // Builder to test
-        public PdfBuilder Tester(DateTime start)
+        public PdfBuilder Date(DateTime start, DateTime end)
         {
-            _document.Add(new Paragraph($"Time: {start}"));
+            _document.Add(new Paragraph($"Report From {start} to {end}")
+                .SetTextAlignment(TextAlignment.CENTER)
+                .SetBold()
+                .SetFontSize(15));
             return this;
         }
 //-----------------------------------------------------------------------------
