@@ -55,15 +55,19 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                     {
                         totalUsage += deviceLog.DeviceEnergyUsage;
                     }
-                    double averageTotalUsage = totalUsage / NUMOFDAYS;
+                    System.Diagnostics.Debug.WriteLine("totalUsage:" + totalUsage);
+                    double averageUsage = totalUsage / NUMOFDAYS;
+                    System.Diagnostics.Debug.WriteLine("averageTotalUsage:" + averageUsage);
                     double nationalAverage = getAverageWatt("Else");
-                    DeviceType deviceType = device.DeviceType;
-                    if (deviceType != null)
-                    {
-                        nationalAverage = getAverageWatt(deviceType.DeviceTypeName);
-                    }
+                    String deviceType = device.DeviceTypeName;
+                    System.Diagnostics.Debug.WriteLine("DeviceTypeName:" + deviceType);
+                    nationalAverage = getAverageWatt(deviceType);
+                    System.Diagnostics.Debug.WriteLine("nationalAverage:" + nationalAverage);
+                    System.Diagnostics.Debug.WriteLine("averageUsage:" + averageUsage);
+                    System.Diagnostics.Debug.WriteLine("EEI:" + nationalAverage / averageUsage * 100);
+                    System.Diagnostics.Debug.WriteLine("Mined:" + Math.Min(nationalAverage / averageUsage * 100, 100));
                     //Calculate EEI
-                    double EEI = Math.Min(nationalAverage / averageTotalUsage * 100, 100);
+                    double EEI = Math.Min(nationalAverage / averageUsage * 100, 100);
 
                     //Create new EnergyEfficiency Object and add it into the database and list
                     energyEfficiency = new EnergyEfficiency
@@ -135,9 +139,9 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             switch (deviceName)
             {
                 case "Fan":
-                    return 75;
+                    return 90;
                 case "Light":
-                    return 40;
+                    return 50;
                 case "Aircon":
                     return 2100;
                 default:
