@@ -8,7 +8,7 @@ using SmartHomeManager.Domain.DeviceDomain.Interfaces;
 
 namespace SmartHomeManager.Domain.DeviceDomain.Services
 {
-    public class MockDeviceService
+    public class MockDeviceService : IDeviceService
 
     {
         private readonly IDeviceRepository _deviceRepository;

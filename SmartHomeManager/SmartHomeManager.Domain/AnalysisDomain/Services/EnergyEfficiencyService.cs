@@ -41,6 +41,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
 
         public async Task<EnergyEfficiency> GetDeviceEnergyEfficiency(Guid deviceId)
         {
+
             try
             {
                 EnergyEfficiency? energyEfficiency = await _energyEfficiencyRepository.GetByDeviceIdAsync(deviceId);
@@ -56,7 +57,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                     }
 
                     double averageUsage = totalUsage / NUMOFDAYS;
-                    double nationalAverage = getAverageWatt(device.DeviceTypeName);
+                    double nationalAverage = GetAverageWatt(device.DeviceTypeName);
                     
                     //Calculate EEI
                     double EEI = Math.Min(nationalAverage / averageUsage * 100, 100);
@@ -118,16 +119,16 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             return allEnergyEfficiency;
         }
 
-        private double getAverageWatt(String deviceName)
+        private double GetAverageWatt(String deviceName)
         {
             switch (deviceName)
             {
                 case "Fan":
-                    return 50;
+                    return 15;
                 case "Light":
-                    return 25;
+                    return 10;
                 case "Aircon":
-                    return 1500;
+                    return 1000;
                 default:
                     return 500.0;
             }

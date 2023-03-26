@@ -40,7 +40,9 @@ namespace SmartHomeManager.DataSource
             context.RuleHistories.RemoveRange(context.RuleHistories);
             context.DeviceProducts.RemoveRange(context.DeviceProducts);
 
+            context.CarbonFootprints.RemoveRange(context.CarbonFootprints);
             context.ForecastChartsData.RemoveRange(context.ForecastChartsData);
+            context.EnergyEfficiency.RemoveRange(context.EnergyEfficiency);
 
             await context.SaveChangesAsync();
 

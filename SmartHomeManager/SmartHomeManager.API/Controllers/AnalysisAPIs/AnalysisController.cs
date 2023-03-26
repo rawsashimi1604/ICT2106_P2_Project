@@ -11,7 +11,7 @@ using SmartHomeManager.Domain.DeviceDomain.Entities;
 using SmartHomeManager.Domain.AnalysisDomain.DTOs;
 using SmartHomeManager.Domain.Common.DTOs;
 using SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces;
-
+using SmartHomeManager.Domain.AccountDomain.Interfaces;
 
 namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 {
@@ -20,68 +20,168 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
     public class AnalysisController : ControllerBase
     {
         // TODO: Add private service variables
-        private readonly ReportService _reportService;
-
-        
+        private readonly IReport _reportService;
         private readonly IForecast _forecastService;
         private readonly ICarbonFootprint _carbonFootprintService;
         private readonly AbstractDTOFactory _dtoFactory;
         private readonly IEnergyEfficiency _energyEfficiencyService;
+        
 
         public AnalysisController(
-            IDeviceRepository deviceRepository,
+            IReport report,
             IForecast forecast,
             ICarbonFootprint carbonFootprint,
-            IDeviceLogRepository deviceLogRepository,
-            IEnergyEfficiency energyEfficiency
+            IEnergyEfficiency energyEfficiency,
+            IEnergyEfficiencyRepository energyEfficiencyRepository
         )
         {
-            _reportService = new(deviceRepository, deviceLogRepository, forecast);
+            _reportService = report;
             _carbonFootprintService = carbonFootprint;
             _energyEfficiencyService = energyEfficiency;
             _forecastService = forecast;
             _dtoFactory = new AnalysisDTOFactory();
         }
 
-        // TODO: Create API Routes...
-
-        // TODO: Device Route
         // GET /api/analysis/device/download/{deviceId}
         [HttpGet("device/download/{deviceId}/{lastMonths}")]
-        public async Task<FileContentResult> GetDeviceReport(Guid deviceId, int lastMonths)
+        public async Task<IActionResult> GetDeviceReport(Guid deviceId, int lastMonths)
         {
-            PdfFile file = await _reportService.GetDeviceReport(deviceId, lastMonths);
-            return File(file.FileContents, file.ContentType, file.FileName);
+            PdfFile file;
+            try
+            {
+                file = await _reportService.GetDeviceReport(deviceId, lastMonths);
+            }
+            catch (ArgumentException ex)
+            {
+                return StatusCode(
+                    400,
+                    _dtoFactory.CreateResponseDTO(
+                        ResponseDTOType.ANALYSIS_REPORTDEVICE,
+                        null,
+                        400,
+                        ex.Message
+                    )
+                );
+            }
+            catch (DeviceNotFoundException ex)
+            {
+                return StatusCode(
+                    400,
+                    _dtoFactory.CreateResponseDTO(
+                        ResponseDTOType.ANALYSIS_REPORTDEVICE,
+                        null,
+                        400,
+                        ex.Message
+                    )
+                );
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(
+                    500,
+                    _dtoFactory.CreateResponseDTO(
+                        ResponseDTOType.ANALYSIS_REPORTDEVICE,
+                        null,
+                        500,
+                        ex.Message
+                    )
+                );
+            }
+
+            return (FileContentResult) File(file.FileContents, file.ContentType, file.FileName);
         }
 
+        // GET /api/analysis/householdReport/download/{accountId}
+        [HttpGet("householdReport/download/{accountId}/{lastMonths}")]
+        public async Task<IActionResult> GetHouseholdReport(Guid accountId, int lastMonths)
+        {
 
-        // TODO: GET /api/device/{accountId}
+            PdfFile file;
+
+            try
+            {
+                file = await _reportService.GetHouseholdReport(accountId, lastMonths);
+
+            }
+            catch (ArgumentException ex)
+            {
+                return StatusCode(
+                    400,
+                    _dtoFactory.CreateResponseDTO(
+                        ResponseDTOType.ANALYSIS_REPORTHOUSEHOLD,
+                        null,
+                        400,
+                        ex.Message
+                    )
+                );
+            }
+            catch (AccountNotFoundException ex)
+            {
+                return StatusCode(
+                    400,
+                    _dtoFactory.CreateResponseDTO(
+                        ResponseDTOType.ANALYSIS_REPORTHOUSEHOLD,
+                        null,
+                        400,
+                        ex.Message
+                    )
+                );
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(
+                    500,
+                    _dtoFactory.CreateResponseDTO(
+                        ResponseDTOType.ANALYSIS_REPORTHOUSEHOLD,
+                        null,
+                        500,
+                        ex.Message
+                    )
+                );
+            }
+
+            return (FileContentResult)File(file.FileContents, file.ContentType, file.FileName);
+
+        }
+
+        // GET /api/analysis/device/{accountId}
         [HttpGet("device/{accountId}")]
         [Produces("application/json")]
         public async Task<IActionResult> GetDevicesByGUID(Guid accountId)
         {
             // Use the service here...
-            IEnumerable<Device> devices;
+            IEnumerable<Device> devices = new List<Device>();
 
-            devices = await _reportService.GetDevicesByGUID(accountId);
+            try
+            {
+                devices = await _reportService.GetDevicesByGUID(accountId);
+            }
+            catch(AccountNotFoundException ex)
+            {
+                return StatusCode(
+                    400,
+                    _dtoFactory.CreateResponseDTO(
+                        ResponseDTOType.DEVICE_GETBYACCOUNT, devices, 400, ex.Message
+                    )
+                );
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(
+                    500,
+                    _dtoFactory.CreateResponseDTO(
+                        ResponseDTOType.DEVICE_GETBYACCOUNT, devices, 400, ex.Message
+                    )
+                );
+            }
 
             return StatusCode(200, _dtoFactory.CreateResponseDTO
                 (ResponseDTOType.DEVICE_GETBYACCOUNT, devices, 200, "Success"));
         }
 
-        // TODO: HouseholdReport Route
-        // GET /api/analysis/householdReport/download/{accountId}
-        [HttpGet("householdReport/download/{accountId}/{lastMonths}")]
-        public async Task<FileContentResult> GetHouseholdReport(Guid accountId, int lastMonths)
-        {
-            PdfFile file = await _reportService.GetHouseholdReport(accountId, lastMonths);
-            return File(file.FileContents, file.ContentType, file.FileName);
-        }
-
-        // TODO: HouseholdEnergyUsageForecast Route
         // GET /api/analysis/householdReport/energyUsageForecast/{accountId}
 
-        // TODO: HouseholdEnergyEfficiency Route
+
         // GET /api/analysis/householdReport/energyEfficiency/{accountId}
         [HttpGet("householdReport/energyEfficiency/{accountId}")]
         [Produces("application/json")]
@@ -138,7 +238,6 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
                 );
         }
 
-        // TODO: CarbonFootprint Route
         // GET /api/analysis/householdReport/carbonFootprint/{accountId}
         [HttpGet("householdReport/carbonFootprint/{accountId}/{year}-{month}")]
         [Produces("application/json")]
@@ -206,13 +305,14 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
             );
         }
 
+        // GET /api/analysis/householdReport/energyUsageForecast/{accountId}/{timespan}
         [HttpGet("householdReport/energyUsageForecast/{accountId}/{timespan}")]
         [Produces("application/json")]
         public async Task<IActionResult> GetHouseholdForecast(Guid accountId, int timespan)
         {
             
             // Use the service here...
-            IEnumerable<ForecastChartData> forecastChartDatas;
+            IEnumerable<ForecastChartData> forecastChartDatas = new List<ForecastChartData>();
 
             try
             {
@@ -231,15 +331,30 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
             }
             catch (AccountNotFoundException ex)
             {
-                return StatusCode(400, ex.Message);
+                return StatusCode(400, _dtoFactory.CreateResponseDTO(
+                        ResponseDTOType.ANAYLSIS_FORECAST_GETBYACCOUNTTIMESPAN,
+                        forecastChartDatas,
+                        400,
+                        ex.Message
+                    ));
             }
             catch (ArgumentException ex)
             {
-                return StatusCode(400, ex.Message);
+                return StatusCode(400, _dtoFactory.CreateResponseDTO(
+                        ResponseDTOType.ANAYLSIS_FORECAST_GETBYACCOUNTTIMESPAN,
+                        forecastChartDatas,
+                        400,
+                        ex.Message
+                    ));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(400, _dtoFactory.CreateResponseDTO(
+                        ResponseDTOType.ANAYLSIS_FORECAST_GETBYACCOUNTTIMESPAN,
+                        forecastChartDatas,
+                        500,
+                        ex.Message
+                    ));
             }
 
         }

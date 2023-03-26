@@ -34,9 +34,6 @@ function Report() {
 
     const handleTimeChange = (event) => {
         setSelectedTimeframe(event.target.value);
-        startDate = subtractMonths(startDate, event.target.value);
-        setStartTime(format(startDate, 'yyyy-MM-dd kk:mm:ss'));
-        setEndTime(format(endDate, 'yyyy-MM-dd kk:mm:ss'));
     }
 
     function getDevicesByGUID() {
