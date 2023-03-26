@@ -16,7 +16,6 @@ namespace SmartHomeManager.Domain.AnalysisDomain.DTOs
             {
                 case ResponseDTOType.DEVICE_GETBYACCOUNT:
                     return CreateGetDevicesDTO((IEnumerable<Device>)data, statusCode, statusMessage);
-
                 case ResponseDTOType.ANALYSIS_CARBONFOOTPRINT_GETBYACCOUNTMONTHYEAR:
                     return CreateGetCarbonfootprintDTO((IEnumerable<CarbonFootprint>)data, statusCode, statusMessage);
                 case ResponseDTOType.ANALYSIS_ENERGYEFFICIENCY_GETALL:
@@ -106,6 +105,8 @@ namespace SmartHomeManager.Domain.AnalysisDomain.DTOs
                         EnergyEfficiencyId = energyEfficiency.EnergyEfficiencyId,
                         DeviceID = energyEfficiency.DeviceId,
                         EnergyEfficiencyIndex = energyEfficiency.EnergyEfficiencyIndex,
+                        DeviceName = energyEfficiency.Device.DeviceName,
+                        DeviceTypeName = energyEfficiency.Device.DeviceTypeName
                     });
                 }
             }

@@ -16,7 +16,13 @@ namespace SmartHomeManager.Domain.AnalysisDomain.DTOs
     public class GetEnergyEfficiencyDTOData : IDTOData
     {
         public Guid EnergyEfficiencyId { get; set; }
+
+        public String DeviceName { get; set; }
+        public String DeviceTypeName { get; set; }
+        
         public Guid DeviceID { get; set; }
         public double EnergyEfficiencyIndex { get; set; }
+
+
     }
 }
