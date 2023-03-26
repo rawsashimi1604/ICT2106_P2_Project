@@ -36,41 +36,56 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
         {
             // Add header of the report
             _document.Add(new Paragraph($"Device {device.DeviceId} REPORT")
-                .SetTextAlignment(TextAlignment.LEFT)
+                .SetTextAlignment(TextAlignment.CENTER)
                 .SetBold()
-                .SetFontSize(15));
+                .SetFontSize(15)
+                .SetBorder(new SolidBorder(1))
+                .SetBackgroundColor(ColorConstants.LIGHT_GRAY));
+
+            _document.Add(new Paragraph(" "));
+            _document.Add(new Paragraph(" "));
+            _document.Add(new Paragraph(" "));
+
 
             // Create a table for device
             float[] deviceTableWidths = { 150F, 300F };
-            Table deviceTable = new Table(deviceTableWidths);
+            Table deviceTable = new Table(deviceTableWidths).SetTextAlignment(TextAlignment.CENTER);
 
             // Add cells to the device table
             deviceTable.AddCell(new Cell().Add(new Paragraph("Device ID")
-                .SetBold()));
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
             deviceTable.AddCell(new Cell().Add(new Paragraph($"{device.DeviceId}")));
             deviceTable.AddCell(new Cell().Add(new Paragraph("Device Name")
-                .SetBold()));
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
             deviceTable.AddCell(new Cell().Add(new Paragraph($"{device.DeviceName}")));
             deviceTable.AddCell(new Cell().Add(new Paragraph("Device Brand")
-                .SetBold()));
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
             deviceTable.AddCell(new Cell().Add(new Paragraph($"{device.DeviceBrand}")));
             deviceTable.AddCell(new Cell().Add(new Paragraph("Device Model")
-                .SetBold()));
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
             deviceTable.AddCell(new Cell().Add(new Paragraph($"{device.DeviceModel}")));
             deviceTable.AddCell(new Cell().Add(new Paragraph("Device Type")
-                .SetBold()));
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
             deviceTable.AddCell(new Cell().Add(new Paragraph($"{device.DeviceType}")));
             deviceTable.AddCell(new Cell().Add(new Paragraph("Device Type Name")
-                .SetBold()));
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
             deviceTable.AddCell(new Cell().Add(new Paragraph($"{device.DeviceTypeName}")));
             deviceTable.AddCell(new Cell().Add(new Paragraph("Device Serial Number")
-                .SetBold()));
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
             deviceTable.AddCell(new Cell().Add(new Paragraph($"{device.DeviceSerialNumber}")));
             deviceTable.AddCell(new Cell().Add(new Paragraph("Device Watts")
-                .SetBold()));
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
             deviceTable.AddCell(new Cell().Add(new Paragraph($"{device.DeviceWatts}")));
 
-            _document.Add(deviceTable);
+            _document.Add(deviceTable).SetTextAlignment(TextAlignment.CENTER);
 
             return this;
         }
@@ -93,14 +108,15 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
 
             // Create header for device table
             _document.Add(new Paragraph($"Device {device.DeviceId}")
+                .SetTextAlignment(TextAlignment.CENTER)
                 .SetBold()
                 .SetFontSize(15)
-                .SetUnderline()
-                .SetTextAlignment(TextAlignment.LEFT));
+                .SetBorder(new SolidBorder(1))
+                .SetBackgroundColor(ColorConstants.LIGHT_GRAY));
 
             // Create a table for device
             float[] deviceTableWidths = { 150F, 300F };
-            Table deviceTable = new Table(deviceTableWidths);
+            Table deviceTable = new Table(deviceTableWidths).SetTextAlignment(TextAlignment.CENTER);
 
 
             // Add cells to the device table
@@ -154,13 +170,14 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
         }
 //-----------------------------------------------------------------------------
         // Builder to add header for the household
-        public PdfBuilder addHouseholdHeader(Guid accId)
+        public PdfBuilder addHouseholdHeader(Account account)
         {
-            _document.Add(new Paragraph($"Household Report For Account {accId}")
+            _document.Add(new Paragraph($"Household Report For {account.Username}")
                 .SetBold()
                 .SetFontSize(20)
                 .SetBorder(new SolidBorder(1))
-                .SetBackgroundColor(ColorConstants.LIGHT_GRAY));
+                .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
+                .SetTextAlignment(TextAlignment.CENTER));
             return this;
         }
 //-----------------------------------------------------------------------------
@@ -213,7 +230,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
 
             // Create a table for device
             float[] tableWidths = { 150F, 150F, 150F };
-            Table table = new Table(tableWidths);
+            Table table = new Table(tableWidths).SetTextAlignment(TextAlignment.CENTER);
 
             // Add table headers to the table
             table.AddCell(new Cell().Add(new Paragraph("Month")
@@ -243,7 +260,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
         // Builder to add the total usage and total cost
         public PdfBuilder addTotalUsageCost(double overallUsage, double overallCost)
         {
-            Paragraph front = new Paragraph().SetTextAlignment(TextAlignment.LEFT);
+            Paragraph front = new Paragraph().SetTextAlignment(TextAlignment.CENTER).SetBorder(new SolidBorder(1)).SetBackgroundColor(ColorConstants.YELLOW);
             front.Add("The total Usage for this device is ");
             Text usage = new Text($"{overallUsage.ToString("0.##")} Watts ")
                 .SetFontColor(ColorConstants.RED)
@@ -320,7 +337,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
 
             // Create a table for device
             float[] tableWidths = { 150F, 150F, 150F };
-            Table table = new Table(tableWidths);
+            Table table = new Table(tableWidths).SetTextAlignment(TextAlignment.CENTER);
 
             // Add table headers to the table
             table.AddCell(new Cell().Add(new Paragraph("Month")
@@ -393,10 +410,12 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
 
         public PdfBuilder addEnergyEfficiency(IEnumerable<EnergyEfficiency> energyEfficiency)
         {
+            var total = 0.0;
+            var avg = 0.0;
 
             // Create a table for device
             float[] tableWidths = { 150F, 150F, 150F };
-            Table table = new Table(tableWidths);
+            Table table = new Table(tableWidths).SetTextAlignment(TextAlignment.CENTER);
 
             // Add table headers to the table
             table.AddCell(new Cell().Add(new Paragraph("Device ID")
@@ -412,13 +431,74 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
             foreach(var data in energyEfficiency)
             {
                 table.AddCell(new Cell().Add(new Paragraph($"{data.DeviceId}")));
-                table.AddCell(new Cell().Add(new Paragraph($"{data.EnergyEfficiencyIndex}")));
+                table.AddCell(new Cell().Add(new Paragraph($"{data.EnergyEfficiencyIndex.ToString("0.##")}")));
                 table.AddCell(new Cell().Add(new Paragraph($"{data.DateOfAnalysis}")));
+                total += data.EnergyEfficiencyIndex;
             }
 
+            avg = total / energyEfficiency.Count();
+
+            _document.Add(new Paragraph(" "));
+            _document.Add(new Paragraph(" "));
+            _document.Add(new Paragraph(" "));
+
+            Paragraph p = new Paragraph().SetTextAlignment(TextAlignment.CENTER).SetBorder(new SolidBorder(1)).SetBackgroundColor(ColorConstants.YELLOW);
+
+            Text sentence = new Text("The Average Energy Efficiency Index for the household is ");
+            Text average = new Text(avg.ToString("0.##"))
+                .SetBold()
+                .SetFontColor(ColorConstants.RED);
+
+            p.Add(sentence);
+            p.Add(average);
+
             _document.Add(table);
+            _document.Add(new Paragraph(" "));
+            _document.Add(new Paragraph(" "));
+            _document.Add(p);
 
 
+
+            return this;
+        }
+
+//-----------------------------------------------------------------------------
+        public PdfBuilder addEnergyHeader()
+        {
+            _document.Add(new Paragraph(" "));
+            _document.Add(new Paragraph(" "));
+            _document.Add(new Paragraph(" "));
+
+            _document.Add(new Paragraph("Section C: Energy Effiency Index")
+                .SetBold()
+                .SetFontSize(15)
+                .SetTextAlignment(TextAlignment.CENTER));
+
+            _document.Add(new Paragraph(" "));
+            _document.Add(new Paragraph("The following section shows the Energy Efficiency Index (EEI) for each of the devices. The EEI is used to show how much resources are " +
+                "spent by an appliance to perform its functions. "));
+
+            _document.Add(new Paragraph(" "));
+
+            return this;
+        }
+
+//-----------------------------------------------------------------------------
+        public PdfBuilder addAccountDetails(Account account)
+        {
+            Paragraph p = new Paragraph().SetBorder(new SolidBorder(1));
+            Text name = new Text($"Username: {account.Username}\n");
+            Text address = new Text($"Address: {account.Address}\n");
+            Text email = new Text($"Email: {account.Email}\n");
+            Text devices = new Text($"Number of Devices: {account.DevicesOnboarded}\n");
+
+            p.Add(name);
+            p.Add(address);
+            p.Add(email);
+            p.Add(devices);
+
+            _document.Add(p);
+            
             return this;
         }
 

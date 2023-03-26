@@ -11,7 +11,7 @@ using SmartHomeManager.Domain.DeviceDomain.Entities;
 using SmartHomeManager.Domain.AnalysisDomain.DTOs;
 using SmartHomeManager.Domain.Common.DTOs;
 using SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces;
-
+using SmartHomeManager.Domain.AccountDomain.Interfaces;
 
 namespace SmartHomeManager.API.Controllers.AnalysisAPIs
 {
@@ -27,16 +27,18 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         private readonly ICarbonFootprint _carbonFootprintService;
         private readonly AbstractDTOFactory _dtoFactory;
         private readonly IEnergyEfficiency _energyEfficiencyService;
+        
 
         public AnalysisController(
             IDeviceRepository deviceRepository,
             IForecast forecast,
             ICarbonFootprint carbonFootprint,
             IDeviceLogRepository deviceLogRepository,
-            IEnergyEfficiency energyEfficiency
+            IEnergyEfficiency energyEfficiency,
+            IAccountRepository accountRepository
         )
         {
-            _reportService = new(deviceRepository, deviceLogRepository, forecast, energyEfficiency);
+            _reportService = new(deviceRepository, deviceLogRepository, forecast, energyEfficiency, accountRepository);
             _carbonFootprintService = carbonFootprint;
             _energyEfficiencyService = energyEfficiency;
             _forecastService = forecast;

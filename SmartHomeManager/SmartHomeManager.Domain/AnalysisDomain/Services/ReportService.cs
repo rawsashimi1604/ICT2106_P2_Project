@@ -19,6 +19,9 @@ using SmartHomeManager.Domain.DeviceLoggingDomain.Mocks;
 using SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces;
 using System.Globalization;
 using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
+using SmartHomeManager.Domain.AccountDomain.Interfaces;
+using SmartHomeManager.Domain.AccountDomain.Services;
+using SmartHomeManager.Domain.AccountDomain.Entities;
 
 namespace SmartHomeManager.Domain.AnalysisDomain.Services
 {
@@ -29,14 +32,16 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
         private readonly ICarbonFootprint _carbonFootprintService;
         private readonly IForecast _forecastService;
         private readonly IEnergyEfficiency _energyService;
+        private readonly IAccountService _accountService;
         private const double PRICE_PER_WATTS = 0.002;
 
-        public ReportService(IDeviceRepository deviceRepository, IDeviceLogRepository deviceLogRepository, IForecast forecast, IEnergyEfficiency energy)
+        public ReportService(IDeviceRepository deviceRepository, IDeviceLogRepository deviceLogRepository, IForecast forecast, IEnergyEfficiency energy, IAccountRepository account)
         {
             _mockDeviceService = new(deviceRepository);
             _deviceLogService = new DeviceLogReadService(deviceLogRepository);
             _forecastService = forecast;
             _energyService = energy;
+            _accountService = new AccountService(account);
         }
 
         public async Task<PdfFile> GetDeviceReport(Guid deviceId, int lastMonths)
@@ -123,8 +128,11 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
 
             var pdfBuilder = new PdfBuilder(fileName, pdfDoc);
 
+            Account account = await _accountService.GetAccountByAccountId(accountId);
+
             pdfBuilder
-                .addHouseholdHeader(accountId);
+                .addHouseholdHeader(account)
+                .addAccountDetails(account);
 
             var totalHouseholdUsage = 0.0;
 
@@ -185,21 +193,14 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             }
             pdfBuilder.addHouseholdOverall(householdUsage, householdCost);
 
-            System.Diagnostics.Debug.WriteLine("I LOVE JIAN WEI");
-
-
             IEnumerable<ForecastChartData> forecastChartDatas = await _forecastService.GetHouseHoldForecast(accountId, 1);
 
             IEnumerable<EnergyEfficiency> energyEffiency = await _energyService.GetAllDeviceEnergyEfficiency(accountId);
 
-            System.Diagnostics.Debug.WriteLine("I LOVE EDMUND");
-
-
-
-
 
             pdfBuilder.addForecastReport(forecastChartDatas)
-                    //.addEnergyEfficiency(energyEffiency)
+                    .addEnergyHeader()
+                    .addEnergyEfficiency(energyEffiency)
                     .addGeneratedTime();
 
 
