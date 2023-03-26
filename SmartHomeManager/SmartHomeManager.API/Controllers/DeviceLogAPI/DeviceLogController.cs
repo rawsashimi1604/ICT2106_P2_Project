@@ -34,7 +34,7 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
         public DeviceLogController(IDeviceLogRepository deviceLogRepository, IRoomRepository roomRepository, IDeviceInformationServiceMock deviceInformationService)
         {
            _logReadService = new DeviceLogReadService(deviceLogRepository);
-            _logWriteService = new DeviceLogWriteService(deviceLogRepository);
+            _logWriteService = new DeviceLogWriteService(TimeSpan.FromHours(1), deviceLogRepository);
             _roomReadService = new RoomReadService(roomRepository, deviceInformationService);
             
         }
@@ -102,23 +102,43 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
 
         // date passed shld be start date of the week
         // GET: api/Analytics/DeviceLog/deviceId?date=xxxxxx
-        [HttpGet("{deviceId}/{date}")]
+        [HttpGet("weekly/{deviceId}")]
         [Consumes("application/json")]
         [Produces("application/json")]
-
-        public ActionResult<IEnumerable<DeviceLog>> GetWeeklyDeviceLog(Guid deviceId, DateTime date)
+        public ActionResult<IEnumerable<DeviceLog>> GetWeeklyDeviceLog(Guid deviceId)
         {
             var totalUsage = 0.0;
             var totalActivity = 0.0;
-            var result = _logReadService.GetDeviceLogByDay(deviceId, date);
-           // if (!result.Any()) return NotFound();
-            foreach (var item in result)
+            var result = new List<DeviceLog>();
+            var deviceStateStr = "";
+
+
+            // get logs for the last 7 days
+            for (int i = 0; i < 7; i++)
             {
-                totalUsage += item.DeviceEnergyUsage;
-                totalActivity += item.DeviceActivity;
+                var date = DateTime.Parse("2023-02-19 10:00:00").Date.AddDays(-i);
+                var log = _logReadService.GetDeviceLogByDay(deviceId, date);
+                result.AddRange(log);
+
+                foreach (var item in log)
+                {
+                    totalUsage += item.DeviceEnergyUsage;
+                    totalActivity += item.DeviceActivity;
+                }
             }
-            double[] res = { totalUsage, totalActivity };
-            return Ok(res);
+
+            var deviceState = result.Last().DeviceState;
+            if (deviceState == false)
+            {
+                deviceStateStr = "Off";
+            }
+            else
+            {
+                deviceStateStr = "Running";
+            }
+
+            var resultObject = new { DeviceId = deviceId, DeviceState = deviceStateStr, TotalUsage = totalUsage, TotalActivity = totalActivity };
+            return Ok(resultObject);
         }
 
 
@@ -162,7 +182,7 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
         }
 
 
-        /*[HttpPut("stateOn/{deviceId}")]
+        [HttpPut("stateOn/{deviceId}")]
         [Consumes("application/json")]
         [Produces("application/json")]
         public async Task<IActionResult> PutDeviceLog(DateTime date, Guid deviceId)
@@ -190,19 +210,7 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
 
             return NoContent();
 
-        }*/
-
-
-
-        /*        // GET: api/Analytics/GetDevicesInProfile/profileId
-                [HttpGet("GetDevicesInProfile/{profileId}")]
-                public ActionResult<IEnumerable<Device>> GetDevicesFromProfile(Guid profileId)
-                {
-                    var result = _logReadService.GetAllDevicesInProfile(profileId);
-                    if (!result.Any()) return NotFound();
-
-                    return Ok(result);
-                }*/
+        }
 
 
         // POST: api/DeviceLogs
@@ -212,6 +220,34 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
         {
         var resp = await _logWriteService.AddDeviceLog(deviceLogWebRequest.DeviceId);
         return Ok(resp);
+        }
+
+        public IActionResult StartUpdatingLogs()
+        {
+            // Start updating logs using the LogWriteService instance
+            _logWriteService.StartUpdatingDeviceLogs();
+            return Ok();
+        }
+
+        public IActionResult StopUpdatingLogs()
+        {
+            // Stop updating logs using the LogWriteService instance
+            _logWriteService.StopUpdatingDeviceLogs();
+            return Ok();
+        }
+
+        public IActionResult SetHourlyUpdate()
+        {
+            // Set the interval to hourly
+            _logWriteService.Interval = TimeSpan.FromHours(1);
+            return Ok();
+        }
+
+        public IActionResult SetDailyUpdate()
+        {
+            // Set the interval to daily
+            _logWriteService.Interval = TimeSpan.FromDays(1);
+            return Ok();
         }
 
 

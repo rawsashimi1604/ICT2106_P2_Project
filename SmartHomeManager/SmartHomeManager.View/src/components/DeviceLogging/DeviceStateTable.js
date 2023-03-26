@@ -14,6 +14,7 @@ import ActionButtons from './ActionButtons';
 
 function DeviceStateTable({ devicesData, deviceLog }) {
     const [updatedLog, setUpdatedLog] = useState([]);
+    console.log(deviceLog)
 
     const DisplayData = devicesData?.map((device) => {
         const logData = deviceLog.find((log) => log.deviceId === device.deviceId);
@@ -45,6 +46,7 @@ function DeviceStateTable({ devicesData, deviceLog }) {
                             <Th>Device State</Th>
                             <Th>Energy Usage</Th>
                             <Th>Activity</Th>
+                            <Th>Actions</Th>
                         </Tr>
                     </Thead>
                     <Tbody>{DisplayData}</Tbody>

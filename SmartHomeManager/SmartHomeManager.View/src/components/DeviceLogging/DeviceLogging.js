@@ -126,7 +126,7 @@ function DeviceLogging() {
             <Heading alignContent="center">Device Log</Heading>
             <Text>This page displays charts to illustrate the energy usage and activity level of devices.</Text>
             <Box paddingTop="5">  
-                <text>Please select device to compare{'\n'}</text>
+                <Text>Please select device to compare{'\n'}</Text>
                 <Select
                     onChange={onChange}
                     defaultValue={""}

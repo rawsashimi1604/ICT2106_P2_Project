@@ -21,23 +21,6 @@ function DeviceSchedulerFilter({ room }) {
     const [activeTab, setActiveTab] = useState(0);
     const [selectedOption, setSelectedOption] = useState('Weekly');
 
-    useEffect(() => {
-        const getDevicesFromRoom = async () => {
-            try {
-                const res = await axios.get(
-                    `https://localhost:7140/api/DeviceLog/getDevices/${room}`
-                );
-                const devices = res.data;
-                setAllDevices(devices);
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        if (room) {
-            getDevicesFromRoom();
-        }
-    }, [room]);
-
     const getDailyLogs = async (deviceId) => {
         try {
             const res = await axios.get(
@@ -61,44 +44,75 @@ function DeviceSchedulerFilter({ room }) {
         }
     };
 
+    useEffect(() => {
+        const getDevicesFromRoom = async () => {
+            try {
+                const res = await axios.get(
+                    `https://localhost:7140/api/DeviceLog/getDevices/${room}`
+                );
+                const devices = res.data;
+                setAllDevices(devices);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        if (room) {
+            getDevicesFromRoom();
+        }
+    }, [room, selectedOption]); // add selectedOption as a dependency
+
+    useEffect(() => {
+        const getLogs = async () => {
+            if (selectedOption === 'Daily') {
+                const dailyLogs = [];
+                for (let i = 0; i < allDevices.length; i++) {
+                    const logs = await getDailyLogs(allDevices[i].deviceId);
+                    dailyLogs.push(logs);
+                }
+                setDailyDeviceLog(dailyLogs);
+                setWeeklyDeviceLog([]);
+            } else if (selectedOption === 'Weekly') {
+                const weeklyLogs = [];
+                for (let i = 0; i < allDevices.length; i++) {
+                    const logs = await getWeeklyLogs(allDevices[i].deviceId);
+                    weeklyLogs.push(logs);
+                }
+                setWeeklyDeviceLog(weeklyLogs);
+                setDailyDeviceLog([]);
+            }
+        };
+        getLogs();
+    }, [selectedOption, allDevices]); // add selectedOption and allDevices as dependencies
 
     const handleOptionSelect = async (event) => {
         const value = event.target.value;
         setSelectedOption(value);
-
-        if (value === 'Daily') {
-            const dailyLogs = await getDailyLogs('33333333-3333-3333-3333-333333333333');
-            setDailyDeviceLog([dailyLogs]);
-            setWeeklyDeviceLog([]);
-        } else if (value === 'Weekly') {
-            const weeklyLogs = [];
-            for (let i = 0; i < allDevices.length; i++) {
-                const logs = await getWeeklyLogs(allDevices[i]);
-                weeklyLogs.push(logs);
-            }
-            setWeeklyDeviceLog(weeklyLogs);
-            setDailyDeviceLog([]);
-        }
     };
 
     return (
         <Box>
-            <Select value={selectedOption} onChange={handleOptionSelect} mb="1em">
+            <Select 
+                defaultValue={""}
+                onChange={handleOptionSelect} mb="1em">
+                <option disabled={true} value=""> Select an option </option>
                 <option value="Weekly">Weekly</option>
                 <option value="Daily">Daily</option>
             </Select>
             {selectedOption === 'Weekly' && (
-                <DeviceStateTable devicesData={allDevices} deviceLog={weeklyDeviceLog}  />
+                <DeviceStateTable devicesData={allDevices} deviceLog={weeklyDeviceLog} />
             )}
             {selectedOption === 'Daily' && (
-                <DeviceStateTable devicesData={allDevices} deviceLog={dailyDeviceLog}  />
+                <DeviceStateTable devicesData={allDevices} deviceLog={dailyDeviceLog} />
             )}
-            {dailyDeviceLog.map((log, index) =>
-                <Text key={index}> {log.deviceId} {log.deviceState} {log.totalUsage} { log.totalActivity}</Text>
-            )
-            }
+            {dailyDeviceLog.map((log, index) => (
+                <Text key={index}>
+                    {' '}
+                    {log.deviceId} {log.deviceState} {log.totalUsage} {log.totalActivity}
+                </Text>
+            ))}
         </Box>
     );
 }
+
 
 export default DeviceSchedulerFilter;
