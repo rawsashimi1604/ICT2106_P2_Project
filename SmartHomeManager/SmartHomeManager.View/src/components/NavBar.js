@@ -164,5 +164,9 @@ const NAV_ITEMS = [
     label: "Analytics",
     href: "/analytics",
   },
+  {
+    label: "Limit",
+    href:"/limit"
+  },
     
 ];
