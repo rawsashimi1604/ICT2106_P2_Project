@@ -17,6 +17,6 @@ namespace SmartHomeManager.Domain.AnalysisDomain.DTOs
     {
         public Guid EnergyEfficiencyId { get; set; }
         public Guid DeviceID { get; set; }
-        public Double EnergyEfficiencyIndex { get; set; }
+        public double EnergyEfficiencyIndex { get; set; }
     }
 }

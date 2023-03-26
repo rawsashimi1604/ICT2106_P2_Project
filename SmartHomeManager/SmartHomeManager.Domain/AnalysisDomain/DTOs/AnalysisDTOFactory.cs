@@ -93,18 +93,18 @@ namespace SmartHomeManager.Domain.AnalysisDomain.DTOs
                 }
             };
         }
-        private ResponseDTO CreateGetEnergyEfficiencyDTO(IEnumerable<EnergyEfficiency> data, int statusCode, string statusMessage)
+        private GetEnergyEfficiencyDTO CreateGetEnergyEfficiencyDTO(IEnumerable<EnergyEfficiency> data, int statusCode, string statusMessage)
         {
             List<GetEnergyEfficiencyDTOData> getEnergyEfficiency = new List<GetEnergyEfficiencyDTOData>();
 
-            if (getEnergyEfficiency != null)
+            if (data != null)
             {
-                foreach (var energyEfficiency in getEnergyEfficiency)
+                foreach (EnergyEfficiency energyEfficiency in data)
                 {
                     getEnergyEfficiency.Add(new GetEnergyEfficiencyDTOData
                     {
                         EnergyEfficiencyId = energyEfficiency.EnergyEfficiencyId,
-                        DeviceID = energyEfficiency.DeviceID,
+                        DeviceID = energyEfficiency.DeviceId,
                         EnergyEfficiencyIndex = energyEfficiency.EnergyEfficiencyIndex,
                     });
                 }

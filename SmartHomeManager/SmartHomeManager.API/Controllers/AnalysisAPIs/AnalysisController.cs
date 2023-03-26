@@ -31,7 +31,7 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         // TODO: Add private service variables
         private readonly ReportService _reportService;
 
-        
+
         private readonly ForecastService _forecastService;
         private readonly ICarbonFootprint _carbonFootprintService;
         private readonly AbstractDTOFactory _dtoFactory;
@@ -44,15 +44,19 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
             IForecastRepository forecastRepository,
             IAccountRepository accountRepository,
             IEnergyEfficiencyRepository energyEfficiencyRepository
+
         )
         {
             _reportService = new(deviceRepository, deviceLogRepository);
             _carbonFootprintService = carbonFootprint;
             _forecastService = new(forecastRepository, accountRepository);
-            _energyEfficiencyService = new(energyEfficiencyRepository, deviceRepository, accountRepository);
+            _energyEfficiencyService = new(energyEfficiencyRepository, deviceRepository, accountRepository, deviceLogRepository);
             //  _carbonFootprintService = new (carbonFootprintRepository, deviceLogRepository, accountRepository, deviceRepository);
             _dtoFactory = new AnalysisDTOFactory();
         }
+
+
+
 
         // TODO: Create API Routes...
 
@@ -100,7 +104,8 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         {
             IEnumerable<EnergyEfficiency> allEnergyEfficiency = new List<EnergyEfficiency>();
 
-            try {
+            try
+            {
                 allEnergyEfficiency = await _energyEfficiencyService.GetAllDeviceEnergyEfficiency(accountId);
             }
             catch (DBReadFailException ex)
@@ -114,7 +119,7 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
                     ex.Message)
                 );
             }
-            catch(AccountNotFoundException ex)
+            catch (AccountNotFoundException ex)
             {
                 return StatusCode(
                 400,
@@ -125,7 +130,8 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
                     ex.Message)
                 );
             }
-            catch(Exception ex) {
+            catch (Exception ex)
+            {
                 return StatusCode(
                 500,
                 _dtoFactory.CreateResponseDTO(
@@ -135,7 +141,8 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
                     ex.Message)
                 );
             }
-
+            if (allEnergyEfficiency != null) {
+            }
             return StatusCode(
                 200,
                 _dtoFactory.CreateResponseDTO(
@@ -150,7 +157,7 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         // GET /api/analysis/householdReport/carbonFootprint/{accountId}
         [HttpGet("householdReport/carbonFootprint/{accountId}/{year}-{month}")]
         [Produces("application/json")]
-        public async Task<IActionResult> GetCarbonFootprintData(Guid accountId,int month, int year)
+        public async Task<IActionResult> GetCarbonFootprintData(Guid accountId, int month, int year)
         {
             IEnumerable<CarbonFootprint> result = new List<CarbonFootprint>();
 
