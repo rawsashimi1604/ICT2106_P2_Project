@@ -10,6 +10,8 @@ using SmartHomeManager.Domain.DeviceLoggingDomain.Entities.DTO;
 using SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces;
 using SmartHomeManager.Domain.DeviceLoggingDomain.Mocks;
 using SmartHomeManager.Domain.RoomDomain.Entities;
+using SmartHomeManager.Domain.RoomDomain.Interfaces;
+using SmartHomeManager.Domain.RoomDomain.Services;
 using static System.Reflection.Metadata.BlobBuilder;
 
 namespace SmartHomeManager.Domain.DeviceLoggingDomain.Services
@@ -21,38 +23,34 @@ namespace SmartHomeManager.Domain.DeviceLoggingDomain.Services
     public class DeviceLogReadService
     {
         private readonly IDeviceLogRepository _deviceLogRepository;
-        private readonly IProfileService _profileService;
+
         //private readonly IDeviceWattsService _deviceWattsService;
 
         public DeviceLogReadService(IDeviceLogRepository deviceLogRepository)
         {
             _deviceLogRepository = deviceLogRepository;
-           // _profileService = profileService;
            //_deviceWattsService = deviceWattsService;
         }
 
-        // get devices from profile
-       public IEnumerable<Device> GetAllDevicesInProfile(Guid profileId){
-            return _profileService.GetDevicesByProfile(profileId);
-        }
 
 
         // get watts from devices
-/*        public int getDeviceWatts(Guid deviceId){
-            return _deviceWattsService.getDeviceWatts(deviceId);
-        }*/
+        /*        public int getDeviceWatts(Guid deviceId){
+                    return _deviceWattsService.getDeviceWatts(deviceId);
+                }*/
 
-        public IEnumerable<GetDeviceLogWebRequest> GetDeviceLogByDay(Guid deviceId, DateTime date)
+        public IEnumerable<DeviceLog> GetDeviceLogByDay(Guid deviceId, DateTime date)
         {
-            var res = _deviceLogRepository.Get(deviceId, date);
-            var resp = res.Select(log => new GetDeviceLogWebRequest
+            var logs = _deviceLogRepository.Get(deviceId, date);
+            var deviceLogs = logs.Select(log => new DeviceLog
             {
-                DeviceEnergyUsage = (int)log.DeviceEnergyUsage,
-                DeviceActivity = (int)log.DeviceActivity,
+                DeviceId = log.DeviceId,
+                DeviceState = log.DeviceState,
+                DeviceEnergyUsage = log.DeviceEnergyUsage,
+                DeviceActivity = log.DeviceActivity
             }).ToList();
 
-            return resp;
-
+            return deviceLogs;
         }
 
         // look for logs (to update)
@@ -75,6 +73,11 @@ namespace SmartHomeManager.Domain.DeviceLoggingDomain.Services
 
             return resp;
 
+        }
+
+        public async Task<DeviceLog?> GetLatestDeviceLog(Guid deviceId) {
+            var res = await _deviceLogRepository.GetByLatest(deviceId);
+            return res;
         }
 
         public async Task<IEnumerable<GetDeviceLogWebRequest>> GetAllDeviceLogs()

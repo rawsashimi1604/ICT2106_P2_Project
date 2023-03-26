@@ -71,6 +71,16 @@ namespace SmartHomeManager.DataSource.DeviceLogDataSource
             return result;
         }
 
+        public async Task<DeviceLog?> GetByLatest(Guid deviceId)
+        {
+            var latestLog = await _dbSet
+                .Where(l => l.DeviceId == deviceId)
+                .OrderByDescending(l => l.DateLogged)
+                .FirstOrDefaultAsync();
+
+            return latestLog;
+        }
+
 
         public async Task SaveChangesAsync()
         {

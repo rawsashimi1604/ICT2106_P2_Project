@@ -31,6 +31,7 @@ namespace SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces
         Task<DeviceLog?> Get(DateTime date);
 
         void Update(DeviceLog entity);
+        Task<DeviceLog?> GetByLatest(Guid deviceId);
 
         Task SaveChangesAsync();
     }
