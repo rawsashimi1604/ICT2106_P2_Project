@@ -15,11 +15,7 @@ import {
 } from '@chakra-ui/icons'
 
 import ReportService from 'requests/services/ReportService'
-import { data } from './EfficiencyBar';
-import { format } from 'date-fns';
-
-
-
+// import { format } from 'date-fns';
 
 function Report() {
 
@@ -43,8 +39,8 @@ function Report() {
     const handleTimeChange = (event) =>{
         setSelectedTimeframe(event.target.value);
         startDate = subtractMonths(startDate,event.target.value);
-        setStartTime(format(startDate,'yyyy-MM-dd kk:mm:ss'));
-        setEndTime(format(endDate, 'yyyy-MM-dd kk:mm:ss'));
+        // setStartTime(format(startDate,'yyyy-MM-dd kk:mm:ss'));
+        // setEndTime(format(endDate, 'yyyy-MM-dd kk:mm:ss'));
     }
     
     function subtractMonths(date, month){

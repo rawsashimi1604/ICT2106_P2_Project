@@ -136,6 +136,14 @@ public class Program
         });
 
         // ANALYSIS
+        builder.Services.AddScoped<IEnergyEfficiencyRepository, EnergyEfficiencyRepository>();
+        builder.Services.AddScoped<EnergyEfficiencyService>();
+        builder.Services.AddScoped<IEnergyEfficiency, EnergyEfficiencyProxy>(serviceProvider => {
+            var service = serviceProvider.GetRequiredService<EnergyEfficiencyService>();
+            var accountRepo = serviceProvider.GetRequiredService<IAccountRepository>();
+            return new EnergyEfficiencyProxy(service, accountRepo);
+        });
+
         builder.Services.AddScoped<ICarbonFootprintRepository, CarbonFootprintRepository>();
         builder.Services.AddScoped<CarbonFootprintService>();
         builder.Services.AddScoped<ICarbonFootprint, CarbonFootprintProxy>(serviceProvider => {
@@ -143,7 +151,6 @@ public class Program
             var accountRepo = serviceProvider.GetRequiredService<IAccountRepository>();
             return new CarbonFootprintProxy(service, accountRepo);
         });
-
 
         builder.Services.AddScoped<IForecastDataRepository, ForecastDataRepository>();
         builder.Services.AddScoped<ForecastService>();

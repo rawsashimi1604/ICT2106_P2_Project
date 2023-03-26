@@ -18,7 +18,7 @@ import { Line } from "react-chartjs-2";
 import { BiErrorCircle } from "react-icons/bi"
 import { CgSpinnerAlt } from "react-icons/cg";
 import CarbonFootprintService from "requests/services/CarbonFootprintService";
-import "./CarbonChart.css"
+import "./Analytics.css"
 
 const options = {
   legend: {

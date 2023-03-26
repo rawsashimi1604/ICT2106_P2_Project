@@ -7,10 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SmartHomeManager.Domain.DeviceDomain.Entities;
+using SmartHomeManager.Domain.Common;
 
 namespace SmartHomeManager.Domain.AnalysisDomain.Entities
 {
-    public class EnergyEfficiency
+    public class EnergyEfficiency : IEntity
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid EnergyEfficiencyId { get; set; }
@@ -20,6 +21,9 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Entities
 
         [Required]
         public double EnergyEfficiencyIndex { get; set; }
+
+        [Required]
+        public DateTime DateOfAnalysis { get; set; }
 
         [ForeignKey("DeviceId")]
         public Device Device { get; set; }

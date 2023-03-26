@@ -1,8 +1,10 @@
 ﻿using System;
+using SmartHomeManager.API.Controllers.NotificationAPIs.DTOs;
 using SmartHomeManager.Domain.AnalysisDomain.Entities;
 using SmartHomeManager.Domain.Common;
 using SmartHomeManager.Domain.Common.DTOs;
 using SmartHomeManager.Domain.DeviceDomain.Entities;
+using SmartHomeManager.Domain.NotificationDomain.Entities;
 using SmartHomeManager.Domain.AnalysisDomain.DTOs;
 
 namespace SmartHomeManager.Domain.AnalysisDomain.DTOs
@@ -15,9 +17,10 @@ namespace SmartHomeManager.Domain.AnalysisDomain.DTOs
             {
                 case ResponseDTOType.DEVICE_GETBYACCOUNT:
                     return CreateGetDevicesDTO((IEnumerable<Device>)data, statusCode, statusMessage);
-
                 case ResponseDTOType.ANALYSIS_CARBONFOOTPRINT_GETBYACCOUNTMONTHYEAR:
                     return CreateGetCarbonfootprintDTO((IEnumerable<CarbonFootprint>)data, statusCode, statusMessage);
+                case ResponseDTOType.ANALYSIS_ENERGYEFFICIENCY_GETALL:
+                    return CreateGetEnergyEfficiencyDTO((IEnumerable<EnergyEfficiency>)data, statusCode, statusMessage);
 
                 case ResponseDTOType.ANAYLSIS_FORECAST_GETBYACCOUNTTIMESPAN:
                     return CreateGetForecastChartDataDTO((IEnumerable<ForecastChartData>)data, statusCode, statusMessage);
@@ -26,7 +29,8 @@ namespace SmartHomeManager.Domain.AnalysisDomain.DTOs
             }
         }
 
-        public GetDevicesDTO CreateGetDevicesDTO(
+
+        private GetDevicesDTO CreateGetDevicesDTO(
             IEnumerable<Device> devices,
             int statusCode,
             string statusMessage
@@ -57,7 +61,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.DTOs
             };
         }
 
-        public GetCarbonFootprintDTO CreateGetCarbonfootprintDTO(
+        private GetCarbonFootprintDTO CreateGetCarbonfootprintDTO(
             IEnumerable<CarbonFootprint> carbonFootprints,
             int statusCode,
             string statusMessage
@@ -90,8 +94,37 @@ namespace SmartHomeManager.Domain.AnalysisDomain.DTOs
                 }
             };
         }
+        private GetEnergyEfficiencyDTO CreateGetEnergyEfficiencyDTO(IEnumerable<EnergyEfficiency> data, int statusCode, string statusMessage)
+        {
+            List<GetEnergyEfficiencyDTOData> getEnergyEfficiency = new List<GetEnergyEfficiencyDTOData>();
 
-        public GetForecastChartDataDTO CreateGetForecastChartDataDTO(
+            if (data != null)
+            {
+                foreach (EnergyEfficiency energyEfficiency in data)
+                {
+                    getEnergyEfficiency.Add(new GetEnergyEfficiencyDTOData
+                    {
+                        EnergyEfficiencyId = energyEfficiency.EnergyEfficiencyId,
+                        DeviceID = energyEfficiency.DeviceId,
+                        EnergyEfficiencyIndex = energyEfficiency.EnergyEfficiencyIndex,
+                        DeviceName = energyEfficiency.Device.DeviceName,
+                        DeviceTypeName = energyEfficiency.Device.DeviceTypeName
+                    });
+                }
+            }
+
+            return new GetEnergyEfficiencyDTO
+            {
+                Data = getEnergyEfficiency,
+                Response = new ResponseInformation
+                {
+                    ServerMessage = statusMessage,
+                    StatusCode = statusCode
+                }
+            };
+        }
+
+        private GetForecastChartDataDTO CreateGetForecastChartDataDTO(
             IEnumerable<ForecastChartData> forecastChartDatas,
             int statusCode,
             string statusMessage
