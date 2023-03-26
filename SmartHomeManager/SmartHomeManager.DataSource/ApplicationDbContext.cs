@@ -12,6 +12,7 @@ using SmartHomeManager.Domain.HomeSecurityDomain.Entities;
 using SmartHomeManager.Domain.APIDomain.Entities;
 using SmartHomeManager.Domain.EnergyProfileDomain.Entities;
 using SmartHomeManager.Domain.AnalysisDomain.Entities;
+using SmartHomeManager.Domain.DeviceEnergyLimit.Entities;
 
 namespace SmartHomeManager.DataSource;
 
@@ -48,6 +49,7 @@ public class ApplicationDbContext : DbContext
         ForecastCharts = base.Set<ForecastChart>();
         ForecastChartsData = base.Set<ForecastChartData>();
         EnergyEfficiency = base.Set<EnergyEfficiency>();
+        DeviceEnergyLimit = base.Set<DeviceEnergyLimit>();
     }
 
     public DbSet<Account> Accounts { get; }
@@ -79,6 +81,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<ForecastChart> ForecastCharts { get; }
     public DbSet<ForecastChartData> ForecastChartsData { get; }
     public DbSet<EnergyEfficiency> EnergyEfficiency { get; }
+    public DbSet<DeviceEnergyLimit> DeviceEnergyLimit { get; }
 
 
 

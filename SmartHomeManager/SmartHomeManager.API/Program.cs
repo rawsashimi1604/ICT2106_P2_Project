@@ -46,6 +46,10 @@ using SmartHomeManager.Domain.AccountDomain.Entities;
 using SmartHomeManager.Domain.Common;
 using SmartHomeManager.Domain.NotificationDomain.Entities;
 using SmartHomeManager.Domain.NotificationDomain.Interfaces;
+using SmartHomeManager.Domain.DeviceEnergyLimit.Interfaces;
+using SmartHomeManager.Domain.DeviceEnergyLimit.Entities;
+using SmartHomeManager.DataSource.DeviceEnergyLimitDataSource;
+using SmartHomeManager.Domain.DeviceEnergyLimit;
 
 namespace SmartHomeManager.API;
 
@@ -63,6 +67,49 @@ public class Program
                 policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
             });
         });
+
+        // MODULE 3
+        builder.Services.AddScoped<IGenericRepository<History>, DataSource.HistoryDataSource.HistoryRepository>();
+        builder.Services.AddScoped<IRuleHistoryRepository<RuleHistory>, RuleHistoryRepository>();
+        //builder.Services.AddScoped<IDeviceEnergyLimitRepository<SmartHomeManager.Domain.DeviceEnergyLimit.Entities.DeviceEnergyLimit>, DeviceEnergyLimitRepository>();
+        builder.Services.AddScoped<IDeviceEnergyThreshold, DeviceEnergyLimitService>();
+        builder.Services.AddScoped<IGenericRepository<Rule>, RuleRepository>();
+        builder.Services.AddScoped<IGenericRepository<EnergyProfile>, EnergyProfileRepository>();
+        builder.Services.AddScoped<IGenericRepository<Scenario>, ScenarioRepository>();
+        builder.Services.AddScoped<IGetRulesService, GetRulesServices>();
+        builder.Services.AddScoped<IGetScenariosService, GetScenariosService>();
+        builder.Services.AddScoped<IInformDirectorServices, DirectorServices>();
+        builder.Services.AddScoped<IEnergyProfileServices, EnergyProfileServices>();
+        builder.Services.AddScoped<IGenericRepository<HomeSecurity>, HomeSecurityRepository>();
+        builder.Services.AddScoped<IGenericRepository<HomeSecuritySetting>, HomeSecuritySettingRepository>();
+        builder.Services.AddScoped<IHomeSecurityDeviceDefinitionRepository<HomeSecurityDeviceDefinition>, HomeSecurityDeviceDefinitionRepository>();
+
+        // builder.Services.AddHostedService<DirectorServices>();
+
+        // DEVICE
+        builder.Services.AddScoped<IDeviceRepository, DeviceRepository>();
+        builder.Services.AddScoped<IDeviceTypeRepository, DeviceTypeRepository>();
+
+
+        // DEVICELOG
+        builder.Services.AddScoped<IDeviceLogRepository, DeviceLogRepository>();
+        // builder.Services.AddScoped<IProfileService, ProfileRepositoryMock>();
+
+        // NOTIFICATION
+        // Inject dependencies for Notification Repository, so all implementations of IGenericRepository<Notification> will use the NotificationRepository implementation...
+        builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+        builder.Services.AddScoped<IGenericRepository<Account>, MockAccountRepository>();
+
+        // ROOM
+        builder.Services.AddScoped<IRoomRepository, RoomRepository>();
+        builder.Services.AddScoped<IDeviceInformationServiceMock, DeviceRepositoryMock>();
+
+        // ACCOUNT
+        builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+        builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
+        builder.Services.AddScoped<AccountService>();
+        builder.Services.AddScoped<EmailService>();
+        builder.Services.AddScoped<ProfileService>();
 
         #region DEPENDENCY INJECTIONS
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -111,6 +158,7 @@ public class Program
         builder.Services.AddScoped<EmailService>();
         builder.Services.AddScoped<ProfileService>();
         #endregion DEPENDENCY INJECTIONS
+
 
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();

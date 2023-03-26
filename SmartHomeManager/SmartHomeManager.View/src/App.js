@@ -24,6 +24,8 @@ import ProfileLanding from "./pages/profile/ProfileLanding";
 import RegisterDevice from "./pages/RegisterDevice";
 import SelectNearbyDevice from "pages/SelectNearbyDevice";
 import Report from "pages/Analytics";
+import List_EnergyLimits from "pages/EnergyLimit/List_EnergyLimit/List_EnergyLimits";
+import Create_EnergyLimit from "pages/EnergyLimit/Create_EnergyLimit/Create_EnergyLimit";
 
 export function App() {
   return (
@@ -52,7 +54,12 @@ export function App() {
             <Route path="/intruder" element={<Intruder />} />
             <Route path="/configuration" element={<Configuration />} />
             <Route path="/energyProfile" element={<EnergyProfile />} />
-            <Route path="/scenario" element={<Scenario />} />
+                      <Route path="/scenario" element={<Scenario />} />
+                      <Route path="/EnergyLimit" element={<List_EnergyLimits />} />
+                      <Route
+                          path="/energyLimit/create/energylimit"
+                          element={<Create_EnergyLimit />}
+                      />
             <Route
               path="/scenario/create/action-rule"
               element={<ActionRule />}

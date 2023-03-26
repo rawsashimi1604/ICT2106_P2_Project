@@ -163,6 +163,10 @@ const NAV_ITEMS = [
   {
     label: "Analytics",
     href: "/analytics",
-  },
+    },
+    {
+        label: "EnergyLimit",
+        href: "/EnergyLimit",
+    }
     
 ];
