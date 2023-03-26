@@ -161,9 +161,6 @@ function CarbonChart() {
     let value = e.target.value || 2023; // set default value to "2022" if e.target.value is falsy
   
     switch(value) {
-      case 2021:
-        setSelectedYear(value);
-        break;
       case 2022:
         setSelectedYear(value);
         break;
@@ -218,8 +215,6 @@ function CarbonChart() {
       width={"200px"}
       variant="filled"
     >
-
-      <option value={2021}>2021</option>
       <option value={2022}>2022</option>
       <option value={2023}>2023</option>
       {/* add more years as needed */}
