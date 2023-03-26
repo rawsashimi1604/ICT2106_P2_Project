@@ -310,10 +310,13 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
 
             var currentMonth = dt.Month;
 
-            _document.Add(new Paragraph("Your Upcoming Forecast Report")
+            _document.Add(new Paragraph("Section B: Upcoming Forecast Report")
                 .SetTextAlignment(TextAlignment.CENTER)
                 .SetBold()
                 .SetFontSize(15));
+
+            _document.Add(new Paragraph("This section shows the forecasted report for your household with the forecast data of energy usage and cost for the rest of the year")
+                .SetTextAlignment(TextAlignment.CENTER));
 
             // Create a table for device
             float[] tableWidths = { 150F, 150F, 150F };
@@ -349,6 +352,10 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
 
             }
 
+            _document.Add(new Paragraph(" "));
+            _document.Add(new Paragraph(" "));
+
+
             _document.Add(table).SetTextAlignment(TextAlignment.CENTER);
 
             return this;
@@ -379,6 +386,38 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
             front.Add(costT);
 
             _document.Add(front);
+
+            return this;
+        }
+//-----------------------------------------------------------------------------
+
+        public PdfBuilder addEnergyEfficiency(IEnumerable<EnergyEfficiency> energyEfficiency)
+        {
+
+            // Create a table for device
+            float[] tableWidths = { 150F, 150F, 150F };
+            Table table = new Table(tableWidths);
+
+            // Add table headers to the table
+            table.AddCell(new Cell().Add(new Paragraph("Device ID")
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
+            table.AddCell(new Cell().Add(new Paragraph("Energy Efficiency Index")
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
+            table.AddCell(new Cell().Add(new Paragraph("Date of Analysis")
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
+
+            foreach(var data in energyEfficiency)
+            {
+                table.AddCell(new Cell().Add(new Paragraph($"{data.DeviceId}")));
+                table.AddCell(new Cell().Add(new Paragraph($"{data.EnergyEfficiencyIndex}")));
+                table.AddCell(new Cell().Add(new Paragraph($"{data.DateOfAnalysis}")));
+            }
+
+            _document.Add(table);
+
 
             return this;
         }

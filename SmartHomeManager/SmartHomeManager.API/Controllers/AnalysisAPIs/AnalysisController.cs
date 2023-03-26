@@ -36,7 +36,7 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
             IEnergyEfficiency energyEfficiency
         )
         {
-            _reportService = new(deviceRepository, deviceLogRepository, forecast);
+            _reportService = new(deviceRepository, deviceLogRepository, forecast, energyEfficiency);
             _carbonFootprintService = carbonFootprint;
             _energyEfficiencyService = energyEfficiency;
             _forecastService = forecast;
