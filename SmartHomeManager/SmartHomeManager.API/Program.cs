@@ -152,8 +152,13 @@ public class Program
             return new CarbonFootprintProxy(service, accountRepo);
         });
 
-        builder.Services.AddScoped<IForecastRepository, ForecastRepository>();
         builder.Services.AddScoped<IForecastDataRepository, ForecastDataRepository>();
+        builder.Services.AddScoped<ForecastService>();
+        builder.Services.AddScoped<IForecast, ForecastProxy>(serviceProvider => {
+            var service = serviceProvider.GetRequiredService<ForecastService>();
+            var accountRepo = serviceProvider.GetRequiredService<IAccountRepository>();
+            return new ForecastProxy(service, accountRepo);
+        });
 
 
         #endregion DEPENDENCY INJECTIONS
@@ -189,7 +194,7 @@ public class Program
         {
             var context = services.GetRequiredService<ApplicationDbContext>();
             // in order to use await in a method, the caller method must be async as well
-            //await CommonSeedData.Seed(context);
+            await CommonSeedData.Seed(context);
         }
         catch (Exception e)
         {

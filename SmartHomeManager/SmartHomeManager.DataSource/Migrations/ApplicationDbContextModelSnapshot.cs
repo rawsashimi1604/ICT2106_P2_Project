@@ -188,9 +188,9 @@ namespace SmartHomeManager.DataSource.Migrations
                     b.ToTable("EnergyEfficiency");
                 });
 
-            modelBuilder.Entity("SmartHomeManager.Domain.AnalysisDomain.Entities.ForecastChart", b =>
+            modelBuilder.Entity("SmartHomeManager.Domain.AnalysisDomain.Entities.ForecastChartData", b =>
                 {
-                    b.Property<Guid>("ForecastChartId")
+                    b.Property<Guid>("ForecastChartDataId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -201,41 +201,23 @@ namespace SmartHomeManager.DataSource.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("TimespanType")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("ForecastChartId");
-
-                    b.HasIndex("AccountId");
-
-                    b.ToTable("ForecastCharts");
-                });
-
-            modelBuilder.Entity("SmartHomeManager.Domain.AnalysisDomain.Entities.ForecastChartData", b =>
-                {
-                    b.Property<Guid>("ForecastChartDataId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("ForecastChartId")
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("Index")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsForecast")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Label")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<double>("Value")
+                    b.Property<double>("PriceValue")
+                        .HasColumnType("REAL");
+
+                    b.Property<int>("TimespanType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("WattsValue")
                         .HasColumnType("REAL");
 
                     b.HasKey("ForecastChartDataId");
-
-                    b.HasIndex("ForecastChartId");
 
                     b.ToTable("ForecastChartsData");
                 });
@@ -848,28 +830,6 @@ namespace SmartHomeManager.DataSource.Migrations
                         .IsRequired();
 
                     b.Navigation("Device");
-                });
-
-            modelBuilder.Entity("SmartHomeManager.Domain.AnalysisDomain.Entities.ForecastChart", b =>
-                {
-                    b.HasOne("SmartHomeManager.Domain.AccountDomain.Entities.Account", "Account")
-                        .WithMany()
-                        .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Account");
-                });
-
-            modelBuilder.Entity("SmartHomeManager.Domain.AnalysisDomain.Entities.ForecastChartData", b =>
-                {
-                    b.HasOne("SmartHomeManager.Domain.AnalysisDomain.Entities.ForecastChart", "ForecastChart")
-                        .WithMany()
-                        .HasForeignKey("ForecastChartId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ForecastChart");
                 });
 
             modelBuilder.Entity("SmartHomeManager.Domain.DeviceDomain.Entities.Device", b =>

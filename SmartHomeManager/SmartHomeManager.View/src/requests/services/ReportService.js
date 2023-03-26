@@ -5,8 +5,8 @@ const GET_DEVICE_REPORT_API_ROUTE = `https://localhost:7140/api/analysis/device/
 const GET_DEVICES_BY_GUID_ROUTE = `https://localhost:7140/api/analysis/device/`
 const GET_HOUSEHOLD_REPORT_ROUTE = `https://localhost:7140/api/analysis/householdReport/download/`
 
-function getDeviceReport(deviceId){
-    return PdfDownloadService.get(GET_DEVICE_REPORT_API_ROUTE + deviceId);
+function getDeviceReport(deviceId, startDate , endDate){
+    return PdfDownloadService.get(`${GET_DEVICE_REPORT_API_ROUTE}${deviceId}?start=${startDate}&end=${endDate}`);
 }
 
 function getDevicesByGUID(accountId){

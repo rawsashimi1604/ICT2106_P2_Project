@@ -5,6 +5,7 @@ using SmartHomeManager.Domain.Common;
 using SmartHomeManager.Domain.Common.DTOs;
 using SmartHomeManager.Domain.DeviceDomain.Entities;
 using SmartHomeManager.Domain.NotificationDomain.Entities;
+using SmartHomeManager.Domain.AnalysisDomain.DTOs;
 
 namespace SmartHomeManager.Domain.AnalysisDomain.DTOs
 {
@@ -20,11 +21,12 @@ namespace SmartHomeManager.Domain.AnalysisDomain.DTOs
                     return CreateGetCarbonfootprintDTO((IEnumerable<CarbonFootprint>)data, statusCode, statusMessage);
                 case ResponseDTOType.ANALYSIS_ENERGYEFFICIENCY_GETALL:
                     return CreateGetEnergyEfficiencyDTO((IEnumerable<EnergyEfficiency>)data, statusCode, statusMessage);
+
+                case ResponseDTOType.ANAYLSIS_FORECAST_GETBYACCOUNTTIMESPAN:
+                    return CreateGetForecastChartDataDTO((IEnumerable<ForecastChartData>)data, statusCode, statusMessage);
                 default:
                     return null;
             }
-
-           
         }
 
 
@@ -121,6 +123,46 @@ namespace SmartHomeManager.Domain.AnalysisDomain.DTOs
                 }
             };
         }
+
+        private GetForecastChartDataDTO CreateGetForecastChartDataDTO(
+            IEnumerable<ForecastChartData> forecastChartDatas,
+            int statusCode,
+            string statusMessage
+        )
+        {
+            List<ForecastChartDataObjectDTO> getForecastChartDatas = new List<ForecastChartDataObjectDTO>();
+
+            if (forecastChartDatas != null)
+            {
+                foreach (var forecastChart in forecastChartDatas)
+                {
+
+                    getForecastChartDatas.Add(new ForecastChartDataObjectDTO
+                    {
+                        ForecastChartDataId = forecastChart.ForecastChartDataId,
+                        AccountId = forecastChart.AccountId,
+                        TimespanType = forecastChart.TimespanType,
+                        DateOfAnalysis= forecastChart.DateOfAnalysis,
+                        Label = forecastChart.Label,
+                        WattsValue = forecastChart.WattsValue,
+                        PriceValue= forecastChart.PriceValue,
+                        Index= forecastChart.Index,
+                    });
+
+                }
+            }
+
+            return new GetForecastChartDataDTO
+            {
+                Data = getForecastChartDatas,
+                Response = new ResponseInformation
+                {
+                    ServerMessage = statusMessage,
+                    StatusCode = statusCode
+                }
+            };
+        }
+
     }
 }
 

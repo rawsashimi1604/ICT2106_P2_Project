@@ -17,6 +17,7 @@ using SmartHomeManager.Domain.DeviceDomain.Services;
 using SmartHomeManager.Domain.DeviceLoggingDomain.Services;
 using SmartHomeManager.Domain.DeviceLoggingDomain.Mocks;
 using SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces;
+using System.Globalization;
 
 namespace SmartHomeManager.Domain.AnalysisDomain.Services
 {
@@ -31,7 +32,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             _deviceLogReadService = new(deviceLogRepository);
         }
 
-        public async Task<PdfFile> GetDeviceReport(Guid deviceId)
+        public async Task<PdfFile> GetDeviceReport(Guid deviceId, string start, string end)
         {
             string fileName = "device.pdf";
 
@@ -43,7 +44,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             Device? device = await _mockDeviceService.GetDeviceById(deviceId);
 
             // Get device log
-            var deviceLog = await _deviceLogReadService.GetDeviceLogByIdAsync(deviceId);
+            IEnumerable<DeviceLog> deviceLog = await _deviceLogReadService.GetDeviceLogByIdAsync(deviceId);
 
             // Retrieve fileBytes using pdfBuilder
             var pdfBuilder = new PdfBuilder(fileName, pdfDoc);
@@ -53,10 +54,19 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
 
             var totalUsage = 0.0;
 
-            foreach(var log in deviceLog)
+            var parsedStart = DateTime.Parse(start);
+            var parsedEnd = DateTime.Parse(end);
+
+            pdfBuilder.Tester(parsedStart);
+            pdfBuilder.Tester(parsedEnd);
+
+            foreach (var log in deviceLog)
             {
-                pdfBuilder.addDeviceLogById(log);
-                totalUsage = totalUsage + log.DeviceEnergyUsage;
+                if(log.DateLogged >= parsedStart && log.DateLogged <= parsedEnd)
+                {
+                    pdfBuilder.addDeviceLogById(log);
+                    totalUsage = totalUsage + log.DeviceEnergyUsage;
+                }
             }
 
            pdfBuilder.addDeviceLogTotalUsage(totalUsage)
@@ -68,7 +78,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             return new PdfFile(fileBytes, "application/force-download", fileName);  
         }
 
-        public async Task <PdfFile> GetHouseholdReport(Guid accountId)
+        public async Task <PdfFile> GetHouseholdReport(Guid accountId, DateTime start, DateTime end)
         {
            
             string fileName = "household.pdf";
@@ -92,7 +102,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                     .addHouseholdDetails(device)
                     .addDeviceLogHeader();
                 // Get device log
-                var deviceLog = await _deviceLogReadService.GetDeviceLogByIdAsync(device.DeviceId);
+                var deviceLog = await _deviceLogReadService.GetDeviceLogByIdAsync(device.DeviceId, start, end);
                 foreach(var log in deviceLog)
                 {
                     pdfBuilder.addDeviceLogById(log);

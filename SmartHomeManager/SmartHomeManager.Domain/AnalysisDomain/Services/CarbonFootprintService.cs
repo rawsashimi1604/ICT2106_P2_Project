@@ -153,7 +153,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             List<DateTime> result = new List<DateTime>();
 
             DateTime now = new DateTime(year, month, 1);
-            for (int i = 0; i < 6; i++)
+            for (int i = 1; i < 6; i++)
             {
                 int dtYear = now.Year;
                 int dtMonth = now.Month - i;

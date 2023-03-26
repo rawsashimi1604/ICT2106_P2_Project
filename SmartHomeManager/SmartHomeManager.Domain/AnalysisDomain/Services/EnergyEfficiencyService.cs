@@ -56,9 +56,8 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                     }
 
                     double averageUsage = totalUsage / NUMOFDAYS;
-                    double nationalAverage = getAverageWatt("Else");
-                    String deviceType = device.DeviceTypeName;
-
+                    double nationalAverage = getAverageWatt(device.DeviceTypeName);
+                    
                     //Calculate EEI
                     double EEI = Math.Min(nationalAverage / averageUsage * 100, 100);
 
@@ -95,7 +94,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             {
                 //Get from Energy Efficiency Table
                 EnergyEfficiency? existingEf = await _energyEfficiencyRepository.GetByDeviceIdAsync(device.DeviceId);
-                Boolean toUpdate = true;
+                bool toUpdate = true;
                 //If exist, check if it is out of date
                 if (existingEf != null)
                 {
