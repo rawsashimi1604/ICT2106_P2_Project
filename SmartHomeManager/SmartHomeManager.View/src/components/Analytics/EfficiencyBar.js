@@ -43,7 +43,7 @@ export const options = {
 };
 
 export function EfficiencyBar() {
-  const SESSION_ACCOUNT_GUID = "11111111-1111-1111-1111-111111111110";
+  const SESSION_ACCOUNT_GUID = "11111111-1111-1111-1111-111111111111";
 
   const [isDataLoading, setIsDataLoading] = useState(false);
   const [isDataError, setIsDataError] = useState(null);
