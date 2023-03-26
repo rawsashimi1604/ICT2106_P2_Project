@@ -72,6 +72,8 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             List<double> allEnergyUsage = new List<double>();
             List<double> allEnergyCost = new List<double>();
 
+            
+
      
 
             foreach (var monthDt in pastLastMonths)
@@ -102,8 +104,16 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             }
 
             pdfBuilder.addMonthlyStats(lastMonths, allMonthYearStrings, allEnergyCost, allEnergyUsage)
-                      .addTotalUsageCost(overallUsage,overallCost)
-                      .addGeneratedTime();
+                      .addTotalUsageCost(overallUsage, overallCost);
+
+            EnergyEfficiency deviceEfficiency = await _energyService.GetDeviceEnergyEfficiency(deviceId);
+
+            System.Diagnostics.Debug.WriteLine("HERE: " + deviceEfficiency.DeviceId);
+
+            pdfBuilder
+                .addEnergyHeader()
+                .addDeviceEnergyEfficiency(deviceEfficiency)
+                .addGeneratedTime();
 
            
             var fileBytes = pdfBuilder.Build();

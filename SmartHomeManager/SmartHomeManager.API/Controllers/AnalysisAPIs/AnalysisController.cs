@@ -31,7 +31,8 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
             IReport report,
             IForecast forecast,
             ICarbonFootprint carbonFootprint,
-            IEnergyEfficiency energyEfficiency
+            IEnergyEfficiency energyEfficiency,
+            IEnergyEfficiencyRepository energyEfficiencyRepository
         )
         {
             _reportService = report;

@@ -101,6 +101,48 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
             return this;
         }
 
+//-----------------------------------------------------------------------------
+        public PdfBuilder addDeviceEnergyEfficiency(EnergyEfficiency energyEfficiency)
+        {
+            _document.Add(new Paragraph(" "));
+
+            // Create a table for device
+            float[] tableWidths = { 150F, 150F, 150F };
+            Table table = new Table(tableWidths).SetTextAlignment(TextAlignment.CENTER);
+
+            // Add table headers to the table
+            table.AddCell(new Cell().Add(new Paragraph("Device ID")
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
+            table.AddCell(new Cell().Add(new Paragraph("Energy Efficiency Index")
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
+            table.AddCell(new Cell().Add(new Paragraph("Date of Analysis")
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
+
+            table.AddCell(new Cell().Add(new Paragraph(energyEfficiency.DeviceId.ToString())));
+            table.AddCell(new Cell().Add(new Paragraph(energyEfficiency.EnergyEfficiencyIndex.ToString("0.##"))));
+            table.AddCell(new Cell().Add(new Paragraph(energyEfficiency.DateOfAnalysis.ToString())));
+
+            _document.Add(table);
+
+            Paragraph p = new Paragraph().SetTextAlignment(TextAlignment.CENTER).SetBorder(new SolidBorder(1)).SetBackgroundColor(ColorConstants.YELLOW);
+
+            Text sentence = new Text("The Energy Efficiency Index for the device is ");
+            Text eei = new Text(energyEfficiency.EnergyEfficiencyIndex.ToString("0.##"))
+                .SetBold()
+                .SetFontColor(ColorConstants.RED);
+
+            p.Add(sentence);
+            p.Add(eei);
+
+            _document.Add(new Paragraph(" "));
+
+            _document.Add(p);
+
+            return this;
+        }
 
 //-----------------------------------------------------------------------------
         // Builder to add the devices
@@ -470,6 +512,27 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
             _document.Add(new Paragraph(" "));
 
             _document.Add(new Paragraph("Section C: Energy Effiency Index")
+                .SetBold()
+                .SetFontSize(15)
+                .SetTextAlignment(TextAlignment.CENTER));
+
+            _document.Add(new Paragraph(" "));
+            _document.Add(new Paragraph("The following section shows the Energy Efficiency Index (EEI) for each of the devices. The EEI is used to show how much resources are " +
+                "spent by an appliance to perform its functions. "));
+
+            _document.Add(new Paragraph(" "));
+
+            return this;
+        }
+
+//-----------------------------------------------------------------------------
+
+        public PdfBuilder addDeviceEnergyHeader()
+        {
+            _document.Add(new Paragraph(" "));
+            _document.Add(new Paragraph(" "));
+
+            _document.Add(new Paragraph("Energy Effiency Index")
                 .SetBold()
                 .SetFontSize(15)
                 .SetTextAlignment(TextAlignment.CENTER));
