@@ -36,6 +36,7 @@ function List_EnergyLimits() {
 		getAllRules().then(() => {
 			console.log("all rules")
 		})
+			.catch((error) => {
 				console.log(error);
 			})
 	}, [])

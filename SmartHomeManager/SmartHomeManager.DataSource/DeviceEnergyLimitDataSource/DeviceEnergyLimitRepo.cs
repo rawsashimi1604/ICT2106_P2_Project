@@ -1,28 +1,24 @@
-using Microsoft.EntityFrameworkCore;
-using SmartHomeManager.Domain.AccountDomain.Entities;
-using SmartHomeManager.Domain.Common;
+using SmartHomeManager.DataSource.Interfaces;
 using SmartHomeManager.Domain.DeviceEnergyLimit.Entities;
-using SmartHomeManager.Domain.DeviceEnergyLimit.Interfaces;
-using SmartHomeManager.Domain.EnergyProfileDomain.Entities;
-using SmartHomeManager.Domain.RoomDomain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace SmartHomeManager.DataSource.DeviceEnergyLimitDataSource
 {
     public class DeviceEnergyLimitRepository : IDeviceEnergyLimitRepository
     {
 
-        private readonly ApplicationDbContext _db;
+        private readonly ApplicationDbContext _dbContext;
         private readonly DbSet<DeviceEnergyLimit> _dbSet;
 
-        public DeviceEnergyLimitRepository(ApplicationDbContext db)
+        public DeviceEnergyLimitRepository(ApplicationDbContext dbContext)
         {
-            _db = db;
-            _dbSet = _db.Set<DeviceEnergyLimit>();
+            _dbContext = dbContext;
+            _dbSet = _dbContext.Set<DeviceEnergyLimit>();
         }
 
         public async Task<DeviceEnergyLimit?> GetDeviceEnergyLimitById(Guid id)
@@ -34,31 +30,55 @@ namespace SmartHomeManager.DataSource.DeviceEnergyLimitDataSource
         {
             _dbSet.Update(deviceEnergyLimit);
         }
-        //public async Task<IEnumerable<DeviceEnergyLimit>> GetAllDeviceEnergyLimit()
-        //{
-        //    // get all accounts
-        //    return await _dbSet.DeviceEnergyLimit.ToListAsync();
-        //}
+
+        public async Task<IEnumerable<DeviceEnergyLimit>> GetAllDeviceEnergyLimit()
+        {
+            return await _dbSet.ToListAsync();
+        }
 
         public async Task<DeviceEnergyLimit?> Get(Guid id)
         {
-            var result = await _dbSet.FindAsync(id);
-
-            return result;
+            return await _dbSet.FindAsync(id);
         }
 
         public async Task SaveChangesAsync()
         {
-            await _db.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
         }
-
 
         public async Task<IEnumerable<DeviceEnergyLimit>> GetAll()
         {
-            IEnumerable<DeviceEnergyLimit> query = await _dbSet.ToListAsync();
-            return query;
+            return await _dbSet.ToListAsync();
         }
 
+        public async Task<DeviceLog> Get(Guid deviceId, DateTime dateTime)
+        {
+            return await _dbContext.DeviceLogs.Where(d => d.DeviceId == deviceId && d.DateTime == dateTime).FirstOrDefaultAsync();
+        }
 
+        public async Task<IEnumerable<DeviceLog>> Get(Guid deviceId, DateTime startDateTime, DateTime endDateTime)
+        {
+            return await _dbContext.DeviceLogs.Where(d => d.DeviceId == deviceId && d.DateTime >= startDateTime && d.DateTime <= endDateTime).ToListAsync();
+        }
+
+        public async Task<IEnumerable<DeviceLog>> GetByDate(DateTime dateTime, Guid deviceId, bool deviceState)
+        {
+            return await _dbContext.DeviceLogs.Where(d => d.DeviceId == deviceId && d.DateTime == dateTime && d.DeviceState == deviceState).ToListAsync();
+        }
+
+        public async Task<IEnumerable<DeviceLog>> Get(DateTime dateTime, Guid deviceId, bool deviceState)
+        {
+            return await _dbContext.DeviceLogs.Where(d => d.DeviceId == deviceId && d.DateTime == dateTime && d.DeviceState == deviceState).ToListAsync();
+        }
+
+        public async Task<IEnumerable<DeviceLog>> Get(DateTime dateTime)
+        {
+            return await _dbContext.DeviceLogs.Where(d => d.DateTime == dateTime).ToListAsync();
+        }
+
+        public async Task Add(DeviceLog entity)
+        {
+            await _dbContext.DeviceLogs.AddAsync(entity);
+        }
     }
 }
