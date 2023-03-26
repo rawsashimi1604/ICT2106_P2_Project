@@ -21,9 +21,13 @@ namespace SmartHomeManager.Domain.AnalysisDomain.DTOs
                     return CreateGetCarbonfootprintDTO((IEnumerable<CarbonFootprint>)data, statusCode, statusMessage);
                 case ResponseDTOType.ANALYSIS_ENERGYEFFICIENCY_GETALL:
                     return CreateGetEnergyEfficiencyDTO((IEnumerable<EnergyEfficiency>)data, statusCode, statusMessage);
-
                 case ResponseDTOType.ANAYLSIS_FORECAST_GETBYACCOUNTTIMESPAN:
                     return CreateGetForecastChartDataDTO((IEnumerable<ForecastChartData>)data, statusCode, statusMessage);
+                case ResponseDTOType.ANALYSIS_REPORTHOUSEHOLD:
+                    return CreateHouseholdReportDTO(data, statusCode, statusMessage);
+                case ResponseDTOType.ANALYSIS_REPORTDEVICE:
+                    return CreateDeviceReportDTO(data, statusCode, statusMessage);
+
                 default:
                     return null;
             }
@@ -155,6 +159,42 @@ namespace SmartHomeManager.Domain.AnalysisDomain.DTOs
             return new GetForecastChartDataDTO
             {
                 Data = getForecastChartDatas,
+                Response = new ResponseInformation
+                {
+                    ServerMessage = statusMessage,
+                    StatusCode = statusCode
+                }
+            };
+        }
+
+        private GetHouseholdReportDTO CreateHouseholdReportDTO(
+            IEnumerable<object> data,
+            int statusCode,
+            string statusMessage
+        )
+        {
+            // Return empty DTO...
+            return new GetHouseholdReportDTO
+            {
+                Data = new List<object>(),
+                Response = new ResponseInformation
+                {
+                    ServerMessage = statusMessage,
+                    StatusCode = statusCode
+                }
+            };
+        }
+
+        private GetDeviceReportDTO CreateDeviceReportDTO(
+            IEnumerable<object> data,
+            int statusCode,
+            string statusMessage
+        )
+        {
+            // Return empty DTO...
+            return new GetDeviceReportDTO
+            {
+                Data = new List<object>(),
                 Response = new ResponseInformation
                 {
                     ServerMessage = statusMessage,

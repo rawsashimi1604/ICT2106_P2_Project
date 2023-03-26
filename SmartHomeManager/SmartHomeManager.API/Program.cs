@@ -160,6 +160,14 @@ public class Program
             return new ForecastProxy(service, accountRepo);
         });
 
+        builder.Services.AddScoped<ReportService>();
+        builder.Services.AddScoped<IReport, ReportProxy>(serviceProvider => {
+            var service = serviceProvider.GetRequiredService<ReportService>();
+            var accountRepo = serviceProvider.GetRequiredService<IAccountRepository>();
+            var deviceRepo = serviceProvider.GetRequiredService<IDeviceRepository>();
+            return new ReportProxy(service, accountRepo, deviceRepo);
+        });
+
 
         #endregion DEPENDENCY INJECTIONS
 
