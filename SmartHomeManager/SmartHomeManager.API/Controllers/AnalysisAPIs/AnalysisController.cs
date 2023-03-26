@@ -35,7 +35,7 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         private readonly ForecastService _forecastService;
         private readonly ICarbonFootprint _carbonFootprintService;
         private readonly AbstractDTOFactory _dtoFactory;
-        private readonly EnergyEfficiencyService _energyEfficiencyService;
+        private readonly IEnergyEfficiency _energyEfficiencyService;
 
         public AnalysisController(
             IDeviceRepository deviceRepository,
@@ -43,15 +43,13 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
             IDeviceLogRepository deviceLogRepository,
             IForecastRepository forecastRepository,
             IAccountRepository accountRepository,
-            IEnergyEfficiencyRepository energyEfficiencyRepository
-
+            IEnergyEfficiency energyEfficiency
         )
         {
             _reportService = new(deviceRepository, deviceLogRepository);
             _carbonFootprintService = carbonFootprint;
             _forecastService = new(forecastRepository, accountRepository);
-            _energyEfficiencyService = new(energyEfficiencyRepository, deviceRepository, accountRepository, deviceLogRepository);
-            //  _carbonFootprintService = new (carbonFootprintRepository, deviceLogRepository, accountRepository, deviceRepository);
+            _energyEfficiencyService = energyEfficiency;
             _dtoFactory = new AnalysisDTOFactory();
         }
 

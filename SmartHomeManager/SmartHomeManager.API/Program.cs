@@ -54,6 +54,7 @@ using SmartHomeManager.Domain.NotificationDomain.Services;
 using SmartHomeManager.Domain.NotificationDomain.Proxies;
 using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
 using SmartHomeManager.Domain.AnalysisDomain.Services;
+using SmartHomeManager.Domain.AnalysisDomain.Proxies;
 
 namespace SmartHomeManager.API;
 
@@ -136,6 +137,13 @@ public class Program
 
         // ANALYSIS
         builder.Services.AddScoped<IEnergyEfficiencyRepository, EnergyEfficiencyRepository>();
+        builder.Services.AddScoped<EnergyEfficiencyService>();
+        builder.Services.AddScoped<IEnergyEfficiency, EnergyEfficiencyProxy>(serviceProvider => {
+            var service = serviceProvider.GetRequiredService<EnergyEfficiencyService>();
+            var accountRepo = serviceProvider.GetRequiredService<IAccountRepository>();
+            return new EnergyEfficiencyProxy(service, accountRepo);
+        });
+
         builder.Services.AddScoped<ICarbonFootprintRepository, CarbonFootprintRepository>();
         builder.Services.AddScoped<CarbonFootprintService>();
         builder.Services.AddScoped<ICarbonFootprint, CarbonFootprintProxy>(serviceProvider => {
@@ -143,6 +151,7 @@ public class Program
             var accountRepo = serviceProvider.GetRequiredService<IAccountRepository>();
             return new CarbonFootprintProxy(service, accountRepo);
         });
+
         builder.Services.AddScoped<IForecastRepository, ForecastRepository>();
         builder.Services.AddScoped<IForecastDataRepository, ForecastDataRepository>();
 
@@ -180,7 +189,7 @@ public class Program
         {
             var context = services.GetRequiredService<ApplicationDbContext>();
             // in order to use await in a method, the caller method must be async as well
-            await CommonSeedData.Seed(context);
+            //await CommonSeedData.Seed(context);
         }
         catch (Exception e)
         {

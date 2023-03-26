@@ -39,12 +39,11 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             _deviceInfoService = new DeviceLogReadService(deviceLogRepository);
         }
 
-
         public async Task<EnergyEfficiency> GetDeviceEnergyEfficiency(Guid deviceId)
         {
             try
             {
-                EnergyEfficiency energyEfficiency = await _energyEfficiencyRepository.GetByDeviceIdAsync(deviceId);
+                EnergyEfficiency? energyEfficiency = await _energyEfficiencyRepository.GetByDeviceIdAsync(deviceId);
                 if (energyEfficiency == null)
                 {
                     Device device = await _deviceService.GetDeviceById(deviceId);
@@ -55,17 +54,11 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                     {
                         totalUsage += deviceLog.DeviceEnergyUsage;
                     }
-                    System.Diagnostics.Debug.WriteLine("totalUsage:" + totalUsage);
+
                     double averageUsage = totalUsage / NUMOFDAYS;
-                    System.Diagnostics.Debug.WriteLine("averageTotalUsage:" + averageUsage);
                     double nationalAverage = getAverageWatt("Else");
                     String deviceType = device.DeviceTypeName;
-                    System.Diagnostics.Debug.WriteLine("DeviceTypeName:" + deviceType);
-                    nationalAverage = getAverageWatt(deviceType);
-                    System.Diagnostics.Debug.WriteLine("nationalAverage:" + nationalAverage);
-                    System.Diagnostics.Debug.WriteLine("averageUsage:" + averageUsage);
-                    System.Diagnostics.Debug.WriteLine("EEI:" + nationalAverage / averageUsage * 100);
-                    System.Diagnostics.Debug.WriteLine("Mined:" + Math.Min(nationalAverage / averageUsage * 100, 100));
+
                     //Calculate EEI
                     double EEI = Math.Min(nationalAverage / averageUsage * 100, 100);
 
@@ -78,7 +71,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                         Device = device,
                         DateOfAnalysis = DateTime.Now
                     };
-                    _energyEfficiencyRepository.AddAsync(energyEfficiency);
+                    await _energyEfficiencyRepository.AddAsync(energyEfficiency);
                 }
                 return energyEfficiency;
             }
@@ -93,14 +86,6 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
         {
             //Add all DeviceEnergyUsage
 
-
-            //Check if account exist
-            if (!await _accountService.CheckAccountExists(accountId))
-            {
-                throw new AccountNotFoundException();
-            }
-
-
             //get All device
             IEnumerable<Device> allDevices = await _deviceService.GetAllDevicesByAccount(accountId);
             List<EnergyEfficiency> allEnergyEfficiency = new List<EnergyEfficiency>();
@@ -109,7 +94,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             foreach (Device device in allDevices)
             {
                 //Get from Energy Efficiency Table
-                EnergyEfficiency existingEf = await _energyEfficiencyRepository.GetByDeviceIdAsync(device.DeviceId);
+                EnergyEfficiency? existingEf = await _energyEfficiencyRepository.GetByDeviceIdAsync(device.DeviceId);
                 Boolean toUpdate = true;
                 //If exist, check if it is out of date
                 if (existingEf != null)
@@ -117,7 +102,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                     //Outdated
                     if (existingEf.DateOfAnalysis.AddDays(RECENTDAYS) < DateTime.Now)
                     {
-                        _energyEfficiencyRepository.DeleteByIdAsync(existingEf.EnergyEfficiencyId);
+                       await _energyEfficiencyRepository.DeleteByIdAsync(existingEf.EnergyEfficiencyId);
                     }
                     //Recent
                     else
@@ -147,7 +132,6 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                 default:
                     return 500.0;
             }
-            return 0.0;
         }
 
     }
