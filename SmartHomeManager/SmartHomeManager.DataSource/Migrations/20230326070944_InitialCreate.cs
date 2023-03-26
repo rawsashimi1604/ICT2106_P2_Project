@@ -553,7 +553,8 @@ namespace SmartHomeManager.DataSource.Migrations
                 {
                     EnergyEfficiencyId = table.Column<Guid>(type: "TEXT", nullable: false),
                     DeviceId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    EnergyEfficiencyIndex = table.Column<double>(type: "REAL", nullable: false)
+                    EnergyEfficiencyIndex = table.Column<double>(type: "REAL", nullable: false),
+                    DateOfAnalysis = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -11,7 +11,7 @@ using SmartHomeManager.DataSource;
 namespace SmartHomeManager.DataSource.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230313133059_InitialCreate")]
+    [Migration("20230326070944_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -173,6 +173,9 @@ namespace SmartHomeManager.DataSource.Migrations
                 {
                     b.Property<Guid>("EnergyEfficiencyId")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateOfAnalysis")
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("DeviceId")

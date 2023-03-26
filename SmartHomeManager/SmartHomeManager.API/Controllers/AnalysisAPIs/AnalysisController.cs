@@ -44,7 +44,6 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
             IForecastRepository forecastRepository,
             IAccountRepository accountRepository,
             IEnergyEfficiencyRepository energyEfficiencyRepository
-
         )
         {
             _reportService = new(deviceRepository, deviceLogRepository);
@@ -54,9 +53,6 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
             //  _carbonFootprintService = new (carbonFootprintRepository, deviceLogRepository, accountRepository, deviceRepository);
             _dtoFactory = new AnalysisDTOFactory();
         }
-
-        
-        
 
         // TODO: Create API Routes...
 

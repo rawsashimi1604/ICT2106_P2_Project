@@ -32,7 +32,6 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             _accountService = new AccountService(accountRepository);
         }
 
-
         public async Task<EnergyEfficiency> GetDeviceEnergyEfficiency(Guid deviceId)
         {
             try {

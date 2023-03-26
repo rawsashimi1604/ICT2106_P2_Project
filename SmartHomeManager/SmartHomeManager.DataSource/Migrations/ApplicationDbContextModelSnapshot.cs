@@ -172,6 +172,9 @@ namespace SmartHomeManager.DataSource.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime>("DateOfAnalysis")
+                        .HasColumnType("TEXT");
+
                     b.Property<Guid>("DeviceId")
                         .HasColumnType("TEXT");
 

@@ -22,6 +22,9 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Entities
         [Required]
         public double EnergyEfficiencyIndex { get; set; }
 
+        [Required]
+        public DateTime DateOfAnalysis { get; set; }
+
         [ForeignKey("DeviceId")]
         public Device Device { get; set; }
     }

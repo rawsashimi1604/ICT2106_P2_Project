@@ -135,6 +135,7 @@ public class Program
         });
 
         // ANALYSIS
+        builder.Services.AddScoped<IEnergyEfficiencyRepository, EnergyEfficiencyRepository>();
         builder.Services.AddScoped<ICarbonFootprintRepository, CarbonFootprintRepository>();
         builder.Services.AddScoped<CarbonFootprintService>();
         builder.Services.AddScoped<ICarbonFootprint, CarbonFootprintProxy>(serviceProvider => {
