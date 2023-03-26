@@ -19,7 +19,9 @@ using SmartHomeManager.Domain.DeviceLoggingDomain.Mocks;
 using SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces;
 using System.Globalization;
 using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
-using PdfSharp.Charting;
+using System.Web.UI.DataVisualization;
+using System.Web.UI.DataVisualization.Charting;
+using System.Web;
 
 namespace SmartHomeManager.Domain.AnalysisDomain.Services
 {
@@ -129,11 +131,16 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             var householdUsage = 0.0;
             var householdCost = 0.0;
 
+
+
+            pdfBuilder.addDeviceParagraph();
+
             foreach (var device in deviceList)
             {
                 var totalDeviceUsage = 0.0;
                 pdfBuilder
                     .addHouseholdDetails(device);
+                    
 
                 List<String> allMonthYearStrings = new List<String>();
                 List<double> allEnergyUsage = new List<double>();
@@ -144,7 +151,6 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                 
                 foreach (var monthDt in pastLastMonths)
                 {
-                    System.Diagnostics.Debug.WriteLine("PAST MONTHS: " + pastLastMonths);
                     // If its december, end date should be Jan of the following year
                     // If its not december, end date should be the following month 1st day.
                     var endDate = monthDt.Month == 12 ?
@@ -152,8 +158,6 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                         new DateTime(monthDt.Year, monthDt.Month + 1, 1, 0, 0, 0);
 
                     var monthData = await _deviceLogService.GetDeviceLogByIdAsync(device.DeviceId, monthDt, endDate);
-
-                    System.Diagnostics.Debug.WriteLine("HERE HERE: " + device.DeviceId + " MONTH : " + monthData);
 
                     var totalUsage = 0.0;
 
@@ -178,8 +182,15 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                       .addTotalUsageCost(overallUsage, overallCost);
 
             }
-            pdfBuilder.addHouseholdOverall(householdUsage,householdCost)
-                      .addGeneratedTime();
+            pdfBuilder.addHouseholdOverall(householdUsage, householdCost);
+                     
+
+
+            IEnumerable<ForecastChartData> forecastChartDatas = await _forecastService.GetHouseHoldForecast(accountId, 1);
+
+            pdfBuilder.addForecastReport(forecastChartDatas)
+                 .addGeneratedTime();
+
 
             var filebytes = pdfBuilder.Build();
 
@@ -217,10 +228,19 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             return result;
         }
 
-        private bool generateChart(int lastMonths,List<String>Months, List<double> item)
+        private void GetBarChart(int lastMonths, List<String>allMonthYearString, List<double>values)
         {
-            
-            return true;
+            // Create a new instance of the Chart class
+            Chart myChart = new Chart();
+
+            // Set the chart properties
+            //myChart.Width = new Unit(400);
+
+
+            for(int i = 0; i < lastMonths; i++)
+            {
+                
+            }
         }
     }
 }

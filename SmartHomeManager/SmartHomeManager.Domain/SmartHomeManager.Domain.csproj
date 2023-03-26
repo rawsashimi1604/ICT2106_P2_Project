@@ -17,6 +17,8 @@
     <None Remove="iTextSharp" />
     <None Remove="itext7.commons" />
     <None Remove="Chart.js" />
+    <None Remove="System.Web.DataVisualization" />
+    <None Remove="System.Web" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SceneDomain\Services\" />
@@ -64,4 +66,12 @@
     <Folder Include="DeviceDomain\Interfaces\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="System.Web.DataVisualization">
+      <HintPath>bin\Debug\net7.0\System.Web.DataVisualization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web">
+      <HintPath>bin\Debug\net7.0\System.Web.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>

@@ -10,6 +10,9 @@ using iText.Kernel.Pdf.Canvas;
 using iText.IO.Font.Constants;
 using iText.Kernel.Font;
 using iText.Layout.Borders;
+using SmartHomeManager.Domain.AnalysisDomain.Entities;
+using iText.Kernel.Colors;
+
 
 
 namespace SmartHomeManager.Domain.AnalysisDomain.Builders
@@ -18,10 +21,12 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
     {
         private readonly Document _document;
         private readonly string _fileName;
+        private readonly PdfDocument _pdfDoc;
         private const string FILEPATH = "../SmartHomeManager.Domain/AnalysisDomain/Files/";
 
         public PdfBuilder(string fileName, PdfDocument pdfDocument)
         {
+            _pdfDoc = pdfDocument;
             _document = new Document(pdfDocument);
             _fileName = fileName;
         }
@@ -31,15 +36,8 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
         {
             // Add header of the report
             _document.Add(new Paragraph($"Device {device.DeviceId} REPORT")
-                .SetTextAlignment(TextAlignment.CENTER)
+                .SetTextAlignment(TextAlignment.LEFT)
                 .SetBold()
-                .SetFontSize(15));
-
-            // Header for Device table
-            _document.Add(new Paragraph("Device Details")
-                .SetBold()
-                .SetUnderline()
-                .SetTextAlignment(TextAlignment.CENTER)
                 .SetFontSize(15));
 
             // Create a table for device
@@ -94,10 +92,11 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
         public PdfBuilder addHouseholdDetails(Device device) {
 
             // Create header for device table
-            _document.Add(new Paragraph($"Device {device.DeviceId} Details")
+            _document.Add(new Paragraph($"Device {device.DeviceId}")
                 .SetBold()
                 .SetFontSize(15)
-                .SetUnderline());
+                .SetUnderline()
+                .SetTextAlignment(TextAlignment.LEFT));
 
             // Create a table for device
             float[] deviceTableWidths = { 150F, 300F };
@@ -105,29 +104,48 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
 
 
             // Add cells to the device table
+
+            // Device ID
             deviceTable.AddCell(new Cell().Add(new Paragraph("Device ID")
-                .SetBold()));
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
             deviceTable.AddCell(new Cell().Add(new Paragraph($"{device.DeviceId}")));
+
+            // Device Name
             deviceTable.AddCell(new Cell().Add(new Paragraph("Device Name")
-                .SetBold()));
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
             deviceTable.AddCell(new Cell().Add(new Paragraph($"{device.DeviceName}")));
+
+            // Device Brand
             deviceTable.AddCell(new Cell().Add(new Paragraph("Device Brand")
-                .SetBold()));
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
             deviceTable.AddCell(new Cell().Add(new Paragraph($"{device.DeviceBrand}")));
+
+            // Device Model
             deviceTable.AddCell(new Cell().Add(new Paragraph("Device Model")
-                .SetBold()));
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
             deviceTable.AddCell(new Cell().Add(new Paragraph($"{device.DeviceModel}")));
-            deviceTable.AddCell(new Cell().Add(new Paragraph("Device Type")
-                .SetBold()));
-            deviceTable.AddCell(new Cell().Add(new Paragraph($"{device.DeviceType}")));
+
+            // Device Type Name
             deviceTable.AddCell(new Cell().Add(new Paragraph("Device Type Name")
-                .SetBold()));
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
             deviceTable.AddCell(new Cell().Add(new Paragraph($"{device.DeviceTypeName}")));
+
+
+            //Device Serial Number
             deviceTable.AddCell(new Cell().Add(new Paragraph("Device Serial Number")
-                .SetBold()));
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
             deviceTable.AddCell(new Cell().Add(new Paragraph($"{device.DeviceSerialNumber}")));
+
+            // Device Watts
             deviceTable.AddCell(new Cell().Add(new Paragraph("Device Watts")
-                .SetBold()));
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
             deviceTable.AddCell(new Cell().Add(new Paragraph($"{device.DeviceWatts}")));
 
             _document.Add(deviceTable).SetTextAlignment(TextAlignment.CENTER);
@@ -140,7 +158,9 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
         {
             _document.Add(new Paragraph($"Household Report For Account {accId}")
                 .SetBold()
-                .SetFontSize(20));
+                .SetFontSize(20)
+                .SetBorder(new SolidBorder(1))
+                .SetBackgroundColor(ColorConstants.LIGHT_GRAY));
             return this;
         }
 //-----------------------------------------------------------------------------
@@ -183,9 +203,12 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
             List<double> allEnergyUsage
             )
         {
+            _document.Add(new Paragraph(" "));
+            _document.Add(new Paragraph(" "));
+            _document.Add(new Paragraph(" "));
 
-            _document.Add(new Paragraph("Monthly Stats")
-                .SetTextAlignment(TextAlignment.CENTER)
+            _document.Add(new Paragraph("The table below is the statistics of the device")
+                .SetTextAlignment(TextAlignment.LEFT)
                 .SetBold());
 
             // Create a table for device
@@ -194,11 +217,14 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
 
             // Add table headers to the table
             table.AddCell(new Cell().Add(new Paragraph("Month")
-                .SetBold()));
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
             table.AddCell(new Cell().Add(new Paragraph("Usage (W)")
-                .SetBold()));
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
             table.AddCell(new Cell().Add(new Paragraph("Cost ($)")
-                .SetBold()));
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
 
 
             // Add data to the table
@@ -217,72 +243,113 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
         // Builder to add the total usage and total cost
         public PdfBuilder addTotalUsageCost(double overallUsage, double overallCost)
         {
-            _document.Add(new Paragraph($"Total Usage (W): {overallUsage.ToString("0.##")}")
-                .SetTextAlignment(TextAlignment.CENTER)
-                .SetBold());
+            Paragraph front = new Paragraph().SetTextAlignment(TextAlignment.LEFT);
+            front.Add("The total Usage for this device is ");
+            Text usage = new Text($"{overallUsage.ToString("0.##")} Watts ")
+                .SetFontColor(ColorConstants.RED)
+                .SetBold();
 
-            _document.Add(new Paragraph($"Total Cost ($): {overallCost.ToString("0.##")}")
-                .SetTextAlignment(TextAlignment.CENTER)
-                .SetBold());
+            Text between = new Text("and total cost is ");
+            
+            Text cost = new Text($"${overallCost.ToString("0.##")}")
+                .SetFontColor(ColorConstants.RED)
+                .SetBold();
+
+            front.Add(usage);
+            front.Add(between);
+            front.Add(cost);
+
+            _document.Add(new Paragraph(" "));
+            _document.Add(new Paragraph(" "));
+
+            _document.Add(front)
+                .SetTextAlignment(TextAlignment.LEFT);
+
+            _document.Add(new Paragraph(" "));
+            _document.Add(new Paragraph(" "));
+
+            //_document.Add(new Paragraph($"The total Usage for this device is {overallUsage.ToString("0.##")} and total cost is ${overallCost.ToString("0.##")}"));
+            //_document.Add(new Paragraph($"Total Usage (W): {overallUsage.ToString("0.##")}")
+            //    .SetTextAlignment(TextAlignment.CENTER)
+            //    .SetBold());
+
+            //_document.Add(new Paragraph($"Total Cost ($): {overallCost.ToString("0.##")}")
+            //    .SetTextAlignment(TextAlignment.CENTER)
+            //    .SetBold());
 
             return this;
         }
 
 
 //-----------------------------------------------------------------------------
-        public PdfBuilder addCostChart(
-            int lastMonths,
-            List<String>allMonthYearStrings,
-            List<double>allEnergyUsage
-            )
+        public PdfBuilder addDeviceParagraph()
         {
-            String[] labels = { };
-            double[] values = { };
-
-            for(var i = 0; i < lastMonths; i++)
-            {
-                labels.Append(allMonthYearStrings[i]);
-                values.Append(allEnergyUsage[i]);
-            }
-
-            // Define chart size and position
-            float chartWidth = 400f;
-            float chartHeight = 300f;
-            float chartX = 100f;
-            float chartY = 500f;
-
-            // Define fonts for chart title and labels
-            PdfFont titleFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD);
-            PdfFont labelFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA);
-
-            // Draw chart title
-            Paragraph chartTitle = new Paragraph("Monthly Sales Report")
-                .SetFont(titleFont)
+            _document.Add(new Paragraph("Section A: Device Reports")
                 .SetTextAlignment(TextAlignment.CENTER)
-                .SetFontSize(20f);
-            _document.Add(chartTitle);
+                .SetBold()
+                .SetFontSize(15));
 
-            // Draw chart labels
-            Table labelTable = new Table(UnitValue.CreatePercentArray(new float[] { 30f, 70f }));
-            for (int i = 0; i < labels.Length; i++)
+            _document.Add(new Paragraph("This section holds the information of the devices held in your household with the breakdown of the monthly statistics of the individual device")
+                .SetTextAlignment(TextAlignment.CENTER));
+            return this;
+        }
+
+//-----------------------------------------------------------------------------
+        // Builder to add forecast to household report
+        public PdfBuilder addForecastReport(IEnumerable<ForecastChartData> forecast)
+        {
+
+            _document.Add(new Paragraph(" "));
+            _document.Add(new Paragraph(" "));
+            _document.Add(new Paragraph(" "));
+            _document.Add(new Paragraph(" "));
+            _document.Add(new Paragraph(" "));
+            _document.Add(new Paragraph(" "));
+
+            DateTime dt = DateTime.Now;
+
+            var currentMonth = dt.Month;
+
+            _document.Add(new Paragraph("Your Upcoming Forecast Report")
+                .SetTextAlignment(TextAlignment.CENTER)
+                .SetBold()
+                .SetFontSize(15));
+
+            // Create a table for device
+            float[] tableWidths = { 150F, 150F, 150F };
+            Table table = new Table(tableWidths);
+
+            // Add table headers to the table
+            table.AddCell(new Cell().Add(new Paragraph("Month")
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
+            table.AddCell(new Cell().Add(new Paragraph("Usage (W)")
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
+            table.AddCell(new Cell().Add(new Paragraph("Cost ($)")
+                .SetBold()
+                .SetBackgroundColor(ColorConstants.GREEN)));
+
+
+
+            foreach (var data in forecast)
             {
-                Cell labelCell = new Cell().Add(new Paragraph(labels[i]))
-                    .SetFont(labelFont)
-                    .SetFontSize(10f)
-                    .SetBorder(Border.NO_BORDER);
-                labelTable.AddCell(labelCell);
-                Cell valueCell = new Cell().Add(new Paragraph(values[i].ToString()))
-                    .SetFont(labelFont)
-                    .SetFontSize(10f)
-                    .SetBorder(Border.NO_BORDER);
-                labelTable.AddCell(valueCell);
+                
+                for (var i = dt.Month + 1; i <= 12; i++)
+                {
+                    DateTime newDt = dt.AddMonths(i - dt.Month);
+                    if(newDt.ToString("MMMM") == data.Label)
+                    {
+                        table.AddCell(new Cell().Add(new Paragraph(data.Label)));
+                        table.AddCell(new Cell().Add(new Paragraph(data.WattsValue.ToString("0.##"))));
+                        table.AddCell(new Cell().Add(new Paragraph(data.PriceValue.ToString("0.##"))));
+                    }
+                }
+
+
             }
-            _document.Add(labelTable);
 
-            // Create chart
-            
-
-
+            _document.Add(table).SetTextAlignment(TextAlignment.CENTER);
 
             return this;
         }
@@ -291,13 +358,28 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
         public PdfBuilder addHouseholdOverall(double usage, double cost)
         {
 
-            _document.Add(new Paragraph($"Total Household Usage (W): {usage.ToString("0.##")}")
+            Paragraph front = new Paragraph()
                 .SetTextAlignment(TextAlignment.CENTER)
-                .SetBold());
+                .SetBorder(new SolidBorder(1))
+                .SetBackgroundColor(ColorConstants.YELLOW);
 
-            _document.Add(new Paragraph($"Total Household Cost ($): {cost.ToString("0.##")}")
-                .SetTextAlignment(TextAlignment.CENTER)
-                .SetBold());
+            front.Add("The total Household Usage is ");
+            Text usageT = new Text($"{usage.ToString("0.##")} Watts ")
+                .SetFontColor(ColorConstants.RED)
+                .SetBold();
+
+            Text between = new Text("and total cost is ");
+
+            Text costT = new Text($"${cost.ToString("0.##")}")
+                .SetFontColor(ColorConstants.RED)
+                .SetBold();
+
+            front.Add(usageT);
+            front.Add(between);
+            front.Add(costT);
+
+            _document.Add(front);
+
             return this;
         }
 
