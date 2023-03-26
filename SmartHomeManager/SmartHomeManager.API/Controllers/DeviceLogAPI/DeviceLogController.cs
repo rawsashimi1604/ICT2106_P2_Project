@@ -185,14 +185,14 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
         [HttpPut("stateOn/{deviceId}")]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public async Task<IActionResult> PutDeviceLog(DateTime date, Guid deviceId)
+        public async Task<IActionResult> PutDeviceLog(DateTime date, Guid deviceId, Guid roomId)
         {
             var res = await _logReadService.GetDeviceLogByDate(date, deviceId, true);
 
             if (res == null)
             {
 
-                await _logWriteService.AddDeviceLog(deviceId);
+                await _logWriteService.AddDeviceLog(deviceId, roomId);
             }
             else
             {
@@ -216,9 +216,9 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
         // POST: api/DeviceLogs
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<GetDeviceLogWebRequest>> PostDeviceLog(CreateDeviceLogWebRequest deviceLogWebRequest )
+        public async Task<IActionResult> PostDeviceLog(Guid deviceId, Guid roomId)
         {
-        var resp = await _logWriteService.AddDeviceLog(deviceLogWebRequest.DeviceId);
+        var resp = await _logWriteService.AddDeviceLog(deviceId, roomId);
         return Ok(resp);
         }
 
