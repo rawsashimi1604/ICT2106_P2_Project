@@ -22,22 +22,23 @@ using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
 using SmartHomeManager.Domain.AccountDomain.Interfaces;
 using SmartHomeManager.Domain.AccountDomain.Services;
 using SmartHomeManager.Domain.AccountDomain.Entities;
+using SmartHomeManager.Domain.Common.Exceptions;
 
 namespace SmartHomeManager.Domain.AnalysisDomain.Services
 {
-    public class ReportService
+    public class ReportService : IReport
     {
-        private readonly MockDeviceService _mockDeviceService;
+        private readonly IDeviceService _deviceService;
         private readonly IDeviceInfoService _deviceLogService;
-        private readonly ICarbonFootprint _carbonFootprintService;
         private readonly IForecast _forecastService;
         private readonly IEnergyEfficiency _energyService;
         private readonly IAccountService _accountService;
+
         private const double PRICE_PER_WATTS = 0.002;
 
         public ReportService(IDeviceRepository deviceRepository, IDeviceLogRepository deviceLogRepository, IForecast forecast, IEnergyEfficiency energy, IAccountRepository account)
         {
-            _mockDeviceService = new(deviceRepository);
+            _deviceService = new MockDeviceService(deviceRepository);
             _deviceLogService = new DeviceLogReadService(deviceLogRepository);
             _forecastService = forecast;
             _energyService = energy;
@@ -46,14 +47,13 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
 
         public async Task<PdfFile> GetDeviceReport(Guid deviceId, int lastMonths)
         {
+            Device? device = await _deviceService.GetDeviceById(deviceId);
+
             string fileName = "device.pdf";
 
             // Create a new PDF document
             PdfDocument pdfDoc = new PdfDocument(new PdfWriter("../SmartHomeManager.Domain/AnalysisDomain/Files/" + fileName));
             iText.Layout.Document doc = new iText.Layout.Document(pdfDoc);
-
-            // Get device
-            Device? device = await _mockDeviceService.GetDeviceById(deviceId);
 
             // Get device log
             IEnumerable<DeviceLog> deviceLog = await _deviceLogService.GetDeviceLogByIdAsync(deviceId);
@@ -87,8 +87,6 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
 
                 var totalUsage = 0.0;
 
-
-
                 foreach (var data in monthData)
                 {
                     totalUsage += data.DeviceEnergyUsage;
@@ -103,8 +101,6 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                 allEnergyUsage.Add(totalUsage);
             }
 
-            
-
             pdfBuilder.addMonthlyStats(lastMonths, allMonthYearStrings, allEnergyCost, allEnergyUsage)
                       .addTotalUsageCost(overallUsage,overallCost)
                       .addGeneratedTime();
@@ -118,17 +114,19 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
 
         public async Task <PdfFile> GetHouseholdReport(Guid accountId, int lastMonths)
         {
-           
+          
+            Account? account = await _accountService.GetAccountByAccountId(accountId);
+
             string fileName = "household.pdf";
 
             PdfDocument pdfDoc = new PdfDocument(new PdfWriter("../SmartHomeManager.Domain/AnalysisDomain/Files/" + fileName));
             iText.Layout.Document doc = new iText.Layout.Document(pdfDoc);
 
-            IEnumerable<Device> deviceList = await _mockDeviceService.GetAllDevicesByAccount(accountId);
+            IEnumerable<Device> deviceList = await _deviceService.GetAllDevicesByAccount(accountId);
 
             var pdfBuilder = new PdfBuilder(fileName, pdfDoc);
 
-            Account account = await _accountService.GetAccountByAccountId(accountId);
+            
 
             pdfBuilder
                 .addHouseholdHeader(account)
@@ -139,8 +137,6 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             var pastLastMonths = GetPastLastMonths(DateTime.Now.Year, DateTime.Now.Month, lastMonths);
             var householdUsage = 0.0;
             var householdCost = 0.0;
-
-
 
             pdfBuilder.addDeviceParagraph();
 
@@ -210,13 +206,9 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
         }
 
         public async Task<IEnumerable<Device>?> GetDevicesByGUID(Guid accountId)
-        {
-
-            IEnumerable<Device> deviceList = await _mockDeviceService.GetAllDevicesByAccount(accountId);
-
+        {   
+            IEnumerable<Device> deviceList = await _deviceService.GetAllDevicesByAccount(accountId);
             return deviceList;
-
-
         }
 
         private List<DateTime> GetPastLastMonths(int year, int month, int lastMonths)

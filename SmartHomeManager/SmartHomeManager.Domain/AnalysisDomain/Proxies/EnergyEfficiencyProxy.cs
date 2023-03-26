@@ -34,5 +34,10 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Proxies
 
             return await _energyEfficiencyService.GetAllDeviceEnergyEfficiency(accountId);
         }
+
+        public async Task<EnergyEfficiency> GetDeviceEnergyEfficiency(Guid deviceId)
+        {
+            return await _energyEfficiencyService.GetDeviceEnergyEfficiency(deviceId);
+        }
     }
 }

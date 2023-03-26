@@ -63,10 +63,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DeviceDomain\Interfaces\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="System.Web.DataVisualization">
       <HintPath>bin\Debug\net7.0\System.Web.DataVisualization.dll</HintPath>
     </Reference>

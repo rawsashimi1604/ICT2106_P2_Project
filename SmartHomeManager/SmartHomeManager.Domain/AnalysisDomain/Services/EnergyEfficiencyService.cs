@@ -41,6 +41,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
 
         public async Task<EnergyEfficiency> GetDeviceEnergyEfficiency(Guid deviceId)
         {
+
             try
             {
                 EnergyEfficiency? energyEfficiency = await _energyEfficiencyRepository.GetByDeviceIdAsync(deviceId);
