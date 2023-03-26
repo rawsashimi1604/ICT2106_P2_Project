@@ -56,7 +56,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                     }
 
                     double averageUsage = totalUsage / NUMOFDAYS;
-                    double nationalAverage = getAverageWatt(device.DeviceTypeName);
+                    double nationalAverage = GetAverageWatt(device.DeviceTypeName);
                     
                     //Calculate EEI
                     double EEI = Math.Min(nationalAverage / averageUsage * 100, 100);
@@ -118,7 +118,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             return allEnergyEfficiency;
         }
 
-        private double getAverageWatt(String deviceName)
+        private double GetAverageWatt(String deviceName)
         {
             switch (deviceName)
             {

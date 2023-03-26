@@ -19,9 +19,6 @@ using SmartHomeManager.Domain.DeviceLoggingDomain.Mocks;
 using SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces;
 using System.Globalization;
 using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
-using System.Web.UI.DataVisualization;
-using System.Web.UI.DataVisualization.Charting;
-using System.Web;
 
 namespace SmartHomeManager.Domain.AnalysisDomain.Services
 {
@@ -245,7 +242,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
         private void GetBarChart(int lastMonths, List<String>allMonthYearString, List<double>values)
         {
             // Create a new instance of the Chart class
-            Chart myChart = new Chart();
+            //Chart myChart = new Chart();
 
             // Set the chart properties
             //myChart.Width = new Unit(400);
