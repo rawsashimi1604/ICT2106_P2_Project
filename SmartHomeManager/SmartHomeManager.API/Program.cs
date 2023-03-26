@@ -202,7 +202,7 @@ public class Program
         {
             var context = services.GetRequiredService<ApplicationDbContext>();
             // in order to use await in a method, the caller method must be async as well
-            //await CommonSeedData.Seed(context);
+            await CommonSeedData.Seed(context);
         }
         catch (Exception e)
         {

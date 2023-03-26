@@ -124,11 +124,11 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             switch (deviceName)
             {
                 case "Fan":
-                    return 50;
+                    return 15;
                 case "Light":
-                    return 25;
+                    return 10;
                 case "Aircon":
-                    return 1500;
+                    return 1000;
                 default:
                     return 500.0;
             }

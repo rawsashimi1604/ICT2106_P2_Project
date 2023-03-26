@@ -23,6 +23,7 @@ using SmartHomeManager.Domain.AccountDomain.Interfaces;
 using SmartHomeManager.Domain.AccountDomain.Services;
 using SmartHomeManager.Domain.AccountDomain.Entities;
 using SmartHomeManager.Domain.Common.Exceptions;
+using System.Web;
 
 namespace SmartHomeManager.Domain.AnalysisDomain.Services
 {
@@ -111,7 +112,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             System.Diagnostics.Debug.WriteLine("HERE: " + deviceEfficiency.DeviceId);
 
             pdfBuilder
-                .addEnergyHeader()
+                .addDeviceEnergyHeader()
                 .addDeviceEnergyEfficiency(deviceEfficiency)
                 .addGeneratedTime();
 
@@ -240,21 +241,6 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             }
 
             return result;
-        }
-
-        private void GetBarChart(int lastMonths, List<String>allMonthYearString, List<double>values)
-        {
-            // Create a new instance of the Chart class
-            //Chart myChart = new Chart();
-
-            // Set the chart properties
-            //myChart.Width = new Unit(400);
-
-
-            for(int i = 0; i < lastMonths; i++)
-            {
-                
-            }
         }
     }
 }
