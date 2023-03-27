@@ -8,6 +8,12 @@ import { ReactComponent as WeatherSvg } from "./assets/Weather.svg";
 import { ReactComponent as PlantSvg } from "./assets/Plant.svg";
 import { ReactComponent as ReportSvg } from "./assets/Report.svg";
 
+
+
+
+
+
+
 function Dashboard() {
   return (
     <>
@@ -32,7 +38,7 @@ function Dashboard() {
           </Card>
 
           {/* Carbon footprint */}
-          <Card w="50%">
+          <Card w="50%" onClick="">
             <CardBody>
               <Flex flexDirection="row" align="center" justify="space-between">
                 <Flex flexDirection="column" gap="10px" maxWidth="80%">
@@ -92,10 +98,10 @@ function Dashboard() {
           </Card>
         </Flex>
 
-        <Flex flexDirection="row" gap="20px">
+        <Flex flexDirection="row" gap="20px" justifyContent="center">
 
           {/* Report */}
-          <Card w="60%">
+          <Card w="60%" display="flex" align="center">
             <CardBody>
               <Flex flexDirection="row" align="center" justify="space-between">
                 <Flex flexDirection="column" gap="10px" width="80%">
