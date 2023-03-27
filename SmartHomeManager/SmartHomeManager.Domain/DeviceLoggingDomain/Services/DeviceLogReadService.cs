@@ -20,7 +20,7 @@ namespace SmartHomeManager.Domain.DeviceLoggingDomain.Services
     // get device log by date and time
     // get watts from devices
 
-    public class DeviceLogReadService
+    public class DeviceLogReadService : IDeviceInfoService
     {
         private readonly IDeviceLogRepository _deviceLogRepository;
 
@@ -87,6 +87,25 @@ namespace SmartHomeManager.Domain.DeviceLoggingDomain.Services
             return resp;
         }
 
+        // Mocks for team5...
+        public async Task<IEnumerable<DeviceLog>> GetAllDeviceLogAsync()
+        {
+            var result = await _deviceLogRepository.GetAll();
+            return result;
+        }
+
+        public async Task<IEnumerable<DeviceLog>> GetDeviceLogByIdAsync(Guid deviceId, DateTime start, DateTime end)
+        {
+            var result = await _deviceLogRepository.GetAsync(deviceId, start, end);
+            return result;
+        }
+
+        public async Task<IEnumerable<DeviceLog>> GetDeviceLogByIdAsync(Guid deviceId)
+        {
+            var result = await _deviceLogRepository.GetAllByDeviceId(deviceId);
+            return result;
+        }
+        
         // get logs based on roomId
         public async Task<IEnumerable<DeviceLog>> getDeviceLogByRoom(Guid roomId) {
             var res = await _deviceLogRepository.GetByRoom(roomId);

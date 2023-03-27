@@ -30,9 +30,17 @@ namespace SmartHomeManager.DataSource.DeviceDataSource
             throw new NotImplementedException();
         }
 
-        public Task<Device> GetAsync(Guid deviceId)
+        public async Task<IEnumerable<Device>> GetAllAsyncByAccountId(Guid accountId)
         {
-            throw new NotImplementedException();
+            IEnumerable<Device> devices = await _applicationDbContext.Devices.ToListAsync();
+            IEnumerable<Device> result = devices.Where(x => x.AccountId == accountId);
+            return result;
+        }
+
+
+        public async Task<Device?> GetAsync(Guid deviceId)
+        {
+            return _applicationDbContext.Devices.Find(deviceId);
         }
 
         public async Task<bool> SaveAsync() 

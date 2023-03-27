@@ -1,13 +1,17 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SmartHomeManager.API.Controllers.NotificationAPIs.ViewModels;
+using SmartHomeManager.API.Controllers.NotificationAPIs.DTOs;
 using SmartHomeManager.Domain.AccountDomain.Entities;
+using SmartHomeManager.Domain.AccountDomain.Interfaces;
 using SmartHomeManager.Domain.Common;
+using SmartHomeManager.Domain.Common.DTOs;
+using SmartHomeManager.Domain.Common.Exceptions;
+using SmartHomeManager.Domain.NotificationDomain.DTOs;
 using SmartHomeManager.Domain.NotificationDomain.Entities;
 using SmartHomeManager.Domain.NotificationDomain.Interfaces;
 using SmartHomeManager.Domain.NotificationDomain.Services;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace SmartHomeManager.API.Controllers.NotificationAPIs
 {
@@ -15,15 +19,17 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
     [ApiController]
     public class NotificationController : Controller
     {
-
-        private readonly SendNotificationService _sendNotificationService;
-        private readonly ReceiveNotificationService _receiveNotificationService;
+        private readonly AbstractDTOFactory _dtoFactory;
+        private readonly ISendNotification _sendNotificationService;
+        private readonly IReceiveNotification _receiveNotificationService;
 
         // Dependency Injection of repos to services...
-        public NotificationController(INotificationRepository notificationRepository, IGenericRepository<Account> mockAccountRepository)
+        public NotificationController(IReceiveNotification receiveNotification,ISendNotification sendNotification)
         {
-            _sendNotificationService = new(notificationRepository, mockAccountRepository);
-            _receiveNotificationService = new(notificationRepository, mockAccountRepository);
+
+            _dtoFactory = new NotificationDTOFactory();
+            _sendNotificationService = sendNotification;
+            _receiveNotificationService = receiveNotification;
         }
 
         // API routes....
@@ -33,42 +39,29 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
         [Produces("application/json")]
         public async Task<IActionResult> GetAllNotifications()
         {
-            // Map notfications to DTO....
-            List<GetNotificationObjectDTO> getNotifications = new List<GetNotificationObjectDTO>();
+            IEnumerable<Notification> notifications = null;
 
-            IEnumerable<Notification> notifications;
-            NotificationResult notificationResult;
-            int statusCode;
-            string statusMessage;
-
-
-            (notificationResult, notifications) = (await _receiveNotificationService.GetAllNotificationsAsync());
-
-            // Get the status code and coressponding message...
-            (statusCode, statusMessage) = MapNotificationResult(notificationResult);
-
-            // Account not found or DB Error....
-            if (notificationResult == NotificationResult.Error_AccountNotFound ||
-                notificationResult == NotificationResult.Error_DBReadFail ||
-                notificationResult == NotificationResult.Error_Other)
+            try
             {
-                return StatusCode(statusCode, CreateResponseDTO(getNotifications, statusCode, statusMessage));
+                notifications = (await _receiveNotificationService.GetAllNotificationsAsync());
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(
+                    500,
+                    _dtoFactory.CreateResponseDTO(ResponseDTOType.NOTIFICATION_GETALL, notifications, 500, ex.Message)
+                );
             }
 
-
-            foreach (var notification in notifications)
-            {
-                getNotifications.Add(new GetNotificationObjectDTO
-                {
-                    NotificationId = notification.NotificationId,
-                    AccountId = notification.AccountId,
-                    NotificationMessage = notification.NotificationMessage,
-                    SentTime = notification.SentTime,
-                });
-            }
-
-            // Success path...
-            return StatusCode(statusCode, CreateResponseDTO(getNotifications, statusCode, statusMessage));
+            return StatusCode(
+                200,
+                _dtoFactory.CreateResponseDTO(
+                    ResponseDTOType.NOTIFICATION_GETALL,
+                    notifications,
+                    200,
+                    "Success!"
+                )
+            );
         }
 
         // TODO:    GET /api/notification/{accountId}
@@ -76,121 +69,90 @@ namespace SmartHomeManager.API.Controllers.NotificationAPIs
         [Produces("application/json")]
         public async Task<IActionResult> GetNotificationById(Guid accountId)
         {
-
-            // Map notfications to DTO....
-            List<GetNotificationObjectDTO> getNotifications = new List<GetNotificationObjectDTO>();
-
             // Use the service here...
-            IEnumerable<Notification> notifications;
-            NotificationResult notificationResult;
-            int statusCode;
-            string statusMessage;
+            IEnumerable<Notification> notifications = null;
 
-            (notificationResult, notifications) = await _receiveNotificationService.GetNotificationsAsync(accountId);
-
-            // Get the status code and coressponding message...
-            (statusCode, statusMessage) = MapNotificationResult(notificationResult);
-
-
-            // Account not found or DB Error....
-            if (notificationResult == NotificationResult.Error_AccountNotFound ||
-                notificationResult == NotificationResult.Error_DBReadFail ||
-                notificationResult == NotificationResult.Error_Other)
+            try
             {
-                return StatusCode(statusCode, CreateResponseDTO(getNotifications, statusCode, statusMessage));
+                notifications = await _receiveNotificationService.GetNotificationsAsync(accountId);
+            }
+            catch (AccountNotFoundException ex)
+            {
+                return StatusCode(
+                    400,
+                    _dtoFactory.CreateResponseDTO(ResponseDTOType.NOTIFICATION_GETBYACCOUNT, notifications, 400, ex.Message
+                    )
+                );
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(
+                    500,
+                    _dtoFactory.CreateResponseDTO(ResponseDTOType.NOTIFICATION_GETBYACCOUNT, notifications, 500, ex.Message
+                    )
+                );
+
             }
 
-            foreach (var notification in notifications)
-            {
-                getNotifications.Add(new GetNotificationObjectDTO
-                {
-                    NotificationId = notification.NotificationId,
-                    AccountId = notification.AccountId,
-                    NotificationMessage = notification.NotificationMessage,
-                    SentTime = notification.SentTime,
-                });
-            }
-
-            return StatusCode(statusCode, CreateResponseDTO(getNotifications, statusCode, statusMessage));
+            return StatusCode(
+                200,
+                _dtoFactory.CreateResponseDTO(
+                    ResponseDTOType.NOTIFICATION_GETBYACCOUNT,
+                    notifications,
+                    200,
+                    "Success!"
+                )
+            );
         }
 
         // TODO:    POST /api/notification
         [HttpPost]
         [Consumes("application/json")]
         [Produces("application/json")]
+
         public async Task<IActionResult> AddNotification([FromBody] AddNotificationDTO clientDTO)
         {
+            List<Notification> notificationWrapper = new List<Notification>();
+            Notification? notification;
 
-            // Map notfications to DTO....
-            List<GetNotificationObjectDTO> getNotifications = new List<GetNotificationObjectDTO>();
-            int statusCode;
-            string statusMessage;
-            NotificationResult notificationResult;
+            try
+            {
+                notification = await _sendNotificationService
+                    .SendNotification(
+                    clientDTO.Request.Message,
+                    clientDTO.Request.AccountId
+                );
 
-            (notificationResult, Notification? notification) = await _sendNotificationService
-                .SendNotification(
-                clientDTO.NotificationObject.Message,
-                clientDTO.NotificationObject.AccountId
+                notificationWrapper.Add(notification);
+            }
+
+            catch (AccountNotFoundException ex)
+            {
+                return StatusCode(
+                    400,
+                    _dtoFactory.CreateResponseDTO(ResponseDTOType.NOTIFICATION_ADD, notificationWrapper, 400, ex.Message
+                    )
+                );
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(
+                    500,
+                    _dtoFactory.CreateResponseDTO(ResponseDTOType.NOTIFICATION_ADD, notificationWrapper, 500, ex.Message
+                    )
+                );
+            }
+
+
+            return StatusCode(
+                200,
+                _dtoFactory.CreateResponseDTO(
+                    ResponseDTOType.NOTIFICATION_ADD,
+                    notificationWrapper,
+                    200,
+                    "Success!"
+                )
             );
-
-            // Get the status code and coressponding message...
-            (statusCode, statusMessage) = MapNotificationResult(notificationResult);
-
-            // Account not found or DB Error....
-            if (notificationResult == NotificationResult.Error_AccountNotFound ||
-                notificationResult == NotificationResult.Error_DBInsertFail ||
-                notificationResult == NotificationResult.Error_Other)
-            {
-
-                return StatusCode(statusCode, CreateResponseDTO(getNotifications, statusCode, statusMessage));
-
-            }
-            
-            getNotifications.Add(new GetNotificationObjectDTO
-            {
-                NotificationId = notification.NotificationId,
-                AccountId = notification.AccountId,
-                NotificationMessage = notification.NotificationMessage,
-                SentTime = notification.SentTime,
-            });
-
-            return StatusCode(statusCode, CreateResponseDTO(getNotifications, statusCode, statusMessage));
-        }
-
-        private GetNotificationDTO CreateResponseDTO(List<GetNotificationObjectDTO> notificationList, int statusCode, string statusMessage)
-        {
-            return new GetNotificationDTO
-            {
-                NotificationObjects = notificationList,
-                ResponseObject = new ResponseObjectDTO
-                {
-                    StatusCode = statusCode,
-                    ServerMessage = statusMessage
-                }
-            };
-        }
-
-        private Tuple<int, string> MapNotificationResult(NotificationResult notificationResult)
-        {
-            const string Success = "SUCC: ";
-            const string ClientError = "CLIENT_ERR: ";
-            const string ServerError = "SERVER_ERR: ";
-
-            switch (notificationResult)
-            {
-                case NotificationResult.Success:
-                    return Tuple.Create(200, Success + "Success!");
-                case NotificationResult.Error_AccountNotFound:
-                    return Tuple.Create(400, ClientError + "AccountId Not Found.");
-                case NotificationResult.Error_DBInsertFail:
-                    return Tuple.Create(500, ServerError + "DB Insert Fail.");
-                case NotificationResult.Error_DBReadFail:
-                    return Tuple.Create(500, ServerError + "DB Read Fail.");
-                case NotificationResult.Error_Other:
-                    return Tuple.Create(500, ServerError + "Internal Server Error.");
-                default:
-                    return Tuple.Create(500, ServerError + "Internal Server Error.");
-            }
         }
     }
 }

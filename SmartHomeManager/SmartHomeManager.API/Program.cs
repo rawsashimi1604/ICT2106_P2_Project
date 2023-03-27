@@ -46,6 +46,15 @@ using SmartHomeManager.Domain.AccountDomain.Entities;
 using SmartHomeManager.Domain.Common;
 using SmartHomeManager.Domain.NotificationDomain.Entities;
 using SmartHomeManager.Domain.NotificationDomain.Interfaces;
+using SmartHomeManager.Domain.AnalysisDomain.Entities;
+using SmartHomeManager.DataSource.AnalysisDataSource;
+using SmartHomeManager.Domain.DeviceDomain.Services;
+using ISendNotification = SmartHomeManager.Domain.NotificationDomain.Interfaces.ISendNotification;
+using SmartHomeManager.Domain.NotificationDomain.Services;
+using SmartHomeManager.Domain.NotificationDomain.Proxies;
+using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
+using SmartHomeManager.Domain.AnalysisDomain.Services;
+using SmartHomeManager.Domain.AnalysisDomain.Proxies;
 
 namespace SmartHomeManager.API;
 
@@ -94,11 +103,7 @@ public class Program
         // DEVICELOG
         builder.Services.AddScoped<IDeviceLogRepository, DeviceLogRepository>();
         // builder.Services.AddScoped<IProfileService, ProfileRepositoryMock>();
-
-        // NOTIFICATION
-        // Inject dependencies for Notification Repository, so all implementations of IGenericRepository<Notification> will use the NotificationRepository implementation...
-        builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
-        builder.Services.AddScoped<IGenericRepository<Account>, MockAccountRepository>();
+        
 
         // ROOM
         builder.Services.AddScoped<IRoomRepository, RoomRepository>();
@@ -110,6 +115,60 @@ public class Program
         builder.Services.AddScoped<AccountService>();
         builder.Services.AddScoped<EmailService>();
         builder.Services.AddScoped<ProfileService>();
+     
+
+        // NOTIFICATION
+        // Inject dependencies for Notification Repository, so all implementations of IGenericRepository<Notification> will use the NotificationRepository implementation...
+        builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+
+        builder.Services.AddScoped<SendNotificationService>();
+        builder.Services.AddScoped<ISendNotification, SendNotificationProxy>(serviceProvider => {
+            var service = serviceProvider.GetRequiredService<SendNotificationService>();
+            var accountRepo = serviceProvider.GetRequiredService<IAccountRepository>(); 
+            return new SendNotificationProxy(service, accountRepo);
+        });
+
+        builder.Services.AddScoped<ReceiveNotificationService>();
+        builder.Services.AddScoped<IReceiveNotification, ReceiveNotificationProxy>(serviceProvider => {
+            var service = serviceProvider.GetRequiredService<ReceiveNotificationService>();
+            var accountRepo = serviceProvider.GetRequiredService<IAccountRepository>();
+            return new ReceiveNotificationProxy(service, accountRepo);
+        });
+
+        // ANALYSIS
+        builder.Services.AddScoped<IEnergyEfficiencyRepository, EnergyEfficiencyRepository>();
+        builder.Services.AddScoped<EnergyEfficiencyService>();
+        builder.Services.AddScoped<IEnergyEfficiency, EnergyEfficiencyProxy>(serviceProvider => {
+            var service = serviceProvider.GetRequiredService<EnergyEfficiencyService>();
+            var accountRepo = serviceProvider.GetRequiredService<IAccountRepository>();
+            return new EnergyEfficiencyProxy(service, accountRepo);
+        });
+
+        builder.Services.AddScoped<ICarbonFootprintRepository, CarbonFootprintRepository>();
+        builder.Services.AddScoped<CarbonFootprintService>();
+        builder.Services.AddScoped<ICarbonFootprint, CarbonFootprintProxy>(serviceProvider => {
+            var service = serviceProvider.GetRequiredService<CarbonFootprintService>();
+            var accountRepo = serviceProvider.GetRequiredService<IAccountRepository>();
+            return new CarbonFootprintProxy(service, accountRepo);
+        });
+
+        builder.Services.AddScoped<IForecastDataRepository, ForecastDataRepository>();
+        builder.Services.AddScoped<ForecastService>();
+        builder.Services.AddScoped<IForecast, ForecastProxy>(serviceProvider => {
+            var service = serviceProvider.GetRequiredService<ForecastService>();
+            var accountRepo = serviceProvider.GetRequiredService<IAccountRepository>();
+            return new ForecastProxy(service, accountRepo);
+        });
+
+        builder.Services.AddScoped<ReportService>();
+        builder.Services.AddScoped<IReport, ReportProxy>(serviceProvider => {
+            var service = serviceProvider.GetRequiredService<ReportService>();
+            var accountRepo = serviceProvider.GetRequiredService<IAccountRepository>();
+            var deviceRepo = serviceProvider.GetRequiredService<IDeviceRepository>();
+            return new ReportProxy(service, accountRepo, deviceRepo);
+        });
+
+
         #endregion DEPENDENCY INJECTIONS
 
         builder.Services.AddControllers();

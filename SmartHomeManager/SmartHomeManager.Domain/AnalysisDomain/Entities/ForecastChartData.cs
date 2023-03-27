@@ -6,29 +6,34 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SmartHomeManager.Domain.Common;
 
 namespace SmartHomeManager.Domain.AnalysisDomain.Entities
 {
-    public class ForecastChartData
+    public class ForecastChartData : IEntity
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid ForecastChartDataId { get; set; }
 
         [Required]
-        public Guid ForecastChartId { get; set; }
+        public Guid AccountId { get; set; }
+
+        [Required]
+        public int TimespanType { get; set; }
+
+        [Required]
+        public string DateOfAnalysis { get; set; }
 
         [Required]
         public string Label { get; set; }
 
         [Required]
-        public double Value { get; set; }
+        public double WattsValue { get; set; }
+
         [Required]
-        public bool IsForecast { get; set; }
+        public double PriceValue { get; set; }
 
         [Required]
         public int Index { get; set; }
-
-        [ForeignKey("ForecastChartId")]
-        public ForecastChart ForecastChart { get; set; }
     }
 }

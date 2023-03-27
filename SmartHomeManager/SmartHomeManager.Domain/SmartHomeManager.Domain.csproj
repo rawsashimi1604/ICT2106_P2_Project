@@ -10,11 +10,22 @@
     <None Remove="SceneDomain\Services\" />
     <None Remove="SceneDomain\Entities\DTOs\" />
     <None Remove="SceneDomain\Interfaces\" />
+    <None Remove="AnalysisDomain\Files\" />
+    <None Remove="itext7" />
+    <None Remove="AnalysisDomain\Builders\" />
+    <None Remove="AnalysisDomain\Proxies\" />
+    <None Remove="iTextSharp" />
+    <None Remove="itext7.commons" />
+    <None Remove="Chart.js" />
+    <None Remove="System.Web.DataVisualization" />
+    <None Remove="System.Web" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SceneDomain\Services\" />
     <Folder Include="SceneDomain\Entities\DTOs\" />
     <Folder Include="SceneDomain\Interfaces\" />
+    <Folder Include="AnalysisDomain\Files\" />
+    <Folder Include="AnalysisDomain\Builders\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="EnergyProfile\**" />
@@ -23,7 +34,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="HtmlRenderer.Core" Version="1.5.0.6" />
+    <PackageReference Include="HtmlRenderer.PdfSharp" Version="1.5.0.6" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
+    <PackageReference Include="itext7" Version="7.2.5" />
+    <PackageReference Include="itext7.commons" Version="7.2.5" />
+    <PackageReference Include="Chart.js" Version="3.7.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,6 +55,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="7.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.2" />
+    <PackageReference Include="PdfSharp" Version="1.50.5147" />
   </ItemGroup>
   
   <ItemGroup>
@@ -46,7 +63,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DeviceDomain\Interfaces\" />
+    <Reference Include="System.Web.DataVisualization">
+      <HintPath>bin\Debug\net7.0\System.Web.DataVisualization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web">
+      <HintPath>bin\Debug\net7.0\System.Web.dll</HintPath>
+    </Reference>
   </ItemGroup>
-
 </Project>

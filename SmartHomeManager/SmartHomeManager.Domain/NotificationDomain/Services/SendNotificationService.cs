@@ -1,43 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using SmartHomeManager.Domain.AccountDomain.Entities;
+﻿using System.Text.RegularExpressions;
+using SmartHomeManager.Domain.AccountDomain.Interfaces;
 using SmartHomeManager.Domain.AccountDomain.Services;
-using SmartHomeManager.Domain.Common;
+using SmartHomeManager.Domain.Common.Exceptions;
 using SmartHomeManager.Domain.NotificationDomain.Entities;
 using SmartHomeManager.Domain.NotificationDomain.Interfaces;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SmartHomeManager.Domain.NotificationDomain.Services
 {
     public class SendNotificationService : ISendNotification
     {
         private readonly INotificationRepository _notificationRepository;
-        private readonly MockAccountService _mockAccountService;
+        private readonly AccountService _accountService;
 
-        public SendNotificationService(INotificationRepository notificationRepository, IGenericRepository<Account> mockAccountRepository)
+        public SendNotificationService(INotificationRepository notificationRepository, IAccountRepository accountRepository)
         {
             _notificationRepository = notificationRepository;
-            _mockAccountService = new MockAccountService(mockAccountRepository);
+            _accountService = new AccountService(accountRepository);
         }
 
-        public async Task<Tuple<NotificationResult, Notification?>> SendNotification(string notificationMessage, Guid accountId)
+        public async Task<Notification?> SendNotification(string notificationMessage, Guid accountId)
         {
-            System.Diagnostics.Debug.WriteLine("Notification message:" + notificationMessage);
-
-
-            var account = await _mockAccountService.GetAccount(accountId);
-            
-            //Check if account exist
-            if (account == null)
-            {
-                System.Diagnostics.Debug.WriteLine("Account not found");
-                return Tuple.Create(NotificationResult.Error_AccountNotFound, new Notification());
-            }
+            var account = await _accountService.GetAccountByAccountId(accountId);
 
             //Remove symbol to prevent SQL injection
             notificationMessage = Regex.Replace(notificationMessage, "[^0-9A-Za-z _-]", "");
@@ -56,10 +39,11 @@ namespace SmartHomeManager.Domain.NotificationDomain.Services
             // If something went wrong...
             if (!result)
             {
-                return Tuple.Create(NotificationResult.Error_DBInsertFail, (Notification?) null);
+                throw new DBInsertFailException();
             }
 
-            return Tuple.Create(NotificationResult.Success, notificationToBeAdded);
+            return notificationToBeAdded;
         }
+
     }
 }

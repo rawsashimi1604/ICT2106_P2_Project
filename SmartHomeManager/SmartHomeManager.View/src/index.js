@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { ChakraProvider } from '@chakra-ui/react';
+import theme from './theme'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -11,7 +12,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 // https://stackoverflow.com/questions/73002902/api-getting-called-twice-in-react
 
 root.render(
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
         {/* <React.StrictMode> */}
             <App />
         {/* </React.StrictMode> */}

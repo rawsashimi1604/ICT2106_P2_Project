@@ -16,7 +16,6 @@ namespace SmartHomeManager.Domain.AccountDomain.Services
         private readonly IProfileRepository _profileRepository;
         private readonly IDeviceRepository _deviceRepository;
 
-
         public ProfileService(IProfileRepository profileRepository)
         {
             _profileRepository = profileRepository;
