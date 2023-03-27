@@ -1,10 +1,10 @@
 import React from "react";
-import AnalyticsTab from "components/Analytics/AnalyticsTab";
+import Dashboard from "components/Analytics/Dashboard";
 
 export default function Analytics() {
   return (
     <>
-      <AnalyticsTab/>
+      <Dashboard/>
     </>
   )
 }
