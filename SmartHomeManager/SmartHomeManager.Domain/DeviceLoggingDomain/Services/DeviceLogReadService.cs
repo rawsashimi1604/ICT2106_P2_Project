@@ -37,9 +37,9 @@ namespace SmartHomeManager.Domain.DeviceLoggingDomain.Services
 
 
         // get watts from devices
-/*        public int getDeviceWatts(Guid deviceId){
+        public int getDeviceWatts(Guid deviceId){
             return _deviceWattsService.getDeviceWatts(deviceId);
-        }*/
+        }
 
         public IEnumerable<GetDeviceLogWebRequest> GetDeviceLogByDay(Guid deviceId, DateTime date)
         {
