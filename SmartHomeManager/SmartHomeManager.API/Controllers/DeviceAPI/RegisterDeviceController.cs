@@ -15,9 +15,17 @@ namespace SmartHomeManager.API.Controllers.DeviceAPIs
     {
         private readonly RegisterDeviceService _registerDeviceService;
 
-        public RegisterDeviceController(IDeviceRepository deviceRepository, IDeviceTypeRepository deviceTypeRepository) 
+        public RegisterDeviceController(IDeviceRepository deviceRepository, IDeviceTypeRepository deviceTypeRepository)
         {
             _registerDeviceService = new(deviceRepository, deviceTypeRepository);
+        }
+
+        // GET api/<RegisterDeviceController>/GetAllDevices
+        [HttpGet("GetAllDevice/{deviceName}")]
+        public async Task<IEnumerable<string>> GetAllDevice(String deviceName)
+        {
+            IEnumerable<Device> devices = await _registerDeviceService.GetAllDevicesAsync();
+            return devices.Where(device => device.DeviceTypeName == deviceName).Select(device => $"{device.DeviceName} - {device.DeviceId}");
         }
 
         // GET api/<RegisterDeviceController>/GetAllDeviceTypes
@@ -25,7 +33,7 @@ namespace SmartHomeManager.API.Controllers.DeviceAPIs
         public async Task<IEnumerable<string>> GetAllDeviceTypes()
         {
             IEnumerable<DeviceType> deviceTypes = await _registerDeviceService.GetAllDevicesTypeAsync();
-            return deviceTypes.Select(deviceType => deviceType.DeviceTypeName);    
+            return deviceTypes.Select(deviceType => deviceType.DeviceTypeName);
         }
 
         // POST api/<RegisterDeviceController>/RegisterDevice
@@ -35,7 +43,7 @@ namespace SmartHomeManager.API.Controllers.DeviceAPIs
             if (await _registerDeviceService.RegisterDeviceAsync(deviceWebRequest.DeviceName, deviceWebRequest.DeviceBrand, deviceWebRequest.DeviceModel, deviceWebRequest.DeviceTypeName, deviceWebRequest.DeviceWatts, deviceWebRequest.DeviceSerialNumber, deviceWebRequest.AccountId))
             {
                 return Ok("RegisterDevice() success!");
-	        }
+            }
 
             return BadRequest("RegisterDevice() failed!");
         }
@@ -47,7 +55,7 @@ namespace SmartHomeManager.API.Controllers.DeviceAPIs
             if (await _registerDeviceService.AddDeviceTypeAsync(deviceType))
             {
                 return Ok("AddDeviceType() success!");
-	        }
+            }
 
             return BadRequest("AddDeviceType() failed!");
         }

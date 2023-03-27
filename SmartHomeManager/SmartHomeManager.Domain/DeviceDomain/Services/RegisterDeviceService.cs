@@ -9,13 +9,18 @@ namespace SmartHomeManager.Domain.DeviceDomain.Services
         private readonly IDeviceRepository _deviceRepository;
         private readonly IDeviceTypeRepository _deviceTypeRepository;
 
-        public RegisterDeviceService(IDeviceRepository deviceRepository, IDeviceTypeRepository deviceTypeRepository) 
-        { 
+        public RegisterDeviceService(IDeviceRepository deviceRepository, IDeviceTypeRepository deviceTypeRepository)
+        {
             _deviceRepository = deviceRepository;
             _deviceTypeRepository = deviceTypeRepository;
         }
 
-        public async Task<IEnumerable<DeviceType>> GetAllDevicesTypeAsync() 
+        public async Task<IEnumerable<Device>> GetAllDevicesAsync()
+        {
+            return await _deviceRepository.GetAllAsync();
+        }
+
+        public async Task<IEnumerable<DeviceType>> GetAllDevicesTypeAsync()
         {
             return await _deviceTypeRepository.GetAllAsync();
         }
@@ -39,8 +44,8 @@ namespace SmartHomeManager.Domain.DeviceDomain.Services
 
                 return await _deviceRepository.SaveAsync();
             }
-            catch 
-	        {
+            catch
+            {
                 return false;
             }
         }
@@ -56,7 +61,7 @@ namespace SmartHomeManager.Domain.DeviceDomain.Services
             catch
             {
                 return false;
-	        }
+            }
         }
     }
 }

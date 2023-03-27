@@ -10,7 +10,6 @@ import {
     Tooltip,
     Legend,
 } from "chart.js";
-import { Bar } from "react-chartjs-2";
 import WeeklyEnergyChart from "components/DeviceLogging/WeeklyEnergyChart";
 
 
@@ -24,143 +23,109 @@ ChartJS.register(
 );
 
 function DeviceLogging() {
-    const [device1ID, setDevice1ID] = useState("");
-    const [allDeviceID, setAllDevice1ID] = useState([]);
-    const [Device1WeeklyEnergy, setDevice1WeeklyEnergy] = useState([])
 
 
-    const onChange = (event) => {
+    const [deviceTypeName, setDeviceTypeName] = useState([]);
+    const [selectedDevice, setSelectedDevice] = useState("");
+    const [data, setData] = useState([]);
+
+    const [deviceName, setDeviceName] = useState([]);
+    const [selectedDeviceName1, setSelectedDeviceName1] = useState("");
+    const [selectedDeviceName2, setSelectedDeviceName2] = useState("");
+
+
+
+    /*const onChange = (event) => {
         const value = event.target.value;
-        setDevice1ID(value);
-    };
+        setDeviceID(value);
+    };*/
+
+    function fetchDeviceTypes() {
+        fetch("https://localhost:7140/api/RegisterDevice/GetAllDeviceTypes/")
+            .then((response) => response.json())
+            .then((data) => setDeviceTypeName(data));
+    }
 
     useEffect(() => {
-        const fetchDeviceID = async () => {
-            try {
-                const res = await fetch('https://localhost:7140/api/DeviceLog/{22222222-2222-2222-2222-222222222222}', {
-                    method: 'GET',
-                    headers: {
-                        accept: 'text/plain',
-                    },
-                })
-                const data = await res.json()
-                setAllDevice1ID(data)
-            } catch (error) {
-                console.error(error)
-            }
+
+        fetchDeviceTypes();
+
+        if (selectedDevice !== "") {
+            fetch(`https://localhost:7140/api/RegisterDevice/GetAllDevice/${selectedDevice}`)
+                .then((response) => response.json())
+                .then((data) => setData(data))
+                .catch((error) => console.log(error));
         }
-        fetchDeviceID()
-    }, [])
-
-    const fetchWeeklyLog = async (id, date) => {
-        try {
-            // loops 7 times to get weekly log
-            //
-            // var dateAndTime = fetechedDateTimeVariable
-
-            // var date = dateAndTime.Date
-            const dateString = date.split(" ")
-            // date = 2023-02-15
-            const day = dateString[0].split("-")
-            // 15 should be in dateOfDay
-            let dateOfDay = parseInt(day[2])
+    }, [selectedDevice]);
 
 
-            for (let i = 0; i < 7; i++) {
-
-                let getWeekData = day[0] + "-" + day[1] + "-" + dateOfDay + " 00:00:00.0000000"
-
-                //create the fetch request
-                const res = await axios.get(`https://localhost:7140/api/DeviceLog/${id}/${getWeekData}`)
-                console.log(res)
-                dateOfDay = dateOfDay + 1
-                // result from backend
-                let energyUsage = await res.data[0]
-                console.log(energyUsage)
-                const activity = await res.data[1]
-
-                setDevice1WeeklyEnergy(current => [...current, energyUsage])
-
-            }
-            //get the fetch request
-
-            // add weekly energy log from res according to deviceID
-            /*            if (id != device1ID) {
-                            if (Device2WeeklyEnergy == null) {
-                                setDevice2WeeklyEnergy(data)
-                            } else {
-                                //append
-                                setDevice2WeeklyEnergy(current => [...current, ...data])
-                            }
-                        } else {
-                            if (Device1WeeklyEnergy == null) {
-                                setDevice1WeeklyEnergy(data)
-                            } else {
-                                //append
-                                setDevice1WeeklyEnergy(current => [...current, ...data])
-                            }
-                        }
-            
-                        // add weekly activity log from res according to deviceID
-                        if (id != device1ID) {
-                            if (Device2WeeklyEnergy == null) {
-                                setDevice2WeeklyActivity(data)
-                            } else {
-                                //append
-                                setDevice2WeeklyActivity(current => [...current, ...data])
-                            }
-                        } else {
-                            if (Device1WeeklyEnergy == null) {
-                                setDevice1WeeklyActivity(data)
-                            } else {
-                                //append
-                                setDevice1WeeklyActivity(current => [...current, ...data])
-                            }
-                        }*/
-
-        } catch (err) {
-            console.error(err)
-        }
-
-
-    }
 
     // displaying 
     return (
         <Box>
             <Heading alignContent="center">Device Log</Heading>
             <Text>This page displays charts to illustrate the energy usage and activity level of devices.</Text>
-            <Box paddingTop="5">  
+            <Box paddingTop="5">
                 <text>Please select device to compare{'\n'}</text>
-                <Select
-                    onChange={onChange}
-                    defaultValue={""}
-                    variant='filled'
-                >
-                    <option disabled={true} value="">Please select device</option>
-                    {
-                        allDeviceID.map((list, index) =>
-                            <option key={index} value={list}> Device {index}</option>)
-                    }
-                </Select>  
+                <Select value={selectedDevice} onChange={(e) => setSelectedDevice(e.target.value)} placeholder="Please a select a device type">
 
-                <Box paddingTop="5">
-                    <Button
-                        padding="5"
-                        
-                        colorScheme="blue"
-                        onClick={() => {
-                            fetchWeeklyLog(device1ID, "2023-02-13 00:00:00")
-                        }}
-                    >
-                        View Weekly Energy Chart
-                    </Button>  
-                </Box>              
+
+                    {deviceTypeName.map(option => (
+                        <option key={option} value={option}>{option}</option>
+                    ))}
+
+                </Select>
+
             </Box>
-                
-            <WeeklyEnergyChart
-                Device1WeeklyEnergy={Device1WeeklyEnergy}
-            />
+
+
+            <Box paddingTop="10">
+
+
+
+                {selectedDevice && (
+                    <div>
+
+                        <text>Please select the {selectedDevice} to compare{'\n'}</text>
+
+                        <div style={{ display: 'flex' }}>
+                            <Select value={selectedDeviceName1} onChange={(event) => { setSelectedDeviceName1(event.target.value) }}
+                                style={{ marginRight: '10px' }}
+                                placeholder={`Select 1st ${selectedDevice}`}
+                                width={"200px"}
+                                variant='filled'>
+
+                                {data.map((item) => (
+                                    <option key={item} value={item}>{item}</option>
+                                ))}
+
+
+                            </Select>
+
+                            <Select value={selectedDeviceName2} onChange={(e) => setSelectedDeviceName2(e.target.value)}
+                                style={{ marginRight: '10px' }}
+                                placeholder={`Select 2nd ${selectedDevice}`}
+                                width={"200px"}
+                                variant='filled'>
+
+                                {data.filter(option => option !== selectedDeviceName1).map(option => (
+                                    <option key={option} value={option}>{option}</option>
+                                ))}
+
+
+                            </Select>
+
+
+
+                        </div>
+
+                    </div>
+
+
+                )}
+            </Box>
+
+
         </Box>
     );
 };

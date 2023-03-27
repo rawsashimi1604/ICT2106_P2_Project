@@ -12,17 +12,18 @@ using System.Threading.Tasks;
 
 namespace SmartHomeManager.DataSource.DeviceLogDataSource
 {
-    public class DeviceLogRepository: IDeviceLogRepository
+    public class DeviceLogRepository : IDeviceLogRepository
     {
         private readonly ApplicationDbContext _db;
         private DbSet<DeviceLog> _dbSet;
 
-        public DeviceLogRepository(ApplicationDbContext db) {
+        public DeviceLogRepository(ApplicationDbContext db)
+        {
             _db = db;
             this._dbSet = db.Set<DeviceLog>();
         }
 
-       
+
 
         public IEnumerable<DeviceLog> Get(Guid deviceId, DateTime date)
         {
@@ -39,7 +40,7 @@ namespace SmartHomeManager.DataSource.DeviceLogDataSource
             // get all logs
             var allLogs = _db.DeviceLogs.ToList();
 
-            IEnumerable<DeviceLog> result = _db.DeviceLogs.ToList().Where(log => log.DeviceId == deviceId && log.DateLogged.Date == date && log.DateLogged.TimeOfDay >= date.TimeOfDay && log.EndTime?.TimeOfDay <= endTime.TimeOfDay) ;
+            IEnumerable<DeviceLog> result = _db.DeviceLogs.ToList().Where(log => log.DeviceId == deviceId && log.DateLogged.Date == date && log.DateLogged.TimeOfDay >= date.TimeOfDay && log.EndTime?.TimeOfDay <= endTime.TimeOfDay);
 
             return result;
         }
@@ -53,7 +54,7 @@ namespace SmartHomeManager.DataSource.DeviceLogDataSource
 
         public async Task<DeviceLog?> Get(DateTime date)
         {
-            var result = await _dbSet.FindAsync(date); 
+            var result = await _dbSet.FindAsync(date);
             return result;
         }
 

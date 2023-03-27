@@ -27,12 +27,13 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
 
         public DeviceLogController(IDeviceLogRepository deviceLogRepository)
         {
-           _logReadService = new DeviceLogReadService(deviceLogRepository);
+            _logReadService = new DeviceLogReadService(deviceLogRepository);
             _logWriteService = new DeviceLogWriteService(deviceLogRepository);
-            
+
         }
 
-        private int getDeviceWatts(Guid deviceId) {
+        private int getDeviceWatts(Guid deviceId)
+        {
             // get watt of device
             var watt = 0;
             return watt;
@@ -62,8 +63,8 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
 
         // GET: api/Analytics/deviceId?startTime=xxxx&&endTime=xxxx
         [HttpGet("daily/{deviceId}")]
-        public ActionResult<IEnumerable<DeviceLog>> GetDailyDeviceLog(Guid deviceId,DateTime endTime)
-        {   
+        public ActionResult<IEnumerable<DeviceLog>> GetDailyDeviceLog(Guid deviceId, DateTime endTime)
+        {
             var date = DateTime.Now.Date;
             var totalUsage = 0;
             var totalActivity = 0;
@@ -74,7 +75,7 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
                 totalUsage += item.DeviceEnergyUsage;
                 totalActivity += item.DeviceActivity;
             }
-            double []res = { totalUsage, totalActivity};
+            double[] res = { totalUsage, totalActivity };
             return Ok(res);
         }
 
@@ -87,8 +88,8 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
             if (!result.Any()) return NotFound();
             return Ok(result);
         }
-            // date passed shld be start date of the week
-            // GET: api/Analytics/DeviceLog/deviceId?date=xxxxxx
+        // date passed shld be start date of the week
+        // GET: api/Analytics/DeviceLog/deviceId?date=xxxxxx
         [HttpGet("{deviceId}/{date}")]
         [Consumes("application/json")]
         [Produces("application/json")]
@@ -98,7 +99,7 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
             var totalUsage = 0;
             var totalActivity = 0;
             var result = _logReadService.GetDeviceLogByDay(deviceId, date);
-           // if (!result.Any()) return NotFound();
+            // if (!result.Any()) return NotFound();
             foreach (var item in result)
             {
                 totalUsage += item.DeviceEnergyUsage;
@@ -125,10 +126,10 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
             var deviceActivity = deviceLogWebRequest.DeviceEnergyUsage;
             var deviceWatt = getDeviceWatts(deviceId);
             // calculating new usage and activity
-            var timeDifference = (endTime.TimeOfDay.TotalSeconds - startTime)/3600;
+            var timeDifference = (endTime.TimeOfDay.TotalSeconds - startTime) / 3600;
             var totalWatts = timeDifference * deviceWatt;
-            
-   
+
+
             await _logWriteService.UpdateDeviceLog(deviceId, timeDifference, totalWatts, endTime, false);
 
             return NoContent();
@@ -136,24 +137,24 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
         }
 
 
-/*        // GET: api/Analytics/GetDevicesInProfile/profileId
-        [HttpGet("GetDevicesInProfile/{profileId}")]
-        public ActionResult<IEnumerable<Device>> GetDevicesFromProfile(Guid profileId)
-        {
-            var result = _logReadService.GetAllDevicesInProfile(profileId);
-            if (!result.Any()) return NotFound();
+        /*        // GET: api/Analytics/GetDevicesInProfile/profileId
+                [HttpGet("GetDevicesInProfile/{profileId}")]
+                public ActionResult<IEnumerable<Device>> GetDevicesFromProfile(Guid profileId)
+                {
+                    var result = _logReadService.GetAllDevicesInProfile(profileId);
+                    if (!result.Any()) return NotFound();
 
-            return Ok(result);
-        }*/
+                    return Ok(result);
+                }*/
 
 
         // POST: api/DeviceLogs
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<GetDeviceLogWebRequest>> PostDeviceLog(CreateDeviceLogWebRequest deviceLogWebRequest )
+        public async Task<ActionResult<GetDeviceLogWebRequest>> PostDeviceLog(CreateDeviceLogWebRequest deviceLogWebRequest)
         {
-        var resp = await _logWriteService.AddDeviceLog(deviceLogWebRequest.DeviceId);
-        return Ok(resp);
+            var resp = await _logWriteService.AddDeviceLog(deviceLogWebRequest.DeviceId);
+            return Ok(resp);
         }
 
 
