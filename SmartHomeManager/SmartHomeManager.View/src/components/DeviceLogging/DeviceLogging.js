@@ -83,7 +83,7 @@ function DeviceLogging() {
                                 width={"200px"}
                                 variant='filled'>
 
-                                {data.map((item) => (
+                                {data.filter(item => item !== selectedDeviceName2).map((item) => (
                                     <option key={item} value={item}>{item}</option>
                                 ))}
 
