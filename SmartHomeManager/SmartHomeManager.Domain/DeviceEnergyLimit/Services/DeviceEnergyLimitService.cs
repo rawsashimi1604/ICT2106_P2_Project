@@ -24,14 +24,13 @@ namespace SmartHomeManager.Domain.DeviceEnergyLimit
     {
 
         private readonly IDeviceEnergyLimitRepository _deviceEnergyLimitRepository;
+        private readonly ISendNotification _notificationService;
 
-        public DeviceEnergyLimitService(IDeviceEnergyLimitRepository deviceEnergyLimitRepository)
+        public DeviceEnergyLimitService(IDeviceEnergyLimitRepository deviceEnergyLimitRepository, ISendNotification notificationService)
         {
             _deviceEnergyLimitRepository = deviceEnergyLimitRepository;
+            _notificationService = notificationService;
         }
-
-
-
 
         public async Task<EnergyLimit?> getDeviceEnergyLimitById(Guid id)
         {
@@ -49,28 +48,6 @@ namespace SmartHomeManager.Domain.DeviceEnergyLimit
 
             return ret;
         }
-
-        //public async Task<IEnumerable<EnergyLimit>> getAllDeviceEnergyLimit()
-        //{
-        //    IEnumerable<EnergyLimit> deviceEnergyLimit = await _deviceEnergyLimitRepository.GetAllAsync();
-
-        //    if (deviceEnergyLimit == null)
-        //    {
-        //        return Enumerable.Empty<EnergyLimit>();
-        //    }
-
-        //    return deviceEnergyLimit;
-        //}
-
-        //public async Task<IEnumerable<SmartHomeManager.Domain.DeviceEnergyLimit.Entities.DeviceEnergyLimit>> setDeviceEnergyLimit(Guid model) 
-        //{
-        //    var res = await _deviceEnergyLimitRepository.Get(model);
-        //    if (res == null) return;
-
-
-        //    _deviceEnergyLimitRepository.Update(res);
-        //    await _deviceEnergyLimitRepository.SaveChangesAsync();
-        //}
 
         public async Task<IEnumerable<SmartHomeManager.Domain.DeviceEnergyLimit.Entities.DeviceEnergyLimit>> getAllDeviceEnergyLimit()
         {
@@ -92,5 +69,25 @@ namespace SmartHomeManager.Domain.DeviceEnergyLimit
             return (IEnumerable<Entities.DeviceEnergyLimit>)resp;
         }
 
+        public async Task<bool> updateDeviceEnergyLimit(Guid id, EnergyLimit energyLimit)
+        {
+            var deviceEnergyLimit = await _deviceEnergyLimitRepository.Get(id);
+
+            if (deviceEnergyLimit == null)
+            {
+                return false;
+            }
+
+            deviceEnergyLimit.DeviceEnergyLimits = energyLimit.DeviceEnergyLimits;
+
+            await _deviceEnergyLimitRepository.Update(deviceEnergyLimit);
+
+            if (energyLimit.DeviceEnergyLimits.ExceedsThreshold())
+            {
+                await _notificationService.SendNotification();
+            }
+
+            return true;
+        }
     }
 }
