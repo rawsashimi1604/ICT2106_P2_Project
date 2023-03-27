@@ -1,6 +1,5 @@
-import { Button, Td, Text } from "@chakra-ui/react";
+import { Button, Td } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import axios from "axios";
 
 function ActionButtons({ id, updateLog }) {
@@ -9,7 +8,9 @@ function ActionButtons({ id, updateLog }) {
             const res = await axios.put(`https://localhost:7140/api/DeviceLog/stateOff/${id}`);
             const logs = res.data;
             console.log(logs);
-            updateLog(prevLogs => prevLogs.map(log => log.deviceId === id ? logs : log)); // update the state with the updated log data
+/*            updateLog(prevLogs => prevLogs.map(log => log.deviceId === id ? logs : log))
+*/
+
         } catch (err) {
             console.error(err);
         }
@@ -21,7 +22,6 @@ function ActionButtons({ id, updateLog }) {
                 const res = await axios.put(`https://localhost:7140/api/DeviceLog/stateOn/${id}`);
                 const logs = res.data;
                 console.log(logs);
-                updateLog(prevLogs => prevLogs.map(log => log.deviceId === id ? logs : log)); // update the state with the updated log data
             }
         } catch (err) {
             console.error(err);

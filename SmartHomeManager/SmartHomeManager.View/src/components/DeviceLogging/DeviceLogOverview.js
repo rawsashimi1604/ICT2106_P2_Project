@@ -111,11 +111,11 @@ function DeviceLogSchedular() {
     // displaying 
     return (
         <Box>
-            <Heading alignContent="center">Device Log Schedular</Heading>
-            <Text>This page displays the logs of the device that is running</Text>
+            <Heading alignContent="center">Device Log Overview</Heading>
+            <Text>This page provides and overview of device logs. It displays a table which provides information on the current state, the energy usage and activity level on weekly or daily level depending on options chosen. User can turn device on and off (for simulation purposes)</Text>
  
 
-            <Box>
+            <Box marginTop="10">
                 <Text>Select room</Text>
                 <Select
                     onChange={onRoomChange}
@@ -130,17 +130,16 @@ function DeviceLogSchedular() {
                     }
                     
                 </Select>
-
-                <DeviceSchedularFilter room ={roomSelect} />
-            
             </Box>
+            <DeviceSchedularFilter room={roomSelect} />
+
 
             <Box>
-                <Heading alignContent="center">Room Comparison</Heading>
-                <Text>Compares device energy usage or activity level between rooms</Text>
+                <Heading alignContent="center" marginTop="10">Room Comparison</Heading>
+                <Text>Compares enerygy usage or activity level of devices belonging in different rooms. Displays a chart graph to illustrate</Text>
             </Box>
 
-            <Box>
+            <Box marginTop="10">
                 <Text>Select the first room to compare</Text>
                 <Select
                     onChange={(event) => onRoom1ComparisionChange(event.target.value, event.target.options[event.target.selectedIndex].text)}

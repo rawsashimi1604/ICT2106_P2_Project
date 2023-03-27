@@ -8,13 +8,12 @@ import {
     Td,
     TableContainer,
     Box,
-    Text,
 } from '@chakra-ui/react';
 import ActionButtons from './ActionButtons';
 
 function DeviceStateTable({ devicesData, deviceLog }) {
-    const [updatedLog, setUpdatedLog] = useState([]);
-    console.log(deviceLog)
+    const [updatedLog, setUpdatedLog] = useState({});
+    console.log(updatedLog)
 
     const DisplayData = devicesData?.map((device) => {
         const logData = deviceLog.find((log) => log.deviceId === device.deviceId);
@@ -31,13 +30,6 @@ function DeviceStateTable({ devicesData, deviceLog }) {
 
     return (
         <Box>
-            <Text>
-                {updatedLog.map((log, index) => (
-                    <Text key={index}>
-                        {log.deviceId} {log.deviceState} {log.totalUsage} {log.totalActivity}
-                    </Text>
-                ))}
-            </Text>
             <TableContainer>
                 <Table variant="striped" colorScheme="gray">
                     <Thead>

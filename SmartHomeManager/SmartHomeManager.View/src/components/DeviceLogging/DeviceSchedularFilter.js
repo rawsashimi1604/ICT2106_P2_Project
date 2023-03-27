@@ -2,11 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import {
-    Tabs,
-    TabList,
-    TabPanels,
-    Tab,
-    TabPanel,
     Text,
     Box,
     Select
@@ -80,8 +75,11 @@ function DeviceSchedulerFilter({ room }) {
                 setDailyDeviceLog([]);
             }
         };
-        getLogs();
-    }, [selectedOption, allDevices]); // add selectedOption and allDevices as dependencies
+        if (selectedOption !== '') {
+            getLogs();
+
+        }
+    }, [selectedOption,allDevices]); // add selectedOption and allDevices as dependencies
 
     const handleOptionSelect = async (event) => {
         const value = event.target.value;
@@ -91,21 +89,23 @@ function DeviceSchedulerFilter({ room }) {
     return (
         <Box>
             <Text>Select daily or weekly table</Text>
-            <Select
-                defaultValue={""}
-                onChange={handleOptionSelect} mb="1em">
-                <option disabled={true} value=""> Select an option </option>
+            <Select value={selectedOption} onChange={handleOptionSelect} mb="1em">
+                <option disabled={true} value="">
+                    Select an option
+                </option>
                 <option value="Weekly">Weekly</option>
                 <option value="Daily">Daily</option>
             </Select>
-            {selectedOption === 'Daily' && dailyDeviceLog.length > 0 && (
-                <DeviceStateTable devicesData={allDevices} deviceLog={dailyDeviceLog} />
-            )}
-            {selectedOption === 'Weekly' && weeklyDeviceLog.length > 0 && (
+
+            {selectedOption === "Weekly" && weeklyDeviceLog.length > 0 && (
                 <DeviceStateTable devicesData={allDevices} deviceLog={weeklyDeviceLog} />
+            )}
+            {selectedOption === "Daily" && dailyDeviceLog.length > 0 && (
+                <DeviceStateTable devicesData={allDevices} deviceLog={dailyDeviceLog} />
             )}
         </Box>
     );
+
 
 }
 

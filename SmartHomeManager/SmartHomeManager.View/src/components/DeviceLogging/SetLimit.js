@@ -5,12 +5,11 @@ import {
     Table,
     Thead,
     Tbody,
-    Tfoot,
     Tr,
     Th,
-    Td,
     TableCaption,
     TableContainer,
+    Box
 } from '@chakra-ui/react'
 
 function EnergyLimitTable() {
@@ -36,7 +35,7 @@ function EnergyLimitTable() {
         setenergyLimitData(updatedEnergyLimitData);
     };
     return (
-        <div>
+        <Box>
             <TableContainer>
                 <Table variant='striped' colorScheme='teal'>
                     <TableCaption>List of Energy Limits</TableCaption>
@@ -55,7 +54,7 @@ function EnergyLimitTable() {
 
             </TableContainer>
             <EnergyLimitForm func={addRows} />
-        </div>
+        </Box>
     );
 }
 export default EnergyLimitTable;
