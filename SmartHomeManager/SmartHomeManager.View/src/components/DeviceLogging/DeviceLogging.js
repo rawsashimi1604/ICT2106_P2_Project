@@ -3,24 +3,13 @@ import axios from "axios";
 import { Button, Box, Heading, Text, Select } from "@chakra-ui/react";
 import {
     Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    Title,
     Tooltip,
-    Legend,
+   
 } from "chart.js";
 import WeeklyEnergyChart from "components/DeviceLogging/WeeklyEnergyChart";
 
 
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend
-);
+
 
 function DeviceLogging() {
 
@@ -118,6 +107,8 @@ function DeviceLogging() {
 
 
                         </div>
+
+
 
                     </div>
 
