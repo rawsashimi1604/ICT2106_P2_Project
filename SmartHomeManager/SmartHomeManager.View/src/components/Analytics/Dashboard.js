@@ -169,16 +169,13 @@ function Dashboard() {
                 <Flex flexDirection="column" gap="10px">
                   <Heading>Welcome John Tan.</Heading>
                   <Text>Monday, 27 March 2023</Text>
-                  <Text color="blue.700">
-                    Get valuable insights on your smart devices with our
-                    analytics dashboard. Monitor usage patterns and identify
-                    energy-saving opportunities. Take control of your energy
-                    consumption and make smarter choices for your home.
+                  <Text color="blue.700" fontSize="18px">
+                  Our analytics dashboard for smart devices empowers you to take control of your energy consumption. With real-time monitoring and detailed reports, you can track usage patterns and identify opportunities to save energy and reduce costs. 
                   </Text>
                 </Flex>
 
                 <Flex>
-                  <WelcomeSvg width="150px" height="150px" />
+                  <WelcomeSvg width="170px" height="170px" />
                 </Flex>
               </Flex>
             </CardBody>
@@ -251,10 +248,17 @@ function Dashboard() {
                       </Text>
                     </Flex>
                   </Flex>
+                  
+                  { carbonData < carbonNationalData ? 
+                    <Text>Congratulations! You consume <Text color={"green.500"} fontWeight="bold" display="inline">{(carbonNationalData/carbonData * 100 - 100).toFixed(2)}</Text>% less energy than other households on average!</Text> :
+                    <Text>Oh no! You consume <Text color={"red.500"} fontWeight="bold" display="inline">{(carbonData/carbonNationalData * 100 - 100).toFixed(2)}</Text>% more energy than other households on average!</Text>
+                  }
+                  
+
                 </Flex>
 
                 <Flex>
-                  <Box pos="absolute" top="47px" right="-80px">
+                  <Box pos="absolute" top="120px" right="-90px">
                     <PlantSvg width="200px" height="200px" />
                   </Box>
                 </Flex>
@@ -293,7 +297,7 @@ function Dashboard() {
                         marginBottom="-10px"
                         color="gray.600"
                       >
-                        YEARLY AVG. USAGE
+                        NEXT YEAR AVG. USAGE
                       </Text>
                       <Text>
                         <Text
@@ -315,7 +319,7 @@ function Dashboard() {
                         marginBottom="-10px"
                         color="gray.600"
                       >
-                        YEARLY AVG. COST
+                        NEXT YEAR AVG. COST
                       </Text>
                       <Text>
                         <Text
@@ -397,7 +401,7 @@ function Dashboard() {
           <Card
             w="60%"
             onClick={() => onReportOpen()}
-            cursor="pointer"
+            cursor="pointer"z 
             boxShadow="md" // Add box shadow
             transition="box-shadow 0.2s ease-in-out" // Add transition effect
             _hover={{
@@ -430,29 +434,6 @@ function Dashboard() {
         </Flex>
       </Flex>
     </>
-
-    // <Tabs isFitted variant='enclosed'>
-    //     <TabList mb='1em'>
-    //         <Tab>Carbon Footprint</Tab>
-    //         <Tab>Forecast Energy Usage and Cost</Tab>
-    //         <Tab>Energy Efficiency</Tab>
-    //         <Tab>Report</Tab>
-    //     </TabList>
-    //     <TabPanels>
-    //         <TabPanel>
-    //             <CarbonChart />
-    //         </TabPanel>
-    //         <TabPanel>
-    //             <ForecastChart />
-    //         </TabPanel>
-    //         <TabPanel>
-    //             <EfficiencyBar />
-    //         </TabPanel>
-    //         <TabPanel>
-    //             <Report />
-    //         </TabPanel>
-    //     </TabPanels>
-    // </Tabs>
   );
 }
 
