@@ -18,6 +18,9 @@ import ForecastModal from "./modals/ForecastModal";
 import EnergyEfficiencyModal from "./modals/EnergyEfficiencyModal";
 import ReportModal from "./modals/ReportModal";
 
+import ErrorWidget from "./widgets/ErrorWidget";
+import LoadingWidget from "./widgets/LoadingWidget";
+
 function Dashboard() {
   const {
     isOpen: isCarbonFootprintOpen,
@@ -43,8 +46,38 @@ function Dashboard() {
     onClose: onReportClose,
   } = useDisclosure();
 
+  const {
+    isOpen: isErrorOpen,
+    onOpen: onErrorOpen,
+    onClose: onErrorClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isLoadingOpen,
+    onOpen: onLoadingOpen,
+    onClose: onLoadingClose,
+  } = useDisclosure();
+
+  function loadDashboardData() {
+    /*
+      1. Create your states on top...
+      2. Use the various services to Load the data into the states......
+      3. Before you load the data.. you should open the loading modal...
+      4. After has loaded finish close the loading modal...
+      5. Use the data in the states to populate your dashboard.
+    */
+  }
+
   return (
     <>
+      <ErrorWidget onClose={onErrorClose} size="xl" isOpen={isErrorOpen} />
+
+      <LoadingWidget
+        onClose={onLoadingClose}
+        size="xl"
+        isOpen={isLoadingOpen}
+      />
+
       {/* CarbonFootprintModal */}
       <CarbonChartModal
         onClose={onCarbonFootprintClose}

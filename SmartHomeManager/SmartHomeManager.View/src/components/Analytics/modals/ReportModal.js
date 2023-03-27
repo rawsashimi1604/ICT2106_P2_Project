@@ -100,7 +100,6 @@ function ReportModal({ onClose, size, isOpen }) {
       link.click();
       
     });
-
     onLoadingClose()
   };
 
