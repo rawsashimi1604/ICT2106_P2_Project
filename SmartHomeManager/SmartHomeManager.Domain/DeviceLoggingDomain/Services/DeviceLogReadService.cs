@@ -24,20 +24,12 @@ namespace SmartHomeManager.Domain.DeviceLoggingDomain.Services
     {
         private readonly IDeviceLogRepository _deviceLogRepository;
 
-        //private readonly IDeviceWattsService _deviceWattsService;
-
         public DeviceLogReadService(IDeviceLogRepository deviceLogRepository)
         {
             _deviceLogRepository = deviceLogRepository;
-           //_deviceWattsService = deviceWattsService;
+           
         }
 
-
-
-        // get watts from devices
-        /*        public int getDeviceWatts(Guid deviceId){
-                    return _deviceWattsService.getDeviceWatts(deviceId);
-                }*/
 
         public IEnumerable<DeviceLog> GetDeviceLogByDay(Guid deviceId, DateTime date)
         {
@@ -93,6 +85,12 @@ namespace SmartHomeManager.Domain.DeviceLoggingDomain.Services
 
             }).ToList();
             return resp;
+        }
+
+        // get logs based on roomId
+        public async Task<IEnumerable<DeviceLog>> getDeviceLogByRoom(Guid roomId) {
+            var res = await _deviceLogRepository.GetByRoom(roomId);
+            return res;
         }
     }
 }

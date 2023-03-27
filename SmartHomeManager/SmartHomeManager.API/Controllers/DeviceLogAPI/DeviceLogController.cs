@@ -18,6 +18,7 @@ using SmartHomeManager.Domain.RoomDomain.Services;
 using SmartHomeManager.Domain.RoomDomain.Mocks;
 using SmartHomeManager.Domain.RoomDomain.Entities;
 using SmartHomeManager.Domain.DeviceDomain.Services;
+using NuGet.Versioning;
 
 namespace SmartHomeManager.API.Controllers.DeviceLogAPI
 {
@@ -141,6 +142,62 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
             return Ok(resultObject);
         }
 
+        [HttpGet("weekly/getByRoom/{roomId}")]
+        public async Task<ActionResult<double[][]>> getWeeklyData(Guid roomId)
+        {
+            // Get energyUsage and activity log of devices in the room
+            var logs = await _logReadService.getDeviceLogByRoom(roomId);
+
+            // Initialize arrays to store daily energy usage and activity level
+            var dailyEnergyUsage = new double[7];
+            var dailyActivityLevel = new double[7];
+
+            // Iterate through each log entry and add the energy usage and activity level to the corresponding day of the week
+            foreach (var log in logs)
+            {
+                var dayOfWeek = (int)log.DateLogged.DayOfWeek;
+                dailyEnergyUsage[dayOfWeek] += log.DeviceEnergyUsage;
+                dailyActivityLevel[dayOfWeek] += log.DeviceActivity;
+            }
+
+            // Create a 2D array to store both energy usage and activity level data
+            var weeklyData = new double[2][];
+            weeklyData[0] = dailyEnergyUsage;
+            weeklyData[1] = dailyActivityLevel;
+
+            return Ok(weeklyData);
+        }
+
+        [HttpGet("hourly/getByRoom/{roomId}")]
+        public async Task<ActionResult<double[][]>> getDailyData(Guid roomId)
+        {
+            // Get energyUsage and activity log of devices in the room
+            var logs = await _logReadService.getDeviceLogByRoom(roomId);
+
+            // Initialize arrays to store hourly energy usage and activity level
+            var hourlyEnergyUsage = new double[24];
+            var hourlyActivityLevel = new double[24];
+
+            // Iterate through each log entry and add the energy usage and activity level to the corresponding hour of the day
+            foreach (var log in logs)
+            {
+                var hourOfDay = log.DateLogged.Hour;
+                hourlyEnergyUsage[hourOfDay] += log.DeviceEnergyUsage;
+                hourlyActivityLevel[hourOfDay] += log.DeviceActivity;
+            }
+
+            // Create a 2D array to store both hourly energy usage and activity level data
+            var dailyData = new double[2][];
+            dailyData[0] = hourlyEnergyUsage;
+            dailyData[1] = hourlyActivityLevel;
+
+            return Ok(dailyData);
+        }
+
+
+
+
+
 
         // this is update from switching off device
         // PUT: api/DeviceLogs/5
@@ -182,7 +239,7 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
         }
 
 
-        [HttpPut("stateOn/{deviceId}")]
+        /*[HttpPut("stateOn/{deviceId}")]
         [Consumes("application/json")]
         [Produces("application/json")]
         public async Task<IActionResult> PutDeviceLog(DateTime date, Guid deviceId, Guid roomId)
@@ -210,7 +267,7 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
 
             return NoContent();
 
-        }
+        }*/
 
 
         // POST: api/DeviceLogs
@@ -220,35 +277,35 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
         {
         var resp = await _logWriteService.AddDeviceLog(deviceId, roomId);
         return Ok(resp);
-        }
 
-        public IActionResult StartUpdatingLogs()
-        {
-            // Start updating logs using the LogWriteService instance
-            _logWriteService.StartUpdatingDeviceLogs();
-            return Ok();
-        }
 
-        public IActionResult StopUpdatingLogs()
-        {
-            // Stop updating logs using the LogWriteService instance
-            _logWriteService.StopUpdatingDeviceLogs();
-            return Ok();
-        }
+        /* public IActionResult StartUpdatingLogs()
+         {
+             // Start updating logs using the LogWriteService instance
+             _logWriteService.StartUpdatingDeviceLogs();
+             return Ok();
+         }
 
-        public IActionResult SetHourlyUpdate()
-        {
-            // Set the interval to hourly
-            _logWriteService.Interval = TimeSpan.FromHours(1);
-            return Ok();
-        }
+         public IActionResult StopUpdatingLogs()
+         {
+             // Stop updating logs using the LogWriteService instance
+             _logWriteService.StopUpdatingDeviceLogs();
+             return Ok();
+         }
 
-        public IActionResult SetDailyUpdate()
-        {
-            // Set the interval to daily
-            _logWriteService.Interval = TimeSpan.FromDays(1);
-            return Ok();
-        }
+         public IActionResult SetHourlyUpdate()
+         {
+             // Set the interval to hourly
+             _logWriteService.Interval = TimeSpan.FromHours(1);
+             return Ok();
+         }
+
+         public IActionResult SetDailyUpdate()
+         {
+             // Set the interval to daily
+             _logWriteService.Interval = TimeSpan.FromDays(1);
+             return Ok();
+         }*/
 
 
     }

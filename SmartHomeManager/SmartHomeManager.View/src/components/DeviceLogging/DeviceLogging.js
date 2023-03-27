@@ -11,7 +11,7 @@ import {
     Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import WeeklyEnergyChart from "components/DeviceLogging/WeeklyEnergyChart";
+import WeeklyEnergyChart from "components/DeviceLogging/WeeklyChart";
 
 
 ChartJS.register(
@@ -80,7 +80,7 @@ function DeviceLogging() {
             //get the fetch request
 
             // add weekly energy log from res according to deviceID
-            /*            if (id != device1ID) {
+                        if (id != device1ID) {
                             if (Device2WeeklyEnergy == null) {
                                 setDevice2WeeklyEnergy(data)
                             } else {
@@ -111,7 +111,7 @@ function DeviceLogging() {
                                 //append
                                 setDevice1WeeklyActivity(current => [...current, ...data])
                             }
-                        }*/
+                        }
 
         } catch (err) {
             console.error(err)
@@ -125,6 +125,8 @@ function DeviceLogging() {
         <Box>
             <Heading alignContent="center">Device Log</Heading>
             <Text>This page displays charts to illustrate the energy usage and activity level of devices.</Text>
+
+
             <Box paddingTop="5">  
                 <Text>Please select device to compare{'\n'}</Text>
                 <Select

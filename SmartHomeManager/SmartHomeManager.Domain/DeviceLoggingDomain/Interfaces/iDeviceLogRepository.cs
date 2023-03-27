@@ -33,6 +33,8 @@ namespace SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces
         void Update(DeviceLog entity);
         Task<DeviceLog?> GetByLatest(Guid deviceId);
 
+        Task<IEnumerable<DeviceLog>> GetByRoom(Guid roomId);
+
         Task SaveChangesAsync();
     }
 }
