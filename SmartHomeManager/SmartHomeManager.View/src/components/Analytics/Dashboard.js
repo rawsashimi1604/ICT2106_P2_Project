@@ -20,8 +20,13 @@ import ReportModal from "./modals/ReportModal";
 
 import ErrorWidget from "./widgets/ErrorWidget";
 import LoadingWidget from "./widgets/LoadingWidget";
+import CarbonFootprintService from "requests/services/CarbonFootprintService";
+import ForecastService from "requests/services/ForecastService";
+import EnergyEfficiencyService from "requests/services/EnergyEfficiencyService";
 
 function Dashboard() {
+
+  const SESSION_ACCOUNT_GUID = "11111111-1111-1111-1111-111111111111";
   const {
     isOpen: isCarbonFootprintOpen,
     onOpen: onCarbonFootprintOpen,
@@ -58,7 +63,23 @@ function Dashboard() {
     onClose: onLoadingClose,
   } = useDisclosure();
 
+  
+
+  const [carbonData, setCarbonData] = useState(null)
+  const [carbonNationalData, setCarbonNationalData] = useState(null)
+
+  const [forecastData, setForecastData] = useState(null)
+  const [forecastCostData, setForecastCostData] = useState(null)
+
+  const [fanData, setFanData] = useState(null)
+  const [lightData, setLightData] = useState(null)
+  const [airconData, setAirconData] = useState(null)
+
+
+
   function loadDashboardData() {
+
+
     /*
       1. Create your states on top...
       2. Use the various services to Load the data into the states......
@@ -66,7 +87,38 @@ function Dashboard() {
       4. After has loaded finish close the loading modal...
       5. Use the data in the states to populate your dashboard.
     */
+      onLoadingOpen();
+      const today = new Date();
+      const month = today.getMonth() + 1;
+      const year = today.getFullYear();
+      CarbonFootprintService.getCarbonFootprintData(SESSION_ACCOUNT_GUID, year, month).then((response) => {
+        setCarbonData(response.data.data[0].householdConsumption.toFixed(2))
+        setCarbonNationalData(response.data.data[0].nationalHouseholdConsumption.toFixed(2))
+        return ForecastService.getHouseholdForecast(SESSION_ACCOUNT_GUID, 1)
+      }).then((response) => {
+        let totalWatt = 0 
+        let totalCost = 0
+        for(let month of response.data.data){
+            totalWatt += month.wattsValue
+            totalCost += month.priceValue
+        }
+        let averageWatt = totalWatt / response.data.data.length
+        let averageCost = totalCost / response.data.data.length
+        setForecastData(averageWatt.toFixed(2))
+        setForecastCostData(averageCost.toFixed(2))
+        return EnergyEfficiencyService.getEnergyEfficiencyData(SESSION_ACCOUNT_GUID)
+      }).then((response) => {
+        setFanData(response.data.data[0].energyEfficiencyIndex.toFixed(2))
+        setAirconData(response.data.data[2].energyEfficiencyIndex.toFixed(2))
+        setLightData(response.data.data[1].energyEfficiencyIndex.toFixed(2))
+      }).then(() => {
+      onLoadingClose(); 
+      })
   }
+
+  useEffect(() => {
+    loadDashboardData();
+  }, [])
 
   return (
     <>
@@ -100,10 +152,10 @@ function Dashboard() {
       <ReportModal onClose={onReportClose} size="xl" isOpen={isReportOpen} />
 
       {/* Dashboard */}
-      <Flex flexDirection="column" gap="20px">
-        <Flex flexDirection="row" gap="20px">
+      <Flex flexDirection="column" gap="40px">
+        <Flex flexDirection="row" gap="40px">
           {/* Welcome */}
-          <Card w="50%" boxShadow="md">
+          <Card w="70%" boxShadow="md">
             <CardBody>
               <Flex flexDirection="row" align="center" justify="space-between">
                 <Flex flexDirection="column" gap="10px">
@@ -126,7 +178,7 @@ function Dashboard() {
 
           {/* Carbon footprint */}
           <Card
-            w="50%"
+            w="70%"
             onClick={() => onCarbonFootprintOpen()}
             cursor="pointer"
             boxShadow="md" // Add box shadow
@@ -144,7 +196,8 @@ function Dashboard() {
                     to national household statistics, measured in Watts. See the
                     environmental impact of your Smart Devices.
                   </Text>
-                  <Text>This months usage: 500W</Text>
+                  <Text>This months household usage: {carbonData && carbonData} Watts</Text>
+                  <Text>This months national usage: {carbonNationalData && carbonNationalData} Watts</Text>
                 </Flex>
 
                 <Flex>
@@ -160,7 +213,7 @@ function Dashboard() {
         <Flex flexDirection="row" gap="20px">
           {/* Forecast */}
           <Card
-            w="50%"
+            w="70%"
             onClick={() => onForecastOpen()}
             cursor="pointer"
             boxShadow="md" // Add box shadow
@@ -178,9 +231,8 @@ function Dashboard() {
                     our advanced analytics tools. Make informed decisions and
                     plan accordingly
                   </Text>
-                  <Text>Some graphs here for week</Text>
-                  <Text>Some graphs here for month</Text>
-                  <Text>Some graphs here for year</Text>
+                  <Text>Forecasted Average Yearly Energy Usage : {forecastData && forecastData} Watts</Text>
+                  <Text>Forecasted Average Yearly Cost : ${forecastCostData && forecastCostData}</Text>  
                 </Flex>
 
                 <Flex>
@@ -194,7 +246,7 @@ function Dashboard() {
 
           {/* Energy Efficiency */}
           <Card
-            w="50%"
+            w="70%"
             onClick={() => onEnergyEfficiencyOpen()}
             cursor="pointer"
             boxShadow="md" // Add box shadow
@@ -212,6 +264,15 @@ function Dashboard() {
                   <Text>
                     Measure and optimize your device energy efficiency. Save
                     energy, reduce costs and environmental impact.
+                  </Text>
+                  <Text>
+                    Smart Fan Energy Efficiency : {fanData && fanData}
+                  </Text>
+                  <Text>
+                    Smart Blub Energy Efficiency : {lightData && lightData}
+                  </Text>
+                  <Text>
+                    Smart Aircon Energy Efficiency : {airconData && airconData}
                   </Text>
                 </Flex>
 

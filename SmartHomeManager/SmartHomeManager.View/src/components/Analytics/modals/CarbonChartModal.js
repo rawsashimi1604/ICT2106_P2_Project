@@ -12,6 +12,7 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
+  Flex
 } from "@chakra-ui/react";
 import { Line } from "react-chartjs-2";
 import CarbonFootprintService from "requests/services/CarbonFootprintService";
@@ -95,6 +96,8 @@ function CarbonChartModal({ onClose, size, isOpen }) {
       .then((response) => {
         console.log(response);
         const carbonFootprintData = response.data.data;
+        console.log(carbonFootprintData[0].householdConsumption)
+        console.log(carbonFootprintData[0].nationalHouseholdConsumption)
         const graph = {
           labels: [],
           datasets: [
@@ -220,8 +223,15 @@ function CarbonChartModal({ onClose, size, isOpen }) {
                     </Select>
                   </Box>
                 </Box>
-
-                {graphData && <Line options={options} data={graphData} />}
+                <Flex 
+                    direction="column"
+                    justify="center"
+                    align="start"
+                    width="70%"
+                    
+                  >
+                  {graphData && <Line options={options} data={graphData} />}
+                </Flex>
               </ModalBody>
 
               <ModalFooter>

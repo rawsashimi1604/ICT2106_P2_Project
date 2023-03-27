@@ -256,12 +256,12 @@ function ForecastModal({ onClose, size, isOpen }) {
                   </div>
                   <Flex flexDirection="row" gap="10px" w="100%">
                     <Flex flexDirection="column" gap="10px" w="50%">
-                      <Text>Total household energy usage.</Text>
+                      <Text>Forecasted household energy usage.</Text>
                       {graphData && <Line options={options} data={graphData} />}
                     </Flex>
 
                     <Flex flexDirection="column" gap="10px" w="50%">
-                      <Text>Total household energy usage cost.</Text>
+                      <Text>Forecasted household energy usage cost.</Text>
                       {costGraphData && (
                         <Line options={options1} data={costGraphData} />
                       )}

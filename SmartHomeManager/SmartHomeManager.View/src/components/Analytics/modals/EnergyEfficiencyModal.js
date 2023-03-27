@@ -50,7 +50,7 @@ export const options = {
   indexAxis: "y",
   elements: {
     bar: {
-      borderWidth: 2,
+      borderWidth: 1,
     },
   },
   responsive: true,
@@ -92,7 +92,7 @@ export default function EnergyEfficiencyModal({ onClose, size, isOpen }) {
           labels: [],
           datasets: [
             {
-              label: "Dataset 1",
+              label: "Energy Efficiency Index",
               data: [],
               borderColor: "rgb(255, 99, 132)",
               backgroundColor: "rgba(255, 99, 132, 0.5)",
@@ -143,24 +143,28 @@ export default function EnergyEfficiencyModal({ onClose, size, isOpen }) {
               <ModalBody>
                 <Text>
                   Measure and optimize your device energy efficiency. Save
-                  energy, reduce costs and environmental impact.
+                  energy, reduce costs and environmental impact. We have
+                  measured your smart devices against the national statistics.
+                  This provides an overview of how efficient your device energy
+                  usage is.
                 </Text>
-
-                <Flex direction="column" justify="center" align="center">
-                  <Heading pb={5}>Energy Efficiency</Heading>
-                  <Text pb={10}>
-                    We have measured your smart devices against the national
-                    statistics. This provides an overview of how efficient your
-                    device energy usage is.
-                  </Text>
-
-                  {graphData && (
-                    <Bar
-                      // @ts-ignore
-                      options={options}
-                      data={graphData}
-                    />
-                  )}
+                
+                <Text align="center" marginTop="10px" marginBottom="10px">The energy efficiency index ranges from 0 to 100, where a higher value indicates better energy efficiency and a lower value indicates poorer energy efficiency.</Text>
+                <Flex justify="center" align="center">
+                  <Flex
+                    direction="column"
+                    justify="center"
+                    align="center"
+                    width="80%"
+                  >
+                    {graphData && (
+                      <Bar
+                        // @ts-ignore
+                        options={options}
+                        data={graphData}
+                      />
+                    )}
+                  </Flex>
                 </Flex>
               </ModalBody>
               <ModalFooter>
