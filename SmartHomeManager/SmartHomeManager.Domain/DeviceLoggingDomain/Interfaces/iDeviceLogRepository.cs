@@ -18,7 +18,7 @@ namespace SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces
         IEnumerable<DeviceLog> Get(Guid deviceId, DateTime date);
         IEnumerable<DeviceLog> Get(Guid deviceId, DateTime date, DateTime endTime);
 
-        Task<DeviceLog> GetByDate(DateTime date, Guid deviceId, bool deviceState);
+        Task<IEnumerable<DeviceLog>> GetByDate(DateTime date, Guid deviceId, bool deviceState);
 
         Task<IEnumerable<DeviceLog>> GetAll();
 
@@ -31,6 +31,9 @@ namespace SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces
         Task<DeviceLog?> Get(DateTime date);
 
         void Update(DeviceLog entity);
+        Task<DeviceLog?> GetByLatest(Guid deviceId);
+
+        Task<IEnumerable<DeviceLog>> GetByRoom(Guid roomId);
 
         Task SaveChangesAsync();
     }

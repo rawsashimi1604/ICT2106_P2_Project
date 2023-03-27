@@ -1,0 +1,20 @@
+[
+  {
+    "deviceId": "33333333-3333-3333-3333-333333333333",
+    "deviceName": "Mi Smart Standing Fan 2",
+    "deviceBrand": "Xiaomi",
+    "deviceModel": "BPLDS02DM",
+    "deviceTypeName": "FAN",
+    "deviceEnergyLimit": 400
+  
+  },
+  {
+    "deviceId": "44444444-4444-4444-4444-444444444444",
+    "deviceName": "Mi Smart LED Bulb",
+    "deviceBrand": "Xiaomi",
+    "deviceModel": "XMBGDP01YLK",
+    "deviceTypeName": "BULB",
+    "deviceEnergyLimit": 600
+   
+  }
+]
