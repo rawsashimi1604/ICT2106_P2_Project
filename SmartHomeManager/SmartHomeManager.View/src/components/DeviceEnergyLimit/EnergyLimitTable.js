@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import EnergyLimitForm from 'components/DeviceEnergyLimit/EnergyLimitForm';
-import EnergyLimitData from 'components/DeviceEnergyLimit/EnergyLimit.json';
+import EnergyLimitForm from './EnergyLimitForm';
+import EnergyLimitData from './EnergyLimit.json';
 import {
     Table,
     Thead,
@@ -54,7 +54,7 @@ function EnergyLimitTable() {
                 </Table>
 
             </TableContainer>
-            <EnergyLimitForm func={addRows} />
+            <EnergyLimitForm func={addRows}/>
         </div>
     );
 }
