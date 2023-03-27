@@ -1,14 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartHomeManager.Domain.DeviceLoggingDomain.Entities;
-using SmartHomeManager.Domain.DeviceLoggingDomain.Entities.DTO;
 using SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces;
-using SmartHomeManager.Domain.RoomDomain.Entities;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace SmartHomeManager.DataSource.DeviceLogDataSource
 {
@@ -27,7 +20,7 @@ namespace SmartHomeManager.DataSource.DeviceLogDataSource
         public IEnumerable<DeviceLog> Get(Guid deviceId, DateTime date)
         {
             // get all logs
-            var allLogs = _db.DeviceLogs.ToList();
+            var allLogs = _dbSet.ToList();
 
             IEnumerable<DeviceLog> result = _db.DeviceLogs.ToList().Where(log => log.DeviceId == deviceId && log.DateLogged.Date == date.Date);
 
@@ -46,7 +39,7 @@ namespace SmartHomeManager.DataSource.DeviceLogDataSource
         public IEnumerable<DeviceLog> Get(Guid deviceId, DateTime date, DateTime endTime)
         {
             // get all logs
-            var allLogs = _db.DeviceLogs.ToList();
+            var allLogs = _dbSet.ToList();
 
             IEnumerable<DeviceLog> result = _db.DeviceLogs.ToList().Where(log => log.DeviceId == deviceId && log.DateLogged.Date == date && log.DateLogged.TimeOfDay >= date.TimeOfDay && log.EndTime?.TimeOfDay <= endTime.TimeOfDay);
 
@@ -58,7 +51,7 @@ namespace SmartHomeManager.DataSource.DeviceLogDataSource
             // get all logs
             var allLogs = await _db.DeviceLogs.ToListAsync();
 
-            IEnumerable<DeviceLog> result = _db.DeviceLogs.ToList().Where(log => log.DeviceId == deviceId && log.DateLogged.Date == date && log.DateLogged.TimeOfDay >= date.TimeOfDay && log.EndTime?.TimeOfDay <= endTime.TimeOfDay) ;
+            IEnumerable<DeviceLog> result =  _dbSet.ToList().Where(log => log.DeviceId == deviceId && log.DateLogged.Date == date && log.DateLogged.TimeOfDay >= date.TimeOfDay && log.EndTime?.TimeOfDay <= endTime.TimeOfDay) ;
 
             return result;
         }
@@ -66,7 +59,7 @@ namespace SmartHomeManager.DataSource.DeviceLogDataSource
         // there should only be 1 device log where device state is True everyday
         public async Task<DeviceLog?> Get(DateTime date, Guid deviceId, bool deviceState)
         {
-            var result = await _dbSet.FindAsync(date, deviceId, deviceState);
+            var result = await _dbSet.FindAsync(deviceId);
             return result;
         }
 
@@ -76,17 +69,42 @@ namespace SmartHomeManager.DataSource.DeviceLogDataSource
             return result;
         }
 
+        public async Task<DeviceLog?> Get(DateTime startTime, DateTime endTime)
+        {
+            var result = await _dbSet.FindAsync(startTime, endTime);
+            return result;
+        }
+
         public async Task<IEnumerable<DeviceLog>> GetAll()
         {
             IEnumerable<DeviceLog> query = await _dbSet.ToListAsync();
             return query;
         }
 
-        public async Task<DeviceLog> GetByDate(DateTime date, Guid deviceId, bool deviceState)
+        public async Task<IEnumerable<DeviceLog>> GetByDate(DateTime date, Guid deviceId, bool deviceState)
         {
-            var result = await _dbSet.FindAsync(date, deviceId, deviceState);
+            var allLogs = await _dbSet.ToListAsync();
+            IEnumerable<DeviceLog> result = allLogs.Where(log => log.DeviceId == deviceId && log.DateLogged.Date == date && log.DeviceState == deviceState);
+
             return result;
         }
+
+        public async Task<DeviceLog?> GetByLatest(Guid deviceId)
+        {
+            var latestLog = await _dbSet
+                .Where(l => l.DeviceId == deviceId)
+                .OrderByDescending(l => l.DateLogged)
+                .FirstOrDefaultAsync();
+
+            return latestLog;
+        }
+
+        public async Task<IEnumerable<DeviceLog>> GetByRoom(Guid roomId) {
+            var allLogs = await _dbSet.ToListAsync();
+            IEnumerable<DeviceLog> result = allLogs.Where(allLogs => allLogs.RoomId == roomId);
+            return result;
+        }
+
 
         public async Task SaveChangesAsync()
         {

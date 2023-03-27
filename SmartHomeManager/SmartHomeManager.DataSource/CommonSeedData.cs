@@ -170,8 +170,10 @@ namespace SmartHomeManager.DataSource
                     DeviceTypeName = "Aircon",
                     DeviceSerialNumber = "789",
                     AccountId = new ("11111111-1111-1111-1111-111111111111"),
-                    RoomId = rooms[0].RoomId
+                    RoomId = rooms[1].RoomId
                 },
+
+                 
             };
 
             // create objects
@@ -383,6 +385,44 @@ namespace SmartHomeManager.DataSource
             //            DeviceState = false,
             //            DeviceId = devices[0].DeviceId,
             //            RoomId = rooms[0].RoomId,
+            //        });
+            //    }
+            //}
+
+            //for (int j = 13; j < 13 + 7; j++)
+            //{
+            //    // create objects
+            //    for (int i = 0; i < 23; i++)
+            //    {
+            //        DeviceLogs.Add(new DeviceLog()
+            //        {
+            //            LogId = Guid.NewGuid(),
+            //            EndTime = DateTime.Parse($"2023-02-{j} {i + 1}:00:00.0000000"),
+            //            DateLogged = DateTime.Parse($"2023-02-{j} 00:00:00.0000000"),
+            //            DeviceEnergyUsage = rnd.Next(100, 1000),
+            //            DeviceActivity = 1,
+            //            DeviceState = false,
+            //            DeviceId = devices[1].DeviceId,
+            //            RoomId = rooms[0].RoomId,
+            //        });
+            //    }
+            //}
+
+            //for (int j = 13; j < 13 + 7; j++)
+            //{
+            //    // create objects
+            //    for (int i = 0; i < 23; i++)
+            //    {
+            //        DeviceLogs.Add(new DeviceLog()
+            //        {
+            //            LogId = Guid.NewGuid(),
+            //            EndTime = DateTime.Parse($"2023-02-{j} {i + 1}:00:00.0000000"),
+            //            DateLogged = DateTime.Parse($"2023-02-{j} 00:00:00.0000000"),
+            //            DeviceEnergyUsage = rnd.Next(100, 1000),
+            //            DeviceActivity = 1,
+            //            DeviceState = false,
+            //            DeviceId = devices[2].DeviceId,
+            //            RoomId = rooms[1].RoomId,
             //        });
             //    }
             //}
