@@ -4,10 +4,6 @@
   margin-right: 10px;
 }
 
-.errorIcon {
-  color: black;
-  margin-right: 10px;
-}
 
 @keyframes spin {
   from {
@@ -15,5 +11,23 @@
   }
   to {
       transform: scale(1) rotate(360deg);
+  }
+}
+
+.moveAnimation {
+  width: 60px;
+  height: 60px;
+  position: relative;
+  animation: example 3s infinite;
+}
+
+@keyframes example {
+  0%,
+  100% {
+    left: 0;
+  }
+
+  50% {
+    left: 20px;
   }
 }
