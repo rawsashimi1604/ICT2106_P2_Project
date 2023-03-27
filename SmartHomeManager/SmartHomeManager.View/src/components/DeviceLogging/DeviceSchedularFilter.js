@@ -18,7 +18,6 @@ function DeviceSchedulerFilter({ room }) {
     const [dailyDeviceLog, setDailyDeviceLog] = useState([]);
     const [weeklyDeviceLog, setWeeklyDeviceLog] = useState([]);
     const [allDevices, setAllDevices] = useState([]);
-    const [activeTab, setActiveTab] = useState(0);
     const [selectedOption, setSelectedOption] = useState('Weekly');
 
     const getDailyLogs = async (deviceId) => {
@@ -63,7 +62,7 @@ function DeviceSchedulerFilter({ room }) {
 
     useEffect(() => {
         const getLogs = async () => {
-            if (selectedOption === 'Daily') {
+            if (selectedOption === 'Daily' && allDevices.length > 0) {
                 const dailyLogs = [];
                 for (let i = 0; i < allDevices.length; i++) {
                     const logs = await getDailyLogs(allDevices[i].deviceId);
@@ -71,7 +70,7 @@ function DeviceSchedulerFilter({ room }) {
                 }
                 setDailyDeviceLog(dailyLogs);
                 setWeeklyDeviceLog([]);
-            } else if (selectedOption === 'Weekly') {
+            } else if (selectedOption === 'Weekly' && allDevices.length > 0) {
                 const weeklyLogs = [];
                 for (let i = 0; i < allDevices.length; i++) {
                     const logs = await getWeeklyLogs(allDevices[i].deviceId);
@@ -91,27 +90,23 @@ function DeviceSchedulerFilter({ room }) {
 
     return (
         <Box>
-            <Select 
+            <Text>Select daily or weekly table</Text>
+            <Select
                 defaultValue={""}
                 onChange={handleOptionSelect} mb="1em">
                 <option disabled={true} value=""> Select an option </option>
                 <option value="Weekly">Weekly</option>
                 <option value="Daily">Daily</option>
             </Select>
-            {selectedOption === 'Weekly' && (
-                <DeviceStateTable devicesData={allDevices} deviceLog={weeklyDeviceLog} />
-            )}
-            {selectedOption === 'Daily' && (
+            {selectedOption === 'Daily' && dailyDeviceLog.length > 0 && (
                 <DeviceStateTable devicesData={allDevices} deviceLog={dailyDeviceLog} />
             )}
-            {dailyDeviceLog.map((log, index) => (
-                <Text key={index}>
-                    {' '}
-                    {log.deviceId} {log.deviceState} {log.totalUsage} {log.totalActivity}
-                </Text>
-            ))}
+            {selectedOption === 'Weekly' && weeklyDeviceLog.length > 0 && (
+                <DeviceStateTable devicesData={allDevices} deviceLog={weeklyDeviceLog} />
+            )}
         </Box>
     );
+
 }
 
 

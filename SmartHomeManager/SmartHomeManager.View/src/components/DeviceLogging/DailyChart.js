@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import { Box, Heading, Text } from "@chakra-ui/react";
 import { Line } from "react-chartjs-2";
 
-function DailyChart({ room1, room2, dataType }) {
+function DailyChart({ room1, room2, room1Name, room2Name, dataType }) {
     const [chartData, setChartData] = useState(null);
     const [room1HourlyData, setRoom1HourlyData] = useState([]);
     const [room2HourlyData, setRoom2HourlyData] = useState([]);
@@ -30,34 +30,6 @@ function DailyChart({ room1, room2, dataType }) {
                     setRoom1HourlyData(room1HourlyActivityLevel);
                     setRoom2HourlyData(room2HourlyActivityLevel);
                 }
-
-                const today = new Date();
-                const hours = [...Array(24)].map((_, index) => {
-                    const date = new Date(today);
-                    date.setHours(index);
-                    return format(date, "HH:mm");
-                });
-
-                const chartData = {
-                    labels: hours,
-                    datasets: [
-                        {
-                            label: `${room1}`,
-                            data: room1HourlyData,
-                            fill: false,
-                            borderColor: "rgb(75, 192, 192)",
-                            tension: 0.1,
-                        },
-                        {
-                            label: `${room2}`,
-                            data: room2HourlyData,
-                            fill: false,
-                            borderColor: "rgb(192, 75, 192)",
-                            tension: 0.1,
-                        },
-                    ],
-                };
-                setChartData(chartData);
             } catch (error) {
                 console.error(error);
             }
@@ -66,30 +38,51 @@ function DailyChart({ room1, room2, dataType }) {
         fetchData();
     }, [room1, room2, dataType]);
 
+    useEffect(() => {
+        if (room1HourlyData.length > 0 && room2HourlyData.length > 0) {
+            const today = new Date();
+            const hours = [...Array(24)].map((_, index) => {
+                const date = new Date(today);
+                date.setHours(index);
+                return format(date, "HH:mm");
+            });
+
+            const chartData = {
+                labels: hours,
+                datasets: [
+                    {
+                        label: `${room1Name}`,
+                        data: room1HourlyData,
+                        fill: false,
+                        borderColor: "rgb(75, 192, 192)",
+                        tension: 0.1,
+                    },
+                    {
+                        label: `${room2Name}`,
+                        data: room2HourlyData,
+                        fill: false,
+                        borderColor: "rgb(192, 75, 192)",
+                        tension: 0.1,
+                    },
+                ],
+            };
+            setChartData(chartData);
+        }
+    }, [room1HourlyData, room2HourlyData]);
+
     return (
         <Box borderWidth="1px" borderRadius="lg" overflow="hidden" p="4">
             <Heading size="md" mb="4">{`Hourly ${dataType} Comparison`}</Heading>
             {chartData ? (
-                <div>
+                <Box>
                     <Line data={chartData} />
-                    <div>
-                        {chartData.datasets.map((dataset, index) => (
-                            <div key={index}>
-                                <h2>{dataset.label}</h2>
-                                {dataset.data.map((data, index) => (
-                                    <p key={index}>
-                                        Hour {index}: {data}
-                                    </p>
-                                ))}
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                </Box>
             ) : (
                 <Text textAlign="center">Loading...</Text>
             )}
         </Box>
     );
 }
+
 
 export default DailyChart;

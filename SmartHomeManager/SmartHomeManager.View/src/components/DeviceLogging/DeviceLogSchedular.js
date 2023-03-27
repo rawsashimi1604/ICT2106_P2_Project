@@ -31,17 +31,13 @@ ChartJS.register(
 
 function DeviceLogSchedular() {
     const [roomList, setRoomList] = useState([])
-    const [deviceID, setDevice1ID] = useState("");
     const [roomSelect, setRoomSelect] = useState("")
-    const [deviceState, setDeviceState] = useState(false);
-    const [allDeviceID, setAllDeviceID] = useState([]);
-    const [logInterval, setLogInterval] = useState("");
-    const [allDevices, setAllDevices] = useState([]);
-    const [room1ComparisionSelect, setRoom1ComparisionSelect] = useState(null);
-    const [room2ComparisionSelect, setRoom2ComparisionSelect] = useState(null);
+    const [room1Id, setRoom1Id] = useState(null);
+    const [room2Id, setRoom2Id] = useState(null);
+    const [room1Name, setRoom1Name] = useState(null);
+    const [room2Name, setRoom2Name] = useState("");
     const [dataType, setDataType] = useState("")
-    const [chartVisible, setChartVisible] = useState(false);
-    const [isChart1Visible, setIsChart1Visible] = useState(true);
+    const [isChart1Visible, setIsChart1Visible] = useState(false);
     const [isChart2Visible, setIsChart2Visible] = useState(false);
 
 
@@ -52,15 +48,21 @@ function DeviceLogSchedular() {
         setRoomSelect(value);
     };
 
-    const onRoom1ComparisionChange = (event) => {
-        const value = event.target.value;
-        setRoom1ComparisionSelect(value);
-    };
+    const onRoom1ComparisionChange = (roomId, roomName) => {
+        // handle room selection here, using roomId and roomName
+        setRoom1Id(roomId);
+        setRoom1Name(roomName)
 
-    const onRoom2ComparisionChange = (event) => {
-        const value = event.target.value;
-        setRoom2ComparisionSelect(value);
-    };
+    }
+
+ 
+    const onRoom2ComparisionChange = (roomId, roomName) => {
+        // handle room selection here, using roomId and roomName
+        setRoom2Id(roomId);
+        setRoom2Name(roomName)
+       
+    }
+
 
     const onDataTypeChange = (event) => {
         const value = event.target.value;
@@ -80,19 +82,17 @@ function DeviceLogSchedular() {
         fetchRoom() 
     }, [])
 
-    const generateWeeklyCharts =  (room1, room2, dataType) => {
+    const generateWeeklyCharts =  (room1, room2, room1Name, room2Name, dataType) => {
         try {
-            console.log(room1)
-           return <WeeklyChart room1={room1} room2={room2} dataType={dataType}  />
+            return <WeeklyChart room1={room1} room2={room2} room1Name={room1Name} room2Name={ room2Name} dataType={dataType}  />
         } catch (error) {
             console.log(error)
         }
     }
 
-    const generateDailyCharts = (room1, room2, dataType) => {
+    const generateDailyCharts = (room1, room2, room1Name, room2Name, dataType) => {
         try {
-            console.log(room1)
-            return <DailyChart room1={room1} room2={room2} dataType={dataType} />
+            return <DailyChart room1={room1} room2={room2} room1Name={room1Name} room2Name={room2Name} dataType={dataType} />
         } catch (error) {
             console.log(error)
         }
@@ -113,10 +113,7 @@ function DeviceLogSchedular() {
         <Box>
             <Heading alignContent="center">Device Log Schedular</Heading>
             <Text>This page displays the logs of the device that is running</Text>
-            <Text> Debug space </Text>
-            {roomList.map((room, index) => 
-                <Text key={ index}> {room.roomId}</Text>)
-            }  
+ 
 
             <Box>
                 <Text>Select room</Text>
@@ -139,41 +136,45 @@ function DeviceLogSchedular() {
             </Box>
 
             <Box>
-                <Heading alignContent="center">Room Comparision</Heading>
+                <Heading alignContent="center">Room Comparison</Heading>
                 <Text>Compares device energy usage or activity level between rooms</Text>
-                <Text>{room1ComparisionSelect}</Text>
             </Box>
 
             <Box>
                 <Text>Select the first room to compare</Text>
                 <Select
-                    onChange={onRoom1ComparisionChange}
-                    defaultValue={""}
-                    variant='filled'
+                    onChange={(event) => onRoom1ComparisionChange(event.target.value, event.target.options[event.target.selectedIndex].text)}
+                    defaultValue=""
+                    variant="filled"
                 >
-                    <option disabled={true} value=""> Select 1st room </option>
-                    {
-                        roomList.map((room, index) =>
-                            <option key={index} value={room.roomId}> {room.name}</option>
-                        )
-                    }
-
+                    <option disabled value="">
+                        Select 1st room
+                    </option>
+                    {roomList.map((room) => (
+                        <option key={room.roomId} value={room.roomId}>
+                            {room.name}
+                        </option>
+                    ))}
                 </Select>
 
                 <Box>
                     <Text>Select the second room to compare</Text>
                     <Select
-                        onChange={onRoom2ComparisionChange}
-                        defaultValue={""}
-                        variant='filled'
+                        onChange={(event) => onRoom2ComparisionChange(event.target.value, event.target.options[event.target.selectedIndex].text)}
+                        defaultValue=""
+                        variant="filled"
                     >
-                        <option disabled={true} value=""> Select 2nd room </option>
-                        {
-                            roomList.map((room, index) =>
-                                <option key={index} value={room.roomId}> {room.name}</option>
-                            )
-                        }
+                        <option disabled value="">
+                            Select 2nd room
+                        </option>
+                        {roomList.map((room) => (
+                            <option key={room.roomId} value={room.roomId}>
+                                {room.name}
+                            </option>
+                        ))}
                     </Select>
+
+
                 </Box>
 
                 <Box>
@@ -191,16 +192,29 @@ function DeviceLogSchedular() {
                     </Select>
                 </Box>
 
-                <Box>
-                    <Button onClick={handleWeeklyButtonClick}>
-                        Generate Weekly Charts
-                        {isChart1Visible && generateWeeklyCharts(room1ComparisionSelect, room2ComparisionSelect, dataType)}
-                    </Button>
-                    <Button onClick={handleDailyButtonClick}>
-                        Generate daily Charts
-                        {isChart2Visible && generateDailyCharts(room1ComparisionSelect, room2ComparisionSelect, dataType)}
-                    </Button>
+                <Box display="flex" flexDirection="row" marginTop="5">
+                    <Box marginRight={4}>
+                        <Button onClick={handleWeeklyButtonClick}>
+                            Generate Weekly Charts
+                        </Button>
+                    </Box>
+
+                    <Box>
+                        <Button onClick={handleDailyButtonClick}>
+                            Generate Daily Charts
+                        </Button>
+                    </Box>
                 </Box>
+
+                <Box marginTop={4}>
+                    {isChart1Visible && generateWeeklyCharts(room1Id, room2Id, room1Name, room2Name, dataType)}
+                    {isChart2Visible && generateDailyCharts(room1Id, room2Id, room1Name, room2Name, dataType)}
+                </Box>
+
+
+
+
+
 
             </Box>
         </Box>

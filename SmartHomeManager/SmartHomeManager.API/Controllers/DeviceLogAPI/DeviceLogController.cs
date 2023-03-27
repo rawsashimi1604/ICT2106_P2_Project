@@ -34,14 +34,15 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
 
         public DeviceLogController(IDeviceLogRepository deviceLogRepository, IRoomRepository roomRepository, IDeviceInformationServiceMock deviceInformationService)
         {
-           _logReadService = new DeviceLogReadService(deviceLogRepository);
+            _logReadService = new DeviceLogReadService(deviceLogRepository);
             _logWriteService = new DeviceLogWriteService(TimeSpan.FromHours(1), deviceLogRepository);
             _roomReadService = new RoomReadService(roomRepository, deviceInformationService);
-            
-        }
- 
 
-        private int getDeviceWatts(Guid deviceId) {
+        }
+
+
+        private int getDeviceWatts(Guid deviceId)
+        {
             // get watt of device
             var watt = 0;
             return watt;
@@ -55,9 +56,10 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
         }
 
         [HttpGet("getRooms")]
-        public ActionResult<IList<Room>> GetAllRooms() {
+        public ActionResult<IList<Room>> GetAllRooms()
+        {
             var result = _roomReadService.GetRoomsByAccountId(Guid.Parse("11111111-1111-1111-1111-111111111111"));
-           
+
             return Ok(result);
         }
 
@@ -85,7 +87,8 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
             {
                 deviceStateStr = "Off";
             }
-            else {
+            else
+            {
                 deviceStateStr = "Running";
             }
             var resultObject = new { DeviceId = deviceId, DeviceState = deviceStateStr, TotalUsage = totalUsage, TotalActivity = totalActivity };
@@ -275,38 +278,39 @@ namespace SmartHomeManager.API.Controllers.DeviceLogAPI
         [HttpPost]
         public async Task<IActionResult> PostDeviceLog(Guid deviceId, Guid roomId)
         {
-        var resp = await _logWriteService.AddDeviceLog(deviceId, roomId);
-        return Ok(resp);
+            var resp = await _logWriteService.AddDeviceLog(deviceId, roomId);
+            return Ok(resp);
 
 
-        /* public IActionResult StartUpdatingLogs()
-         {
-             // Start updating logs using the LogWriteService instance
-             _logWriteService.StartUpdatingDeviceLogs();
-             return Ok();
-         }
+            /* public IActionResult StartUpdatingLogs()
+             {
+                 // Start updating logs using the LogWriteService instance
+                 _logWriteService.StartUpdatingDeviceLogs();
+                 return Ok();
+             }
 
-         public IActionResult StopUpdatingLogs()
-         {
-             // Stop updating logs using the LogWriteService instance
-             _logWriteService.StopUpdatingDeviceLogs();
-             return Ok();
-         }
+             public IActionResult StopUpdatingLogs()
+             {
+                 // Stop updating logs using the LogWriteService instance
+                 _logWriteService.StopUpdatingDeviceLogs();
+                 return Ok();
+             }
 
-         public IActionResult SetHourlyUpdate()
-         {
-             // Set the interval to hourly
-             _logWriteService.Interval = TimeSpan.FromHours(1);
-             return Ok();
-         }
+             public IActionResult SetHourlyUpdate()
+             {
+                 // Set the interval to hourly
+                 _logWriteService.Interval = TimeSpan.FromHours(1);
+                 return Ok();
+             }
 
-         public IActionResult SetDailyUpdate()
-         {
-             // Set the interval to daily
-             _logWriteService.Interval = TimeSpan.FromDays(1);
-             return Ok();
-         }*/
+             public IActionResult SetDailyUpdate()
+             {
+                 // Set the interval to daily
+                 _logWriteService.Interval = TimeSpan.FromDays(1);
+                 return Ok();
+             }*/
 
 
+        }
     }
 }
