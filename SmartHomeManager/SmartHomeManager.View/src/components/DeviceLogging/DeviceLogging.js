@@ -1,14 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { Button, Box, Heading, Text, Select } from "@chakra-ui/react";
-import {
-    Chart as ChartJS,
-    Tooltip,
-   
-} from "chart.js";
-import WeeklyEnergyChart from "components/DeviceLogging/WeeklyEnergyChart";
-
-
+import {Box, Heading, Text, Select } from "@chakra-ui/react";
 
 
 function DeviceLogging() {
@@ -21,12 +12,6 @@ function DeviceLogging() {
     const [selectedDeviceName1, setSelectedDeviceName1] = useState("");
     const [selectedDeviceName2, setSelectedDeviceName2] = useState("");
 
-
-
-    /*const onChange = (event) => {
-        const value = event.target.value;
-        setDeviceID(value);
-    };*/
 
     function fetchDeviceTypes() {
         fetch("https://localhost:7140/api/RegisterDevice/GetAllDeviceTypes/")
@@ -67,56 +52,52 @@ function DeviceLogging() {
             </Box>
 
 
-            <Box paddingTop="10">
-
-
+            <Box paddingTop="10" width="550px" display='inline-block'>           
 
                 {selectedDevice && (
-                    <div>
 
-                        <text>Please select the {selectedDevice} to compare{'\n'}</text>
+                    <><text>Please select the {selectedDevice} to compare{'\n'}</text>
 
-                        <div style={{ display: 'flex' }}>
-                            <Select value={selectedDeviceName1} onChange={(event) => { setSelectedDeviceName1(event.target.value) }}
-                                style={{ marginRight: '10px' }}
-                                placeholder={`Select 1st ${selectedDevice}`}
-                                width={"200px"}
-                                variant='filled'>
+                        <Select
+                        value={selectedDeviceName1} onChange={(event) => { setSelectedDeviceName1(event.target.value); } }
+                        placeholder={`Select 1st ${selectedDevice}`}
+                        width={"500px"}
+                        variant='filled'>
 
-                                {data.filter(item => item !== selectedDeviceName2).map((item) => (
-                                    <option key={item} value={item}>{item}</option>
-                                ))}
+                        {data.filter(item => item !== selectedDeviceName2).map((item) => (
+                            <option key={item} value={item}>{item}</option>
+                        ))}
 
 
-                            </Select>
-
-                            <Select value={selectedDeviceName2} onChange={(e) => setSelectedDeviceName2(e.target.value)}
-                                style={{ marginRight: '10px' }}
-                                placeholder={`Select 2nd ${selectedDevice}`}
-                                width={"200px"}
-                                variant='filled'>
-
-                                {data.filter(option => option !== selectedDeviceName1).map(option => (
-                                    <option key={option} value={option}>{option}</option>
-                                ))}
-
-
-                            </Select>
-
-
-
-                        </div>
-
-
-
-                    </div>
-
+                        </Select></>
 
                 )}
+
             </Box>
 
+            <Box paddingTop="10" width="550px" display='inline-block'>
+            
+            {selectedDevice && (
+
+                <Select
+                    value={selectedDeviceName2} onChange={(e) => setSelectedDeviceName2(e.target.value)}
+                    placeholder={`Select 2nd ${selectedDevice}`}
+                    width={"500px"}
+                    variant='filled'>
+
+                    {data.filter(option => option !== selectedDeviceName1).map(option => (
+                        <option key={option} value={option}>{option}</option>
+                    ))}
+
+
+                </Select>
+
+            )}
+
+            </Box>
 
         </Box>
+
     );
 };
 export default DeviceLogging;
