@@ -16,9 +16,8 @@ function DeviceLogging() {
 
     const [deviceTypeName, setDeviceTypeName] = useState([]);
     const [selectedDevice, setSelectedDevice] = useState("");
-    const [data, setData] = useState([]);
 
-    const [deviceName, setDeviceName] = useState([]);
+    const [data, setData] = useState([]);
     const [selectedDeviceName1, setSelectedDeviceName1] = useState("");
     const [selectedDeviceName2, setSelectedDeviceName2] = useState("");
 
