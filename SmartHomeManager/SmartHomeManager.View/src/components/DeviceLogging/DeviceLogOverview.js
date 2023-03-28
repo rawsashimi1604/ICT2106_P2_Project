@@ -17,7 +17,6 @@ import {
 import Rooms from "../../pages/Rooms";
 import WeeklyChart from "./WeeklyChart";
 import DailyChart from "./DailyChart";
-import { data } from "../Analytics/EfficiencyBar";
 
 
 ChartJS.register(

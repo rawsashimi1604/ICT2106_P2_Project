@@ -324,11 +324,13 @@ namespace SmartHomeManager.DataSource
             var DeviceLogs = new List<DeviceLog>();
 
             List<DateTime> pastTwelveMonths = GetPastTwelveMonths();
+            int checkDeviceIndex = 0;
 
             foreach(var dtMonth in pastTwelveMonths)
             {
                 foreach (var device in devices)
                 {
+                    checkDeviceIndex++;
                     var year = dtMonth.Year;
                     var month = dtMonth.Month;
 
@@ -352,20 +354,38 @@ namespace SmartHomeManager.DataSource
                     {
                         for (int hour = 0; hour < 24; hour++)
                         {
-                            DeviceLogs.Add(new DeviceLog()
+                            if (checkDeviceIndex % 2 == 0)
                             {
-                                LogId = Guid.NewGuid(),
-                                EndTime = DateTime.Parse($"{year}-{month.ToString("D2")}-{day.ToString("D2")} {hour}:00:00.0000000"),
-                                DateLogged = DateTime.Parse($"{year}-{month.ToString("D2")}-{day.ToString("D2")} 00:00:00.0000000"),
-                                DeviceEnergyUsage = (float)(rnd.NextDouble() + 0.5) * device.DeviceWatts,
-                                DeviceActivity = 1,
-                                DeviceState = false,
-                                DeviceId = device.DeviceId,
-                                RoomId = rooms[0].RoomId,
-                            });
+                                DeviceLogs.Add(new DeviceLog()
+                                {
+                                    LogId = Guid.NewGuid(),
+                                    EndTime = DateTime.Parse($"{year}-{month.ToString("D2")}-{day.ToString("D2")} {hour}:00:00.0000000"),
+                                    DateLogged = DateTime.Parse($"{year}-{month.ToString("D2")}-{day.ToString("D2")} 00:00:00.0000000"),
+                                    DeviceEnergyUsage = (float)(rnd.NextDouble() + 0.5) * device.DeviceWatts,
+                                    DeviceActivity = 1,
+                                    DeviceState = false,
+                                    DeviceId = device.DeviceId,
+                                    RoomId = rooms[0].RoomId,
+                                });
+                            } else
+                            {
+                                DeviceLogs.Add(new DeviceLog()
+                                {
+                                    LogId = Guid.NewGuid(),
+                                    EndTime = DateTime.Parse($"{year}-{month.ToString("D2")}-{day.ToString("D2")} {hour}:00:00.0000000"),
+                                    DateLogged = DateTime.Parse($"{year}-{month.ToString("D2")}-{day.ToString("D2")} 00:00:00.0000000"),
+                                    DeviceEnergyUsage = (float)(rnd.NextDouble() + 0.5) * device.DeviceWatts,
+                                    DeviceActivity = 1,
+                                    DeviceState = false,
+                                    DeviceId = device.DeviceId,
+                                    RoomId = rooms[1].RoomId,
+                                });
+                            }
                         }
                     }
                 }
+
+                checkDeviceIndex = 0;
             }
             
 
