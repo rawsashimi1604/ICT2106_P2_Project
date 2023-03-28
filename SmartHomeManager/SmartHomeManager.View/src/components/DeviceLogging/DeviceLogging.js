@@ -13,6 +13,13 @@ function DeviceLogging() {
     const [selectedDeviceName2, setSelectedDeviceName2] = useState("");
 
 
+<<<<<<< Updated upstream
+=======
+    /*const [device1ID, setDevice1ID] = useState("");
+    const [allDeviceID, setAllDevice1ID] = useState([]);
+    const [Device1WeeklyEnergy, setDevice1WeeklyEnergy] = useState([])*/
+
+>>>>>>> Stashed changes
     function fetchDeviceTypes() {
         fetch("https://localhost:7140/api/RegisterDevice/GetAllDeviceTypes/")
             .then((response) => response.json())
@@ -96,6 +103,16 @@ function DeviceLogging() {
 
             </Box>
 
+<<<<<<< Updated upstream
+=======
+            {selectedDeviceName1 && selectedDeviceName2 && (
+
+                <Text>Display Chart Here</Text>
+                /*<WeeklyEnergyChart 
+                    Device1WeeklyEnergy={Device1WeeklyEnergy}/> */
+            )}
+
+>>>>>>> Stashed changes
         </Box>
 
     );
