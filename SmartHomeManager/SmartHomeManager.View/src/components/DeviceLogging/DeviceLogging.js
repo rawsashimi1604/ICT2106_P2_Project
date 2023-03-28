@@ -121,7 +121,7 @@ function DeviceLogging() {
 
             </Box>
 
-            {selectedDeviceName2 && (
+            {selectedDeviceName1 && selectedDeviceName2 && (
 
             <WeeklyEnergyChart 
                 Device1WeeklyEnergy={Device1WeeklyEnergy}
