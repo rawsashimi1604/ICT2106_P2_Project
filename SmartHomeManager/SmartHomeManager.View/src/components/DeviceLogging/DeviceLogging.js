@@ -1,6 +1,26 @@
 import React, { useState, useEffect } from "react";
-import {Box, Heading, Text, Select } from "@chakra-ui/react";
+import axios from "axios";
+import { Button, Box, Heading, Text, Select } from "@chakra-ui/react";
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+} from "chart.js";
+import WeeklyEnergyChart from "components/DeviceLogging/WeeklyEnergyChart";
 
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend
+);
 
 function DeviceLogging() {
 
@@ -12,6 +32,10 @@ function DeviceLogging() {
     const [selectedDeviceName1, setSelectedDeviceName1] = useState("");
     const [selectedDeviceName2, setSelectedDeviceName2] = useState("");
 
+
+    const [device1ID, setDevice1ID] = useState("");
+    const [allDeviceID, setAllDevice1ID] = useState([]);
+    const [Device1WeeklyEnergy, setDevice1WeeklyEnergy] = useState([])
 
     function fetchDeviceTypes() {
         fetch("https://localhost:7140/api/RegisterDevice/GetAllDeviceTypes/")
@@ -30,6 +54,7 @@ function DeviceLogging() {
                 .catch((error) => console.log(error));
         }
     }, [selectedDevice]);
+
 
 
 
@@ -75,7 +100,7 @@ function DeviceLogging() {
 
             </Box>
 
-            <Box paddingTop="10" width="550px" display='inline-block'>
+            <Box paddingTop="10" width="550px" display='inline-block' paddingBottom="10">
             
             {selectedDevice && (
 
@@ -95,6 +120,13 @@ function DeviceLogging() {
             )}
 
             </Box>
+
+            {selectedDeviceName2 && (
+
+            <WeeklyEnergyChart 
+                Device1WeeklyEnergy={Device1WeeklyEnergy}
+            />
+            )}
 
         </Box>
 

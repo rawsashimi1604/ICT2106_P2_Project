@@ -36,7 +36,7 @@ const options = {
 
 const weeklyLabel = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-
+const dailyLabel = ["0000", "0100", "0200", "0300", "0400", "0500", "0600", "0700", "0800", "0900", "1000", "1100", "1200", "1300", "1400", "1500", "1600", "1700", "1800", "1900", "2000", "2100", "2200", "2300"];
 
 
 const weeklyActivityData = {
@@ -73,31 +73,39 @@ function WeeklyEnergyChart({ Device1WeeklyEnergy }) {
                 data: [50, 20, 30, 50, 40, 60, 90],
                 backgroundColor: "rgba(255, 99, 132, 0.5)",
             },
+            {
+                label: "Device 2",
+                data: [40, 30, 70, 80, 10, 40, 65],
+                backgroundColor: "rgba(75, 103, 230, 0.8)",
+            },
         ],
     };
 
-    useEffect(() => {
-        // If your API returns some device weekly data, then set the chart data...
-        if (Device1WeeklyEnergy) {
-            setChartData({
-                labels: weeklyLabel,
-                datasets: [
-                    {
-                        label: "Device 1",
-                        data: Device1WeeklyEnergy,
-                        backgroundColor: "rgba(255, 99, 132, 0.5)",
-                    },
-                ],
-            })
-        }
-    }, [Device1WeeklyEnergy])
+    const dailyData = {
+        labels: dailyLabel,
+        datasets: [
+            {
+                label: "Device 1",
+                data: [50, 20, 30, 50, 40, 60, 90, 50, 20, 30, 50, 40, 60, 90, 50, 20, 30, 50, 40, 60, 90, 22, 88, 76],
+                backgroundColor: "rgba(255, 99, 132, 0.5)",
+            },
+            {
+                label: "Device 2",
+                data: [40, 30, 70, 80, 10, 40, 65, 40, 60, 90, 50, 20, 30, 50, 20, 30, 50, 40, 60, 90, 50, 10, 87, 67],
+                backgroundColor: "rgba(75, 103, 230, 0.8)",
+            },
+        ],
+    };
 
     const dropDownHandler = (e) => {
         let value = e.target.value;
         setDropDownValue(value);
-        /*  if (value === "option1") {
+        if (value === "option1") {
               setChartData(weeklyData);
-          } */
+        }
+        if (value === "option2") {
+            setChartData(dailyData);
+        }
     };
 
     return (
@@ -111,6 +119,7 @@ function WeeklyEnergyChart({ Device1WeeklyEnergy }) {
 
             >
                 <option value="option1">Weekly</option>
+                <option value="option2">Daily</option>
 
             </Select>
             {DropDownValue ? (
