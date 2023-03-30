@@ -8,7 +8,7 @@ using SmartHomeManager.Domain.DeviceDomain.Interfaces;
 
 namespace SmartHomeManager.Domain.DeviceDomain.Services
 {
-    public class MockDeviceService : IDeviceService
+    public class MockDeviceService : IDeviceInformationService
 
     {
         private readonly IDeviceRepository _deviceRepository;
@@ -18,17 +18,26 @@ namespace SmartHomeManager.Domain.DeviceDomain.Services
             _deviceRepository = deviceRepository;
         }
 
-        public async Task<IEnumerable<Device>> GetAllDevicesByAccount(Guid accountId)
+        public async Task<IEnumerable<Device>> GetAllDevicesByAccountAsync(Guid accountId)
         {
             IEnumerable<Device> devices = await _deviceRepository.GetAllAsyncByAccountId(accountId);
             return devices;
         }
 
-        public async Task<Device> GetDeviceById(Guid deviceId)
+        public async Task<Device?> GetDeviceByIdAsync(Guid deviceId)
         {
             Device device = await _deviceRepository.GetAsync(deviceId);
             return device;
         }
 
+        public Task<IEnumerable<Device>> GetDevicesInRoomAsync(Guid roomId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> IsDeviceOnAsync(Guid deviceId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

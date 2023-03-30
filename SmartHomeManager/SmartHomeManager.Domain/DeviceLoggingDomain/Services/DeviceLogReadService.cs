@@ -20,7 +20,7 @@ namespace SmartHomeManager.Domain.DeviceLoggingDomain.Services
     // get device log by date and time
     // get watts from devices
 
-    public class DeviceLogReadService : IDeviceInfoService
+    public class DeviceLogReadService : IDeviceLogInfoService
     {
         private readonly IDeviceLogRepository _deviceLogRepository;
 

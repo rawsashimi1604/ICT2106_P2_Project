@@ -8,7 +8,6 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Interfaces
         public Task<IEnumerable<EnergyEfficiency>> GetAllDeviceEnergyEfficiency(Guid accountId);
 
         public Task<EnergyEfficiency> GetDeviceEnergyEfficiency(Guid deviceId);
-
     }
 }
 

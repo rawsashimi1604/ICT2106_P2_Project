@@ -18,7 +18,6 @@ import Rooms from "../../pages/Rooms";
 import WeeklyChart from "./WeeklyChart";
 import DailyChart from "./DailyChart";
 
-
 ChartJS.register(
     CategoryScale,
     LinearScale,

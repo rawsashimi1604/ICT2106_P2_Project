@@ -12,7 +12,7 @@ using SmartHomeManager.Domain.AccountDomain.Interfaces;
 
 namespace SmartHomeManager.Domain.AccountDomain.Services
 {
-	public class AccountService:IAccountService
+	public class AccountService:IAccountInfoService
 	{
 		private readonly IAccountRepository _accountRepository;
 

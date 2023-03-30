@@ -15,7 +15,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Proxies
     public class EnergyEfficiencyProxy : IEnergyEfficiency
     {
 
-        private readonly IAccountService _accountService;
+        private readonly IAccountInfoService _accountService;
         private readonly IEnergyEfficiency _energyEfficiencyService;
 
         public EnergyEfficiencyProxy(IEnergyEfficiency energyEfficiencyService, IAccountRepository accountRepository) 

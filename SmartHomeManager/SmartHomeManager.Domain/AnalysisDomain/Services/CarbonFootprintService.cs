@@ -23,7 +23,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
     {
 
         private readonly ICarbonFootprintRepository _carbonFootprintRepository;
-        private readonly IDeviceInfoService _deviceLogService;
+        private readonly IDeviceLogInfoService _deviceLogService;
         private readonly MockDeviceService _deviceService;
 
         // According to the Energy Market Authority (EMA) of Singapore,
@@ -53,7 +53,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
 
             // Find which device belong to which account...
             //=> pass in account id and return all the device under that id
-            IEnumerable<Device> devices = await _deviceService.GetAllDevicesByAccount(accountId);
+            IEnumerable<Device> devices = await _deviceService.GetAllDevicesByAccountAsync(accountId);
             
             
 
@@ -153,7 +153,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             List<DateTime> result = new List<DateTime>();
 
             DateTime now = new DateTime(year, month, 1);
-            for (int i = 1; i < 6; i++)
+            for (int i = 0; i < 6; i++)
             {
                 int dtYear = now.Year;
                 int dtMonth = now.Month - i;

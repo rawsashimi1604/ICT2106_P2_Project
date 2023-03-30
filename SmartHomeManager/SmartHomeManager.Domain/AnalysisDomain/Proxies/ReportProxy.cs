@@ -17,8 +17,8 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Proxies
 {
     public class ReportProxy : IReport
     {
-        private readonly IAccountService _accountService;
-        private readonly IDeviceService _deviceService;
+        private readonly IAccountInfoService _accountService;
+        private readonly IDeviceInformationService _deviceService;
         private readonly IReport _reportService;
 
         public ReportProxy(IReport reportService, IAccountRepository accountRepository, IDeviceRepository deviceRepository) 
@@ -39,7 +39,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Proxies
 
             // Check if device exists...
             // Get device
-            Device? device = await _deviceService.GetDeviceById(deviceId);
+            Device? device = await _deviceService.GetDeviceByIdAsync(deviceId);
 
             if (device == null)
             {
