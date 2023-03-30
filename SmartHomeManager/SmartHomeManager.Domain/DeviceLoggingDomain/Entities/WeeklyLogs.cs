@@ -16,5 +16,4 @@ namespace SmartHomeManager.Domain.DeviceLoggingDomain.Entities
         public void weekEnd();
     }
 
-
 }

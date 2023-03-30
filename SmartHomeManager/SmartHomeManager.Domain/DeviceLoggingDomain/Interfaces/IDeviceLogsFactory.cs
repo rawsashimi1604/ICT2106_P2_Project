@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartHomeManager.Domain.DeviceLoggingDomain.Entities
+namespace SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces
 {
     public interface IDeviceLogsFactory
     {
@@ -42,6 +42,4 @@ namespace SmartHomeManager.Domain.DeviceLoggingDomain.Entities
             return new WeeklyLogs();
         }
     }
-
-
 }

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace SmartHomeManager.Domain.DeviceLoggingDomain.Entities
 {
     public class DailyLogs
@@ -15,6 +16,5 @@ namespace SmartHomeManager.Domain.DeviceLoggingDomain.Entities
         public void getLogs(DateTime date, Guid roomID);
 
     }
-
 
 }

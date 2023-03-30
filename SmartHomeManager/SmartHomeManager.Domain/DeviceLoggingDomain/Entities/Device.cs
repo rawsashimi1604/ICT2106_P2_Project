@@ -10,12 +10,17 @@ using System.Threading.Tasks;
 
 namespace SmartHomeManager.Domain.DeviceLoggingDomain.Entities
 {
-    public class Device
+    public class Device extends AbstractDevice
     {
-        public turnOn();
-
-        public turnOff();
+    public turnOn()
+    {
+        // logic for turning device on
+        this.notifyObservers(new DeviceState());
     }
 
-
+    public turnOff()
+    {
+        // logic for turning device off
+        this.notifyObservers(new DeviceState());
+    }
 }
