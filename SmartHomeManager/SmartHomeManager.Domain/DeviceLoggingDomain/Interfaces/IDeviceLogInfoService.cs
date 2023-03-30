@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SmartHomeManager.Domain.DeviceLoggingDomain.Interfaces
 {
-    public interface IDeviceInfoService
+    public interface IDeviceLogInfoService
     {
         public IEnumerable<DeviceLog> getAllDeviceLog();
 
