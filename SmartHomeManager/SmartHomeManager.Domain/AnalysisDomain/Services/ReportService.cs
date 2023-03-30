@@ -29,15 +29,15 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
 {
     public class ReportService : IReport
     {
-        private readonly IDeviceService _deviceService;
-        private readonly IDeviceInfoService _deviceLogService;
+        private readonly IDeviceInformationService _deviceService;
+        private readonly IDeviceLogInfoService _deviceLogService;
         private readonly IForecast _forecastService;
-        private readonly IEnergyEfficiency _energyService;
-        private readonly IAccountService _accountService;
+        private readonly IEnergyEfficiencyAnalytics _energyService;
+        private readonly IAccountInfoService _accountService;
 
         private const double PRICE_PER_WATTS = 0.002;
 
-        public ReportService(IDeviceRepository deviceRepository, IDeviceLogRepository deviceLogRepository, IForecast forecast, IEnergyEfficiency energy, IAccountRepository account)
+        public ReportService(IDeviceRepository deviceRepository, IDeviceLogRepository deviceLogRepository, IForecast forecast, IEnergyEfficiencyAnalytics energy, IAccountRepository account)
         {
             _deviceService = new MockDeviceService(deviceRepository);
             _deviceLogService = new DeviceLogReadService(deviceLogRepository);
@@ -48,7 +48,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
 
         public async Task<PdfFile> GetDeviceReport(Guid deviceId, int lastMonths)
         {
-            Device? device = await _deviceService.GetDeviceById(deviceId);
+            Device? device = await _deviceService.GetDeviceByIdAsync(deviceId);
 
             string fileName = "device.pdf";
 
@@ -60,7 +60,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             IEnumerable<DeviceLog> deviceLog = await _deviceLogService.GetDeviceLogByIdAsync(deviceId);
 
             // Retrieve fileBytes using pdfBuilder
-            var pdfBuilder = new PdfBuilder(fileName, pdfDoc);
+            IPdfBuilder pdfBuilder = new PdfBuilder(fileName, pdfDoc);
             pdfBuilder
                 .addDeviceDetails(device);
 
@@ -133,9 +133,9 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             PdfDocument pdfDoc = new PdfDocument(new PdfWriter("../SmartHomeManager.Domain/AnalysisDomain/Files/" + fileName));
             iText.Layout.Document doc = new iText.Layout.Document(pdfDoc);
 
-            IEnumerable<Device> deviceList = await _deviceService.GetAllDevicesByAccount(accountId);
+            IEnumerable<Device> deviceList = await _deviceService.GetAllDevicesByAccountAsync(accountId);
 
-            var pdfBuilder = new PdfBuilder(fileName, pdfDoc);
+            IPdfBuilder pdfBuilder = new PdfBuilder(fileName, pdfDoc);
 
             
 
@@ -218,7 +218,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
 
         public async Task<IEnumerable<Device>?> GetDevicesByGUID(Guid accountId)
         {   
-            IEnumerable<Device> deviceList = await _deviceService.GetAllDevicesByAccount(accountId);
+            IEnumerable<Device> deviceList = await _deviceService.GetAllDevicesByAccountAsync(accountId);
             return deviceList;
         }
 

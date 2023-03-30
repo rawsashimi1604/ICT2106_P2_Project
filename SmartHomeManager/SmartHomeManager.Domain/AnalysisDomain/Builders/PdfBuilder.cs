@@ -12,27 +12,24 @@ using iText.Kernel.Font;
 using iText.Layout.Borders;
 using SmartHomeManager.Domain.AnalysisDomain.Entities;
 using iText.Kernel.Colors;
-
-
+using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
 
 namespace SmartHomeManager.Domain.AnalysisDomain.Builders
 {
-    public class PdfBuilder
+    public class PdfBuilder : IPdfBuilder
     {
         private readonly Document _document;
         private readonly string _fileName;
-        private readonly PdfDocument _pdfDoc;
         private const string FILEPATH = "../SmartHomeManager.Domain/AnalysisDomain/Files/";
 
         public PdfBuilder(string fileName, PdfDocument pdfDocument)
         {
-            _pdfDoc = pdfDocument;
             _document = new Document(pdfDocument);
             _fileName = fileName;
         }
 //-----------------------------------------------------------------------------
         // Builder to add details for the device
-        public PdfBuilder addDeviceDetails(Device device)
+        public IPdfBuilder addDeviceDetails(Device device)
         {
             // Add header of the report
             _document.Add(new Paragraph($"Device {device.DeviceId} REPORT")
@@ -92,7 +89,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
 
 //-----------------------------------------------------------------------------
         // Builder to add the device total energy usage
-        public PdfBuilder addDeviceLogTotalUsage(double totalUsage)
+        public IPdfBuilder addDeviceLogTotalUsage(double totalUsage)
         {
             _document.Add(new Paragraph($"Total Usage for Device : {totalUsage}")
                 .SetTextAlignment(TextAlignment.CENTER)
@@ -102,7 +99,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
         }
 
 //-----------------------------------------------------------------------------
-        public PdfBuilder addDeviceEnergyEfficiency(EnergyEfficiency energyEfficiency)
+        public IPdfBuilder addDeviceEnergyEfficiency(EnergyEfficiency energyEfficiency)
         {
             _document.Add(new Paragraph(" "));
 
@@ -146,7 +143,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
 
 //-----------------------------------------------------------------------------
         // Builder to add the devices
-        public PdfBuilder addHouseholdDetails(Device device) {
+        public IPdfBuilder addHouseholdDetails(Device device) {
 
             // Create header for device table
             _document.Add(new Paragraph($"Device {device.DeviceId}")
@@ -212,7 +209,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
         }
 //-----------------------------------------------------------------------------
         // Builder to add header for the household
-        public PdfBuilder addHouseholdHeader(Account account)
+        public IPdfBuilder addHouseholdHeader(Account account)
         {
             _document.Add(new Paragraph($"Household Report For {account.Username}")
                 .SetBold()
@@ -224,7 +221,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
         }
 //-----------------------------------------------------------------------------
         //Builder to add total household energy usage
-        public PdfBuilder addTotalHouseUsage(double householdUsage)
+        public IPdfBuilder addTotalHouseUsage(double householdUsage)
         {
             _document.Add(new Paragraph($"Total household energy usage is {householdUsage}")
                 .SetTextAlignment(TextAlignment.CENTER).
@@ -234,7 +231,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
         }
 //-----------------------------------------------------------------------------
         // Builder to generated the current time 
-        public PdfBuilder addGeneratedTime()
+        public IPdfBuilder addGeneratedTime()
         {
             // create date time 
             DateTime now = DateTime.Now;
@@ -244,7 +241,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
         }
 //-----------------------------------------------------------------------------
         // Builder to test
-        public PdfBuilder Date(DateTime start, DateTime end)
+        public IPdfBuilder Date(DateTime start, DateTime end)
         {
             _document.Add(new Paragraph($"Report From {start} to {end}")
                 .SetTextAlignment(TextAlignment.CENTER)
@@ -255,7 +252,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
 //-----------------------------------------------------------------------------
         // Builder to build the table for monthly stats
 
-        public PdfBuilder addMonthlyStats(
+        public IPdfBuilder addMonthlyStats(
             int lastMonths,
             List<String> allMonthYearStrings,
             List<double> allEnergyCost,
@@ -300,7 +297,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
         }
 //-----------------------------------------------------------------------------
         // Builder to add the total usage and total cost
-        public PdfBuilder addTotalUsageCost(double overallUsage, double overallCost)
+        public IPdfBuilder addTotalUsageCost(double overallUsage, double overallCost)
         {
             Paragraph front = new Paragraph().SetTextAlignment(TextAlignment.CENTER).SetBorder(new SolidBorder(1)).SetBackgroundColor(ColorConstants.YELLOW);
             front.Add("The total Usage for this device is ");
@@ -341,7 +338,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
 
 
 //-----------------------------------------------------------------------------
-        public PdfBuilder addDeviceParagraph()
+        public IPdfBuilder addDeviceParagraph()
         {
             _document.Add(new Paragraph("Section A: Device Reports")
                 .SetTextAlignment(TextAlignment.CENTER)
@@ -355,7 +352,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
 
 //-----------------------------------------------------------------------------
         // Builder to add forecast to household report
-        public PdfBuilder addForecastReport(IEnumerable<ForecastChartData> forecast)
+        public IPdfBuilder addForecastReport(IEnumerable<ForecastChartData> forecast)
         {
 
             _document.Add(new Paragraph(" "));
@@ -421,7 +418,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
         }
 
 //-----------------------------------------------------------------------------
-        public PdfBuilder addHouseholdOverall(double usage, double cost)
+        public IPdfBuilder addHouseholdOverall(double usage, double cost)
         {
 
             Paragraph front = new Paragraph()
@@ -450,7 +447,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
         }
 //-----------------------------------------------------------------------------
 
-        public PdfBuilder addEnergyEfficiency(IEnumerable<EnergyEfficiency> energyEfficiency)
+        public IPdfBuilder addEnergyEfficiency(IEnumerable<EnergyEfficiency> energyEfficiency)
         {
             var total = 0.0;
             var avg = 0.0;
@@ -505,7 +502,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
         }
 
 //-----------------------------------------------------------------------------
-        public PdfBuilder addEnergyHeader()
+        public IPdfBuilder addEnergyHeader()
         {
             _document.Add(new Paragraph(" "));
             _document.Add(new Paragraph(" "));
@@ -527,7 +524,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
 
 //-----------------------------------------------------------------------------
 
-        public PdfBuilder addDeviceEnergyHeader()
+        public IPdfBuilder addDeviceEnergyHeader()
         {
             _document.Add(new Paragraph(" "));
             _document.Add(new Paragraph(" "));
@@ -547,7 +544,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Builders
         }
 
 //-----------------------------------------------------------------------------
-        public PdfBuilder addAccountDetails(Account account)
+        public IPdfBuilder addAccountDetails(Account account)
         {
             Paragraph p = new Paragraph().SetBorder(new SolidBorder(1));
             Text name = new Text($"Username: {account.Username}\n");

@@ -23,7 +23,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
     public class CarbonFootprintProxy : ICarbonFootprint
     {
 
-        private readonly IAccountService _accountService;
+        private readonly IAccountInfoService _accountService;
         private readonly ICarbonFootprint _carbonFootprintService;
 
         public CarbonFootprintProxy(ICarbonFootprint carbonFootprintService,IAccountRepository accountRepository)

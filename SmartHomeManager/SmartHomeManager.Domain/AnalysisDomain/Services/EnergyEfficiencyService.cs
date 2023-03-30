@@ -19,12 +19,12 @@ using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
 
 namespace SmartHomeManager.Domain.AnalysisDomain.Services
 {
-    public class EnergyEfficiencyService : IEnergyEfficiency
+    public class EnergyEfficiencyService : IEnergyEfficiencyAnalytics
     {
         private readonly IEnergyEfficiencyRepository _energyEfficiencyRepository;
-        private readonly MockDeviceService _deviceService;
-        private readonly AccountService _accountService;
-        private readonly IDeviceInfoService _deviceInfoService;
+        private readonly IDeviceInformationService _deviceService;
+        private readonly IAccountInfoService _accountService;
+        private readonly IDeviceLogInfoService _deviceInfoService;
 
         //Within how manay days is counted as recent data
         private static int RECENTDAYS = 7;
@@ -46,7 +46,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
                 EnergyEfficiency? energyEfficiency = await _energyEfficiencyRepository.GetByDeviceIdAsync(deviceId);
                 if (energyEfficiency == null)
                 {
-                    Device device = await _deviceService.GetDeviceById(deviceId);
+                    Device device = await _deviceService.GetDeviceByIdAsync(deviceId);
                     //Calculate total Usage
                     double totalUsage = 0;
                     IEnumerable<DeviceLog> deviceLogs = await _deviceInfoService.GetAllDeviceLogAsync();
@@ -91,7 +91,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             //Add all DeviceEnergyUsage
 
             //get All device
-            IEnumerable<Device> allDevices = await _deviceService.GetAllDevicesByAccount(accountId);
+            IEnumerable<Device> allDevices = await _deviceService.GetAllDevicesByAccountAsync(accountId);
             List<EnergyEfficiency> allEnergyEfficiency = new List<EnergyEfficiency>();
 
             //get pass 30 days Compare to EditTime in DeviceLogs Table

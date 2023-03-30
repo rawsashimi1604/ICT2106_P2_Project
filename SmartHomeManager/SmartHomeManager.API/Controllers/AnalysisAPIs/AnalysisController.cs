@@ -24,14 +24,14 @@ namespace SmartHomeManager.API.Controllers.AnalysisAPIs
         private readonly IForecast _forecastService;
         private readonly ICarbonFootprint _carbonFootprintService;
         private readonly AbstractDTOFactory _dtoFactory;
-        private readonly IEnergyEfficiency _energyEfficiencyService;
+        private readonly IEnergyEfficiencyAnalytics _energyEfficiencyService;
         
 
         public AnalysisController(
             IReport report,
             IForecast forecast,
             ICarbonFootprint carbonFootprint,
-            IEnergyEfficiency energyEfficiency,
+            IEnergyEfficiencyAnalytics energyEfficiency,
             IEnergyEfficiencyRepository energyEfficiencyRepository
         )
         {

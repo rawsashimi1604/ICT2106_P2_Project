@@ -17,9 +17,8 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
     {
 
         private readonly IForecastDataRepository _forecastDataRepository;
-        private readonly AccountService _accountService;
-        private readonly IDeviceInfoService _deviceLogService;
-        private readonly MockDeviceService _deviceService;
+        private readonly IDeviceLogInfoService _deviceLogService;
+        private readonly IDeviceInformationService _deviceService;
         private const double PRICE_PER_WATTS = 0.002;
 
         public ForecastService(
@@ -30,7 +29,6 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
         )
         {
             _forecastDataRepository= forecastDataRepository;
-            _accountService = new(accountRepository);
             _deviceLogService = new DeviceLogReadService(deviceLogRepository);
             _deviceService = new MockDeviceService(deviceRepository);
         }
@@ -39,7 +37,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
         {
             // Find which device belong to which account...
             //=> pass in account id and return all the device under that id
-            IEnumerable<Device> devices = await _deviceService.GetAllDevicesByAccount(accountId);
+            IEnumerable<Device> devices = await _deviceService.GetAllDevicesByAccountAsync(accountId);
 
             List<ForecastChartData> result = new List<ForecastChartData>();
             // Get the current date and time

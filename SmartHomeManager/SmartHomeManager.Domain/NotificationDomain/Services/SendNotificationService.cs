@@ -10,7 +10,7 @@ namespace SmartHomeManager.Domain.NotificationDomain.Services
     public class SendNotificationService : ISendNotification
     {
         private readonly INotificationRepository _notificationRepository;
-        private readonly AccountService _accountService;
+        private readonly IAccountInfoService _accountService;
 
         public SendNotificationService(INotificationRepository notificationRepository, IAccountRepository accountRepository)
         {

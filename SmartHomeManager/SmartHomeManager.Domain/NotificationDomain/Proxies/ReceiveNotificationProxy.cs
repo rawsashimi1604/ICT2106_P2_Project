@@ -15,7 +15,7 @@ namespace SmartHomeManager.Domain.NotificationDomain.Proxies
 {
     public class ReceiveNotificationProxy : IReceiveNotification
     {
-        private readonly AccountService _accountService;
+        private readonly IAccountInfoService _accountService;
         private readonly IReceiveNotification _receiveNotificationService;
 
         public ReceiveNotificationProxy(IReceiveNotification receiveNotificationService, IAccountRepository accountRepository)
