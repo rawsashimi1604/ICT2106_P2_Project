@@ -17,9 +17,8 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
     {
 
         private readonly IForecastDataRepository _forecastDataRepository;
-        private readonly AccountService _accountService;
         private readonly IDeviceLogInfoService _deviceLogService;
-        private readonly MockDeviceService _deviceService;
+        private readonly IDeviceInformationService _deviceService;
         private const double PRICE_PER_WATTS = 0.002;
 
         public ForecastService(
@@ -30,7 +29,6 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
         )
         {
             _forecastDataRepository= forecastDataRepository;
-            _accountService = new(accountRepository);
             _deviceLogService = new DeviceLogReadService(deviceLogRepository);
             _deviceService = new MockDeviceService(deviceRepository);
         }

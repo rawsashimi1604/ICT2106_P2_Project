@@ -19,11 +19,11 @@ using SmartHomeManager.Domain.AnalysisDomain.Interfaces;
 
 namespace SmartHomeManager.Domain.AnalysisDomain.Services
 {
-    public class EnergyEfficiencyService : IEnergyEfficiency
+    public class EnergyEfficiencyService : IEnergyEfficiencyAnalytics
     {
         private readonly IEnergyEfficiencyRepository _energyEfficiencyRepository;
-        private readonly MockDeviceService _deviceService;
-        private readonly AccountService _accountService;
+        private readonly IDeviceInformationService _deviceService;
+        private readonly IAccountInfoService _accountService;
         private readonly IDeviceLogInfoService _deviceInfoService;
 
         //Within how manay days is counted as recent data

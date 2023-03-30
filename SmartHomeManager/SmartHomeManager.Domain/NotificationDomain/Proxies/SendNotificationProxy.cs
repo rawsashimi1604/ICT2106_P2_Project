@@ -10,7 +10,7 @@ namespace SmartHomeManager.Domain.NotificationDomain.Proxies
     public class SendNotificationProxy : ISendNotification
     {
         private readonly ISendNotification _sendNotificationService;
-        private readonly AccountService _accountService;
+        private readonly IAccountInfoService _accountService;
 
         public SendNotificationProxy(ISendNotification sendNotificationService, IAccountRepository accountRepository)
         {

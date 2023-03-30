@@ -16,7 +16,7 @@ namespace SmartHomeManager.Domain.NotificationDomain.Services
     public class ReceiveNotificationService : IReceiveNotification
     {
         private readonly INotificationRepository _notificationRepository;
-        private readonly AccountService _accountService;
+        private readonly IAccountInfoService _accountService;
 
         public ReceiveNotificationService(INotificationRepository notificationRepository, IAccountRepository accountRepository)
         {

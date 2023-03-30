@@ -24,7 +24,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
 
         private readonly ICarbonFootprintRepository _carbonFootprintRepository;
         private readonly IDeviceLogInfoService _deviceLogService;
-        private readonly MockDeviceService _deviceService;
+        private readonly IDeviceInformationService _deviceService;
 
         // According to the Energy Market Authority (EMA) of Singapore,
         // the average monthly electricity consumption per household in Singapore

@@ -12,13 +12,13 @@ using SmartHomeManager.Domain.Common.Exceptions;
 
 namespace SmartHomeManager.Domain.AnalysisDomain.Proxies
 {
-    public class EnergyEfficiencyProxy : IEnergyEfficiency
+    public class EnergyEfficiencyProxy : IEnergyEfficiencyAnalytics
     {
 
         private readonly IAccountInfoService _accountService;
-        private readonly IEnergyEfficiency _energyEfficiencyService;
+        private readonly IEnergyEfficiencyAnalytics _energyEfficiencyService;
 
-        public EnergyEfficiencyProxy(IEnergyEfficiency energyEfficiencyService, IAccountRepository accountRepository) 
+        public EnergyEfficiencyProxy(IEnergyEfficiencyAnalytics energyEfficiencyService, IAccountRepository accountRepository) 
         {
             _energyEfficiencyService= energyEfficiencyService;
             _accountService = new AccountService(accountRepository);

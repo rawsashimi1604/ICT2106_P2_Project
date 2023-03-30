@@ -15,7 +15,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Proxies
     {
 
         private readonly IForecast _forecastService;
-        private readonly AccountService _accountService;
+        private readonly IAccountInfoService _accountService;
 
 
         public ForecastProxy(

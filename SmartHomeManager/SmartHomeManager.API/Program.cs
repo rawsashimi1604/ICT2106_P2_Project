@@ -138,7 +138,7 @@ public class Program
         // ANALYSIS
         builder.Services.AddScoped<IEnergyEfficiencyRepository, EnergyEfficiencyRepository>();
         builder.Services.AddScoped<EnergyEfficiencyService>();
-        builder.Services.AddScoped<IEnergyEfficiency, EnergyEfficiencyProxy>(serviceProvider => {
+        builder.Services.AddScoped<IEnergyEfficiencyAnalytics, EnergyEfficiencyProxy>(serviceProvider => {
             var service = serviceProvider.GetRequiredService<EnergyEfficiencyService>();
             var accountRepo = serviceProvider.GetRequiredService<IAccountRepository>();
             return new EnergyEfficiencyProxy(service, accountRepo);

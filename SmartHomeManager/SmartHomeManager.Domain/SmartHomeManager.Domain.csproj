@@ -43,7 +43,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="AccountDomain\Interfaces\" />
     <Folder Include="AccountDomain\Services\" />
   </ItemGroup>
 

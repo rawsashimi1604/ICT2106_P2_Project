@@ -32,12 +32,12 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
         private readonly IDeviceInformationService _deviceService;
         private readonly IDeviceLogInfoService _deviceLogService;
         private readonly IForecast _forecastService;
-        private readonly IEnergyEfficiency _energyService;
+        private readonly IEnergyEfficiencyAnalytics _energyService;
         private readonly IAccountInfoService _accountService;
 
         private const double PRICE_PER_WATTS = 0.002;
 
-        public ReportService(IDeviceRepository deviceRepository, IDeviceLogRepository deviceLogRepository, IForecast forecast, IEnergyEfficiency energy, IAccountRepository account)
+        public ReportService(IDeviceRepository deviceRepository, IDeviceLogRepository deviceLogRepository, IForecast forecast, IEnergyEfficiencyAnalytics energy, IAccountRepository account)
         {
             _deviceService = new MockDeviceService(deviceRepository);
             _deviceLogService = new DeviceLogReadService(deviceLogRepository);
@@ -60,7 +60,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
             IEnumerable<DeviceLog> deviceLog = await _deviceLogService.GetDeviceLogByIdAsync(deviceId);
 
             // Retrieve fileBytes using pdfBuilder
-            var pdfBuilder = new PdfBuilder(fileName, pdfDoc);
+            IPdfBuilder pdfBuilder = new PdfBuilder(fileName, pdfDoc);
             pdfBuilder
                 .addDeviceDetails(device);
 
@@ -135,7 +135,7 @@ namespace SmartHomeManager.Domain.AnalysisDomain.Services
 
             IEnumerable<Device> deviceList = await _deviceService.GetAllDevicesByAccountAsync(accountId);
 
-            var pdfBuilder = new PdfBuilder(fileName, pdfDoc);
+            IPdfBuilder pdfBuilder = new PdfBuilder(fileName, pdfDoc);
 
             
 
